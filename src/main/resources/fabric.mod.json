@@ -18,10 +18,10 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.github.sandydunlop.newsfeed.Newsfeed"
+			"com.github.sandydunlop.newsfeed.NewsfeedModInitializer"
 		],
 		"client": [
-			"com.github.sandydunlop.newsfeed.NewsfeedClient"
+			"com.github.sandydunlop.newsfeed.NewsfeedClientModInitializer"
 		]
 	},
 	"mixins": [
