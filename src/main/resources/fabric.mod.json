@@ -1,0 +1,43 @@
+{
+	"schemaVersion": 1,
+	"id": "newsfeed",
+	"version": "${version}",
+	"name": "Newsfeed",
+	"description": "RSS Newsfeed client for Minecraft.",
+	"authors": [
+		"Sandy Dunlop"
+	],
+	"contact": {
+		"homepage": "https://github.com/sandydunlop/newsfeed",
+		"sources": "https://github.com/sandydunlop/newsfeed",
+		"issues": "https://github.com/sandydunlop/newsfeed/issues",
+		"ko-fi": "https://ko-fi.com/sandydunlop"
+	},
+	"license": "MIT",
+	"icon": "assets/newsfeed/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.github.sandydunlop.newsfeed.Newsfeed"
+		],
+		"client": [
+			"com.github.sandydunlop.newsfeed.NewsfeedClient"
+		]
+	},
+	"mixins": [
+		"newsfeed.mixins.json",
+		{
+			"config": "newsfeed.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.16.10",
+		"minecraft": "~1.21.4",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

@@ -1,0 +1,6 @@
+{
+  "newsfeed.midnightconfig.title": "News Feed Settings",
+  "newsfeed.midnightconfig.feedEnable": "Enable feed",
+  "newsfeed.midnightconfig.feedName":"Name",
+  "newsfeed.midnightconfig.feedUrl":"URL"
+}
