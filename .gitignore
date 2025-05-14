@@ -1,3 +1,5 @@
 *.lock
 /.gradle
 /build
+/bin
+/.vscode

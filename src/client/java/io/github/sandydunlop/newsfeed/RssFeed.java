@@ -1,4 +1,4 @@
-package com.github.sandydunlop.newsfeed;
+package io.github.sandydunlop.newsfeed;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

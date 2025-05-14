@@ -1,6 +1,6 @@
 {
 	"required": true,
-	"package": "com.github.sandydunlop.newsfeed.mixin.client",
+	"package": "io.github.sandydunlop.newsfeed.mixin.client",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
 		"NewsfeedClientMixin"

@@ -8,7 +8,7 @@
 		"Sandy Dunlop"
 	],
 	"contact": {
-		"homepage": "https://github.com/sandydunlop/newsfeed",
+		"homepage": "https://sandydunlop.github.io",
 		"sources": "https://github.com/sandydunlop/newsfeed",
 		"issues": "https://github.com/sandydunlop/newsfeed/issues",
 		"ko-fi": "https://ko-fi.com/sandydunlop"
@@ -18,10 +18,10 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.github.sandydunlop.newsfeed.NewsfeedModInitializer"
+			"io.github.sandydunlop.newsfeed.NewsfeedModInitializer"
 		],
 		"client": [
-			"com.github.sandydunlop.newsfeed.NewsfeedClientModInitializer"
+			"io.github.sandydunlop.newsfeed.NewsfeedClientModInitializer"
 		]
 	},
 	"mixins": [

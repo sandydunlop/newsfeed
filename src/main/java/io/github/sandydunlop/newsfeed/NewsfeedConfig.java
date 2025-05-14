@@ -1,4 +1,4 @@
-package com.github.sandydunlop.newsfeed;
+package io.github.sandydunlop.newsfeed;
 
 import eu.midnightdust.lib.config.MidnightConfig;
 

@@ -1,4 +1,4 @@
-package com.github.sandydunlop.newsfeed.mixin;
+package io.github.sandydunlop.newsfeed.mixin;
 
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.asm.mixin.Mixin;
