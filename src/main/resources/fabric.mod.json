@@ -22,6 +22,9 @@
 		],
 		"client": [
 			"io.github.sandydunlop.newsfeed.NewsfeedClientModInitializer"
+		],
+		"modmenu": [
+			"io.github.sandydunlop.newsfeed.ModMenuIntegration"
 		]
 	},
 	"mixins": [

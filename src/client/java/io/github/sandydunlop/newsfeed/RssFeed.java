@@ -1,24 +1,26 @@
 package io.github.sandydunlop.newsfeed;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.Text;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
 
 
 public class RssFeed
 {
-	public static final Logger LOGGER = LogManager.getLogger(NewsfeedModInitializer.MOD_ID);
+	private static final Logger LOGGER = LogManager.getLogger(NewsfeedModInitializer.MOD_ID);
 	List<SyndEntry> currentEntries;
 	List<SyndEntry> usedEntries;
 	public URL feedSource;
@@ -38,6 +40,7 @@ public class RssFeed
 
 	private boolean hasUrlChanged(){
 		if (NewsfeedConfig.feedUrl != null && !NewsfeedConfig.feedUrl.equals(feedSource.toString())){
+			System.out.println("URL has changed");
 			return true;
 		}else{
 			return false;
@@ -46,10 +49,11 @@ public class RssFeed
 
 	public void init(){
 		try{
-			if (currentEntries.size() == 0) {
+			if (NewsfeedConfig.feedUrl!= null && !NewsfeedConfig.feedUrl.isEmpty()&& currentEntries.size() == 0) {
 				int suppressedCount = 0;
 				feedTitle = NewsfeedConfig.feedName;
 				feedSource = URI.create(NewsfeedConfig.feedUrl).toURL();
+				System.out.println("init loading from " + feedSource.toString());
 				SyndFeedInput input = new SyndFeedInput();
 				SyndFeed feed = input.build(new XmlReader(feedSource));
 				List<SyndEntry> entries = feed.getEntries();
@@ -96,6 +100,7 @@ public class RssFeed
 							feedSource = null;
 							return;
 						}
+						System.out.println("fetch loading from " + tryFeedSource.toString());
 						SyndFeedInput input = new SyndFeedInput();
 						SyndFeed feed = input.build(new XmlReader(tryFeedSource));
 						List<SyndEntry> entries = feed.getEntries();
@@ -122,7 +127,7 @@ public class RssFeed
 	public void update()
 	{
 		if (currentEntries.size() > 0) {
-			if (NewsfeedConfig.feedEnable){
+			if (NewsfeedConfig.feedEnabled){
 				SyndEntry toDisplay = null;
 				for (SyndEntry entry : currentEntries) {
 					if (!alreadyUsed(entry)) {

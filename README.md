@@ -21,7 +21,12 @@ Once you have Minecraft and Fabric installed, you can download the mod from the 
 
 ## Configuration
 
-The configuration file is located in the `config` folder of your Minecraft instance. The file is named `newsfeed.json`. You can edit this file to change the settings of the mod. The mod is also compatible with mod_menu, so you can change the settings in-game through mod_menu.
+Newsfeed is compatible with [mod_menu](https://github.com/TerraformersMC/ModMenu) and can be configured in-game. 
+
+![](https://sandydunlop.github.io/media/newsfeed/screenshot-cfg-0.png)
+*configuration screen*
+
+Alternatively, the configuration file is located in the `config` folder of your Minecraft instance. The file is named `newsfeed.json`. You can edit this file to change the settings of the mod. The mod is also compatible with mod_menu, so you can change the settings in-game through mod_menu.
 
 ## License
 

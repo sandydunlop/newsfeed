@@ -13,9 +13,9 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
-	maven {
-    	url = "https://api.modrinth.com/maven"
-	}
+	maven { url = "https://api.modrinth.com/maven" }
+	maven { url=  "https://maven.shedaniel.me/" }
+    maven { url = "https://maven.terraformersmc.com/releases/" }
 }
 
 loom {
@@ -26,7 +26,6 @@ loom {
 			sourceSet sourceSets.client
 		}
 	}
-
 }
 
 dependencies {
@@ -38,7 +37,8 @@ dependencies {
 	modImplementation include("org.jdom:jdom2:${project.jdom_version}")
 	modImplementation include("com.rometools:rome:${project.rome_version}")
 	modImplementation include("com.rometools:rome-utils:${project.rome_version}")
-	modImplementation include ("maven.modrinth:midnightlib:${project.midnightlib_version}")
+	modImplementation include ("org.json:json:${project.json_java_version}")
+	modApi "com.terraformersmc:modmenu:${project.mod_menu_version}"
 }
 
 processResources {
