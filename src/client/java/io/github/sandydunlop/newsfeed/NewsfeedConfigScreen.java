@@ -163,6 +163,7 @@ public class NewsfeedConfigScreen extends Screen {
 			} catch (IOException e) {
 				LOGGER.error("Problem saving config: {}", e.getMessage());
 			}
+			NewsfeedClientModInitializer.updateNow();
 			this.close();
 		}).build();
 		continueButton.setWidth(120);

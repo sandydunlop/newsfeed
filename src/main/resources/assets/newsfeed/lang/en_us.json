@@ -5,5 +5,14 @@
   "newsfeed.config.feedEnabled.label": "Feed enabled",
   "newsfeed.config.cancel.button": "Cancel",
   "newsfeed.config.continue.button":"Save & Continue",
-  "newsfeed.config.invalid.status":"Not a valid RSS feed"
+  "newsfeed.config.invalid.status":"Not a valid RSS feed",
+
+  "newsfeed.keybinds.title": "Newsfeed",
+  "newsfeed.keybinds.open": "Open Newsfeed",
+
+  "newsfeed.article.prev.button": "◀ Prev",
+  "newsfeed.article.next.button": "Next ▶",
+  "newsfeed.article.open.button": "Open Link",
+  "newsfeed.article.options.button": "Options",
+  "newsfeed.article.close.button": "Close"
 }

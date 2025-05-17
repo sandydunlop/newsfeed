@@ -27,6 +27,7 @@ public class RssFeed
 	String feedTitle;
 	MinecraftClient client;
 
+
     public RssFeed()
 	{
 		currentEntries = new ArrayList<SyndEntry>();
@@ -34,9 +35,11 @@ public class RssFeed
 		init();
 	}
 
+
 	public void setClient(MinecraftClient client){
 		this.client = client;
 	}
+
 
 	private boolean hasUrlChanged(){
 		if (NewsfeedConfig.feedUrl != null && !NewsfeedConfig.feedUrl.equals(feedSource.toString())){
@@ -46,6 +49,7 @@ public class RssFeed
 			return false;
 		}
 	}
+
 
 	public void init(){
 		try{
@@ -63,8 +67,6 @@ public class RssFeed
 				}
 				String msg= String.format("%s feed loaded. Suppressing %d old articles.", feedTitle, suppressedCount);
 				LOGGER.info(msg);
-				if (client!=null && client.player!=null)
-					client.player.sendMessage(Text.of(msg), false);
 			}
 		}catch(IOException e){
 			String msg = String.format("Invalid feed at %s", feedSource.toString(), null);
@@ -76,14 +78,13 @@ public class RssFeed
 		}
 	}
 
+
 	private void fetch()
 	{
 		if (NewsfeedConfig.feedUrl!=null && !NewsfeedConfig.feedUrl.isEmpty()){
 			if (hasUrlChanged()){
 				String msg = "Feed URL has changed. Reloading feed.";
 				LOGGER.info(msg);
-				if (client!=null && client.player!=null)
-					client.player.sendMessage(Text.of(msg), false);
 				currentEntries.clear();
 				usedEntries.clear();
 				init();
@@ -100,7 +101,6 @@ public class RssFeed
 							feedSource = null;
 							return;
 						}
-						System.out.println("fetch loading from " + tryFeedSource.toString());
 						SyndFeedInput input = new SyndFeedInput();
 						SyndFeed feed = input.build(new XmlReader(tryFeedSource));
 						List<SyndEntry> entries = feed.getEntries();
@@ -124,6 +124,7 @@ public class RssFeed
 		}
 	}
 	
+
 	public void update()
 	{
 		if (currentEntries.size() > 0) {
@@ -141,7 +142,7 @@ public class RssFeed
 					String msg = String.format("%s: %s", feedTitle, toDisplay.getTitle());
 					LOGGER.info(msg);
 					if (client!=null && client.player!=null)
-						client.player.sendMessage(Text.of(msg), false);
+						client.player.sendMessage(Text.of(msg), true);
 				}
 			}
 		}else if (currentEntries.size() == 0){
@@ -149,18 +150,28 @@ public class RssFeed
 		}
 	}
 
-	private boolean alreadyGot(SyndEntry entry){
+
+	public SyndEntry getEntry(int n) {
+		if (usedEntries.size() > n) {
+			return usedEntries.get(n);
+		}
+		return null;
+	}
+
+
+	private boolean alreadyGot(SyndEntry entry) {
 		for(SyndEntry e : currentEntries){
-			if(e.getLink().equals(entry.getLink())){
+			if(e.getLink().equals(entry.getLink())) {
 				return true;
 			}
 		}
 		return alreadyUsed(entry);
 	}
 
-	private boolean alreadyUsed(SyndEntry entry){
+
+	private boolean alreadyUsed(SyndEntry entry) {
 		for(SyndEntry e : usedEntries){
-			if(e.getLink().equals(entry.getLink())){
+			if(e.getLink().equals(entry.getLink())) {
 				return true;
 			}
 		}
