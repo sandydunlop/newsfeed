@@ -44,7 +44,7 @@ public class NewsfeedArticleScreen extends Screen {
 		final int screenWidth = this.width;
 		final int screenHeight = this.height;
 		final int marginLeft = (int)(screenWidth * 0.1);
-		int y = screenHeight / 2 - 60;
+		int y = 60;
 		TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
 		currentEntry = rssFeed.usedEntries.size() - 1;
@@ -185,7 +185,7 @@ public class NewsfeedArticleScreen extends Screen {
 		if (rssFeed.feedTitle != null && !rssFeed.feedTitle.isEmpty()){
 			text = Text.of(rssFeed.feedTitle);
 		}
-		context.drawText(client.textRenderer, text, 45, logoTop + 1, 0xFFFFFFFF, true);
+		context.drawText(client.textRenderer, text, (logoLeft + 40) / 2, logoTop + 1, 0xFFFFFFFF, true);
 		context.getMatrices().pop();
 
 		context.fill(marginLeft, 80, this.width - marginLeft, this.height - 40, 0x88303030);
