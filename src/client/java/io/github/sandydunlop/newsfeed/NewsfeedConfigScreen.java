@@ -245,7 +245,7 @@ public class NewsfeedConfigScreen extends Screen {
 		context.drawTexture(RenderLayer::getGuiTextured, texture, logoLeft, logoTop, 0, 0, 32, 32, 32, 32);
 		context.getMatrices().push();  
 		context.getMatrices().scale(2.0F, 2.0F, 1F);  
-		context.drawText(client.textRenderer, Text.translatable("newsfeed.config.title"), 45, logoTop + 1, 0xFFFFFFFF, true);
+		context.drawText(client.textRenderer, Text.translatable("newsfeed.config.title"), (logoLeft + 40) / 2, logoTop + 1, 0xFFFFFFFF, true);
 		context.getMatrices().pop();
 
 		// Status text
