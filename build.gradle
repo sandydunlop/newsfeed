@@ -4,8 +4,9 @@ plugins {
 	id "me.shedaniel.unified-publishing" version "0.1.+"
 }
 
-version = "${rootProject.mod_version}+mc${rootProject.minecraft_version}"
+version = "${rootProject.mod_version}-mc${rootProject.minecraft_version}"
 group = project.maven_group
+base.archivesName = rootProject.mod_id
 
 repositories {
 	// Add repositories to retrieve artifacts from in here.
@@ -63,11 +64,12 @@ java {
 	targetCompatibility = JavaVersion.VERSION_21
 }
 
+
 // configure the maven publication
 publishing {
 	publications {
 		create("mavenJava", MavenPublication) {
-			artifactId = project.archives_base_name
+			artifactId = project.mod_id
 			from components.java
 		}
 	}
