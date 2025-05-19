@@ -3,6 +3,7 @@
   "newsfeed.config.feedName.label": "Display name",
   "newsfeed.config.feedUrl.label": "RSS Feed URL",
   "newsfeed.config.feedEnabled.label": "Feed enabled",
+  "newsfeed.config.updateCheckEnabled.label": "Check for updates",
   "newsfeed.config.cancel.button": "Cancel",
   "newsfeed.config.continue.button":"Save & Continue",
   "newsfeed.config.invalid.status":"Not a valid RSS feed",

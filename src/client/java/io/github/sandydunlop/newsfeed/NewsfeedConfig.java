@@ -6,4 +6,5 @@ public class NewsfeedConfig {
     public static String feedName = "BBC World News";
     public static String feedUrl = "https://feeds.bbci.co.uk/news/world/rss.xml";
     public static boolean feedEnabled = true;
+    public static boolean updateCheckEnabled = true;
 }

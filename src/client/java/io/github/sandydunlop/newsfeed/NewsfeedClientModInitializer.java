@@ -74,6 +74,7 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 			NewsfeedConfig.feedName = jsonObject.getString("feedName");
 			NewsfeedConfig.feedUrl = jsonObject.getString("feedUrl");
 			NewsfeedConfig.feedEnabled = jsonObject.getBoolean("feedEnabled");
+			NewsfeedConfig.updateCheckEnabled = jsonObject.getBoolean("updateCheckEnabled");
 		} catch(JSONException e){
 			LOGGER.error("Problem loading config: {}", e.getMessage());
 		} catch(IOException e){
@@ -98,13 +99,15 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 			rssFeed.update();
 		}
 		if (!doneStartupNotifications && tock > 100) {
-			UpdateChecker updateChecker = new UpdateChecker(NewsfeedModInitializer.MOD_ID);
-			if (updateChecker.isUpdateAvailable()) {
-				LOGGER.info("Update available for " + NewsfeedModInitializer.MOD_ID);
-				String msg = String.format("Update available for %s: %s", NewsfeedModInitializer.MOD_ID, updateChecker.getLatestVersion());
-				LOGGER.info(msg);
-				if (MinecraftClient.getInstance().player != null)
-					MinecraftClient.getInstance().player.sendMessage(Text.of(msg), true);
+			if (NewsfeedConfig.updateCheckEnabled) {
+				UpdateChecker updateChecker = new UpdateChecker(NewsfeedModInitializer.MOD_ID);
+				if (updateChecker.isUpdateAvailable()) {
+					LOGGER.info("Update available for " + NewsfeedModInitializer.MOD_ID);
+					String msg = String.format("Update available for %s: %s", NewsfeedModInitializer.MOD_ID, updateChecker.getLatestVersion());
+					LOGGER.info(msg);
+					if (MinecraftClient.getInstance().player != null)
+						MinecraftClient.getInstance().player.sendMessage(Text.of(msg), true);
+				}
 			}
 			doneStartupNotifications = true;
 		}
