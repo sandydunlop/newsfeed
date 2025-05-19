@@ -43,13 +43,15 @@ public class NewsfeedConfigScreen extends Screen {
 	private TextFieldWidget nameFieldWidget;
 	private TextFieldWidget urlFieldWidget;
 	private CheckboxWidget enabledCheckboxlWidget;
+	private CheckboxWidget updateCheckboxlWidget;
 	private ButtonWidget continueButton;
 
 	private Screen parent;
 	private Path configFilePath;
 	public String feedName = null;
 	public String feedUrl = null;
-	public boolean feedEnabled = false;
+	public boolean feedEnabled = true;
+	public boolean updateCheckEnabled = true;
 
 
 	public NewsfeedConfigScreen(Text title, Screen parent, Path configFile) {
@@ -59,6 +61,7 @@ public class NewsfeedConfigScreen extends Screen {
 		feedName = NewsfeedConfig.feedName;
 		feedUrl = NewsfeedConfig.feedUrl;
 		feedEnabled = NewsfeedConfig.feedEnabled;
+		updateCheckEnabled = NewsfeedConfig.updateCheckEnabled;
 	}
 
 	@Override
@@ -130,8 +133,14 @@ public class NewsfeedConfigScreen extends Screen {
 			.checked(feedEnabled)
 			.build();
 		this.addDrawableChild(enabledCheckboxlWidget);
-		y+= WIDGET_HEIGHT;
 
+		int updateCheckboxX = screenWidth / 2;
+		updateCheckboxlWidget = CheckboxWidget.builder(Text.translatable("newsfeed.config.updateCheckEnabled.label"), textRenderer)
+			.pos(updateCheckboxX, y)
+			.checked(updateCheckEnabled)
+			.build();
+		this.addDrawableChild(updateCheckboxlWidget);
+		y+= WIDGET_HEIGHT;
 
 		y = screenHeight - MEDIUM_VERTICAL_GAP - WIDGET_HEIGHT;
 		int cancelButtonX = screenWidth/2 - 130;
@@ -144,18 +153,19 @@ public class NewsfeedConfigScreen extends Screen {
 		cancelButton.setY(y);
 		this.addDrawableChild(cancelButton);
 
-
 		y = screenHeight - MEDIUM_VERTICAL_GAP - WIDGET_HEIGHT;
 		int continueButtonX = screenWidth/2 + 10;
 		continueButton = ButtonWidget.builder(Text.translatable("newsfeed.config.continue.button"), (btn) -> {
 			NewsfeedConfig.feedUrl = urlFieldWidget.getText();
 			NewsfeedConfig.feedName = nameFieldWidget.getText();
 			NewsfeedConfig.feedEnabled = enabledCheckboxlWidget.isChecked();
+			NewsfeedConfig.updateCheckEnabled = updateCheckboxlWidget.isChecked();
 
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("feedName", nameFieldWidget.getText());
 			jsonObject.put("feedUrl", urlFieldWidget.getText());
 			jsonObject.put("feedEnabled", enabledCheckboxlWidget.isChecked());
+			jsonObject.put("updateCheckEnabled", updateCheckboxlWidget.isChecked());
 
 			try (FileWriter file = new FileWriter(configFilePath.toString(), Charset.forName("UTF-8"))) {
 				file.write(jsonObject.toString(4));
@@ -232,7 +242,8 @@ public class NewsfeedConfigScreen extends Screen {
 			continueButton.active = false;
 		}else if (!NewsfeedConfig.feedName.equals(nameFieldWidget.getText()) ||
 			!NewsfeedConfig.feedUrl.equals(urlFieldWidget.getText()) ||
-			NewsfeedConfig.feedEnabled != enabledCheckboxlWidget.isChecked()){
+			NewsfeedConfig.feedEnabled != enabledCheckboxlWidget.isChecked() ||
+			NewsfeedConfig.updateCheckEnabled != updateCheckboxlWidget.isChecked()){
 			continueButton.active = true;
 		}else{
 			continueButton.active = false;
