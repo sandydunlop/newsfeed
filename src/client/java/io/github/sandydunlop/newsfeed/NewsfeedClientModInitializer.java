@@ -16,6 +16,7 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import org.apache.commons.io.IOUtils;
@@ -32,6 +33,7 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 	public static int tock = 0; //20 ticks = 1 second
 	private static final int ONE_MINUTE = 1200; // 20 ticks * 60 seconds
 	private static int interval = ONE_MINUTE;
+	private static boolean doneStartupNotifications = false;
 	private static RssFeed rssFeed;
 	private static Path configFilePath = null;
 	public static NewsfeedConfig config = new NewsfeedConfig();
@@ -94,6 +96,17 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 		if (tock++ > interval) {
 			tock = 0;
 			rssFeed.update();
+		}
+		if (!doneStartupNotifications && tock > 100) {
+			UpdateChecker updateChecker = new UpdateChecker(NewsfeedModInitializer.MOD_ID);
+			if (updateChecker.isUpdateAvailable()) {
+				LOGGER.info("Update available for " + NewsfeedModInitializer.MOD_ID);
+				String msg = String.format("Update available for %s: %s", NewsfeedModInitializer.MOD_ID, updateChecker.getLatestVersion());
+				LOGGER.info(msg);
+				if (MinecraftClient.getInstance().player != null)
+					MinecraftClient.getInstance().player.sendMessage(Text.of(msg), true);
+			}
+			doneStartupNotifications = true;
 		}
 	}
 
