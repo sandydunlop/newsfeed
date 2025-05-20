@@ -2,6 +2,8 @@
   "newsfeed.config.title": "Newsfeed",
   "newsfeed.config.feedName.label": "Display name",
   "newsfeed.config.feedUrl.label": "RSS Feed URL",
+  "newsfeed.config.clear.tooltip": "Clear",
+  "newsfeed.config.paste.tooltip": "Paste",
   "newsfeed.config.feedEnabled.label": "Feed enabled",
   "newsfeed.config.updateCheckEnabled.label": "Check for mod updates",
   "newsfeed.config.cancel.button": "Cancel",

@@ -72,7 +72,6 @@ public class UpdateChecker
 				JSONArray gameVersions = release.getJSONArray("game_versions");
 				for (int j = 0; j < gameVersions.length(); j++) {
 					Object releaseGameVersionString = gameVersions.get(j);
-					System.out.println("Game Version: " + releaseGameVersionString);
                     final SemanticVersion releaseGameVersion;
                     try{
                         releaseGameVersion = SemanticVersion.parse(releaseGameVersionString.toString());
@@ -82,7 +81,6 @@ public class UpdateChecker
                     }
                     
                     if (releaseGameVersion.equals(currentMinecraftVersion)) {
-                        System.out.println("Compatible Minecraft version");
 						if (releaseModVersion.compareTo(latestModVersion) > 0) {
                             latestModVersion = releaseModVersion;
 						} 
@@ -108,9 +106,7 @@ public class UpdateChecker
         Optional<ModContainer> omc = FabricLoader.getInstance().getModContainer(modId);
         if (omc.isPresent()){
             ModContainer mc = omc.get();
-            if (mc.getMetadata().getVersion() != null) {
-                Version v = mc.getMetadata().getVersion();
-            } else {
+            if (mc.getMetadata().getVersion() == null) {
                 LOGGER.error("Unable to obtain {} version string", modId);
                 return false;
             }

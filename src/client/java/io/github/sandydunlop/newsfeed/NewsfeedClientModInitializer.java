@@ -113,7 +113,7 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 		}
 	}
 
-	
+
 	public static void updateNow() {
 		tock = interval;
 	}

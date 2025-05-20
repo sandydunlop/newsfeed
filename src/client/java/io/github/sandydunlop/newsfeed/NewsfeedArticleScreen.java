@@ -47,12 +47,20 @@ public class NewsfeedArticleScreen extends Screen {
 		int y = 60;
 		TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
+		String title = "";
+		String description = "";
 		currentEntry = rssFeed.usedEntries.size() - 1;
-        entry = rssFeed.getEntry(currentEntry);
+		if (currentEntry > -1){
+        	entry = rssFeed.getEntry(currentEntry);
+			title = entry.getTitle();
+			description = entry.getDescription().getValue();
+		}else{
+			entry = null;
+		}
 
 		int titleLabelWidth = (int)(screenWidth * 0.8);
 		int titleLabelHeight = WIDGET_HEIGHT;
-		titleWidget = new TextWidget(titleLabelWidth, titleLabelHeight,Text.of(entry.getTitle()), textRenderer);
+		titleWidget = new TextWidget(titleLabelWidth, titleLabelHeight,Text.of(title), textRenderer);
 		titleWidget.setX(marginLeft);
 		titleWidget.setY(y);
 		titleWidget.alignLeft();
@@ -62,7 +70,7 @@ public class NewsfeedArticleScreen extends Screen {
 		int descriptionLabelWidth = (int)(screenWidth * 0.8);
 		int descriptionLabelHeight = screenHeight - y - 40;
 		int descriptionPadding = 2;
-		wrappedDescription = textRenderer.wrapLines(Text.of(entry.getDescription().getValue()), descriptionLabelWidth);
+		wrappedDescription = textRenderer.wrapLines(Text.of(description), descriptionLabelWidth);
 		descriptionWidget = new MultiLineTextWidget(wrappedDescription, textRenderer, marginLeft, y, descriptionLabelWidth, descriptionLabelHeight);
 		descriptionWidget.setX(marginLeft + descriptionPadding);
 		descriptionWidget.setY(y + descriptionPadding);

@@ -10,9 +10,11 @@ import java.nio.file.Path;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.TextIconButtonWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
@@ -112,7 +114,7 @@ public class NewsfeedConfigScreen extends Screen {
 		this.addDrawableChild(urlLabelWidget);
 		y+= WIDGET_HEIGHT;
 
-		int urlFieldWidth = (int)(screenWidth * 0.8);
+		int urlFieldWidth = (int)(screenWidth * 0.8) - (WIDGET_HEIGHT * 2);
 		int urlFieldHeight = WIDGET_HEIGHT;
 		int urlFieldX = marginLeft;
 		urlFieldWidget = new TextFieldWidget(textRenderer, urlFieldWidth, urlFieldHeight, Text.of("") );
@@ -123,7 +125,29 @@ public class NewsfeedConfigScreen extends Screen {
 		urlFieldWidget.setEditable(true);
 		urlFieldWidget.setVisible(true);
 		this.addDrawableChild(urlFieldWidget);
-		urlFieldWidget.setChangedListener(null);
+
+		int clearButtonX = urlFieldX + urlFieldWidth;
+		TextIconButtonWidget clearButton = TextIconButtonWidget.builder(Text.of(""), (btn) ->{ 
+				urlFieldWidget.setText("");
+			}, true)
+			.texture(Identifier.of(NewsfeedModInitializer.MOD_ID,"icon/clear"), 16, 16)
+			.dimension(WIDGET_HEIGHT, WIDGET_HEIGHT).build();
+		clearButton.setX(clearButtonX);
+		clearButton.setY(y);
+		clearButton.setTooltip(Tooltip.of(Text.translatable("newsfeed.config.clear.tooltip")));
+		this.addDrawableChild(clearButton);
+
+		int pasteButtonX = urlFieldX + urlFieldWidth + WIDGET_HEIGHT;
+		TextIconButtonWidget pasteButton = TextIconButtonWidget.builder(Text.of(""), (btn) ->{ 
+				String text = ClipboardHelper.getClipboardText();
+				urlFieldWidget.setText(text);
+			}, true)
+			.texture(Identifier.of(NewsfeedModInitializer.MOD_ID,"icon/paste"), 16, 16)
+			.dimension(WIDGET_HEIGHT, WIDGET_HEIGHT).build();
+		pasteButton.setX(pasteButtonX);
+		pasteButton.setY(y);
+		pasteButton.setTooltip(Tooltip.of(Text.translatable("newsfeed.config.paste.tooltip")));
+		this.addDrawableChild(pasteButton);
 		y+= WIDGET_HEIGHT;
 
 		y+= SMALL_VERTICAL_GAP;
@@ -140,6 +164,7 @@ public class NewsfeedConfigScreen extends Screen {
 			.checked(updateCheckEnabled)
 			.build();
 		this.addDrawableChild(updateCheckboxlWidget);
+		updateCheckboxlWidget.setX(screenWidth - marginLeft - updateCheckboxlWidget.getWidth());
 		y+= WIDGET_HEIGHT;
 
 		y = screenHeight - MEDIUM_VERTICAL_GAP - WIDGET_HEIGHT;
