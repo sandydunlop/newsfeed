@@ -22,6 +22,8 @@ public class NewsfeedArticleScreen extends Screen {
 	private static RssFeed rssFeed = null;
 	private SyndEntry entry;
 	private int currentEntry;
+	private String title;
+	private String description;
 
 	List<OrderedText> wrappedDescription;
 	MultiLineTextWidget descriptionWidget;
@@ -47,13 +49,17 @@ public class NewsfeedArticleScreen extends Screen {
 		int y = 60;
 		TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
-		String title = "";
-		String description = "";
+		title = "";
+		description = "";
 		currentEntry = rssFeed.usedEntries.size() - 1;
 		if (currentEntry > -1){
         	entry = rssFeed.getEntry(currentEntry);
 			title = entry.getTitle();
-			description = entry.getDescription().getValue();
+			if (entry.getDescription() == null){
+				description = "";
+			}else{
+				description = entry.getDescription().getValue();
+			}
 		}else{
 			entry = null;
 		}
@@ -90,7 +96,12 @@ public class NewsfeedArticleScreen extends Screen {
 				currentEntry--;
 				entry = rssFeed.getEntry(currentEntry);
 				titleWidget.setMessage(Text.of(entry.getTitle()));
-				wrappedDescription = textRenderer.wrapLines(Text.of(entry.getDescription().getValue()), descriptionLabelWidth);
+				if (entry.getDescription() == null){
+					description = "";
+				}else{
+					description = entry.getDescription().getValue();
+				}
+				wrappedDescription = textRenderer.wrapLines(Text.of(description), descriptionLabelWidth);
 				descriptionWidget.setLines(wrappedDescription);
 				if (currentEntry == 0) {
 					btn.active = false;
@@ -115,7 +126,12 @@ public class NewsfeedArticleScreen extends Screen {
 				currentEntry++;
 				entry = rssFeed.getEntry(currentEntry);
 				titleWidget.setMessage(Text.of(entry.getTitle()));
-				wrappedDescription = textRenderer.wrapLines(Text.of(entry.getDescription().getValue()), descriptionLabelWidth);
+				if (entry.getDescription() == null){
+					description = "";
+				}else{
+					description = entry.getDescription().getValue();
+				}
+				wrappedDescription = textRenderer.wrapLines(Text.of(description), descriptionLabelWidth);
 				descriptionWidget.setLines(wrappedDescription);
 				if (currentEntry == rssFeed.usedEntries.size() - 1) {
 					btn.active = false;
