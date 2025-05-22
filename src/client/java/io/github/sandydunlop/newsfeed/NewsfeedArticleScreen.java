@@ -6,6 +6,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.render.RenderLayer;
@@ -70,6 +71,7 @@ public class NewsfeedArticleScreen extends Screen {
 		titleWidget.setX(marginLeft);
 		titleWidget.setY(y);
 		titleWidget.alignLeft();
+		titleWidget.setTooltip(Tooltip.of(Text.of(title)));
 		this.addDrawableChild(titleWidget);
 		y+= WIDGET_HEIGHT;
 
@@ -96,6 +98,7 @@ public class NewsfeedArticleScreen extends Screen {
 				currentEntry--;
 				entry = rssFeed.getEntry(currentEntry);
 				titleWidget.setMessage(Text.of(entry.getTitle()));
+				titleWidget.setTooltip(Tooltip.of(Text.of(entry.getTitle())));
 				if (entry.getDescription() == null){
 					description = "";
 				}else{
@@ -126,6 +129,7 @@ public class NewsfeedArticleScreen extends Screen {
 				currentEntry++;
 				entry = rssFeed.getEntry(currentEntry);
 				titleWidget.setMessage(Text.of(entry.getTitle()));
+				titleWidget.setTooltip(Tooltip.of(Text.of(entry.getTitle())));
 				if (entry.getDescription() == null){
 					description = "";
 				}else{
