@@ -1,4 +1,4 @@
-package io.github.sandydunlop.newsfeed;
+package io.github.sandydunlop.cupra.gui;
 
 import java.util.List;
 
@@ -13,9 +13,17 @@ import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class MultiLineTextWidget extends AbstractTextWidget {
-    private List<OrderedText> lines;
+    private List<OrderedText> lines = null;
     private final TextRenderer textRenderer;
-    private int x, y, height;
+    private int x =0;
+    private int y = 0;
+    private int height = 0;
+
+
+    public MultiLineTextWidget(TextRenderer textRenderer) {
+        super(0,0,0,0, Text.of(""), textRenderer);
+        this.textRenderer = textRenderer;
+    }
 
 
     public MultiLineTextWidget(List<OrderedText> lines, TextRenderer textRenderer, int x, int y, int width, int height) {
@@ -50,11 +58,15 @@ public class MultiLineTextWidget extends AbstractTextWidget {
     
     @Override
     protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-        int lineY = y;
-        for (OrderedText line : lines) {
-            context.drawText(textRenderer, line, x, lineY, 0xFFFFFF, false);
-            lineY += textRenderer.fontHeight;
-            if (lineY > y + height) break;
+        int descriptionPadding = 2; //TODO
+        int lineY = y + descriptionPadding;
+        context.fill(x, y, this.width + x, this.height + y, 0x88303030);
+        if (lines != null) {
+            for (OrderedText line : lines) {
+                context.drawText(textRenderer, line, x + descriptionPadding, lineY, 0xFFFFFF, false);
+                lineY += textRenderer.fontHeight;
+                if (lineY > y + height) break;
+            }
         }
     }
 }
