@@ -26,6 +26,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.lwjgl.glfw.GLFW;
 
+import io.github.sandydunlop.cupra.UpdateChecker;
+
 
 public class NewsfeedClientModInitializer implements ClientModInitializer {
 	private static final Logger LOGGER = LogManager.getLogger(NewsfeedModInitializer.MOD_ID);
@@ -57,7 +59,7 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (keyBinding1.wasPressed()) {
-				Screen screen = getArticleScreen(client.currentScreen);
+				Screen screen = getArticleScreen(null);
 				MinecraftClient.getInstance().setScreen(screen);
 			}
 		});
