@@ -29,8 +29,16 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 
+import io.github.sandydunlop.cupra.gui.CButton;
+import io.github.sandydunlop.cupra.gui.CCheckBox;
+import io.github.sandydunlop.cupra.gui.CContainer;
+import io.github.sandydunlop.cupra.gui.CGUIScreen;
+import io.github.sandydunlop.cupra.gui.CLabel;
+import io.github.sandydunlop.cupra.gui.CSpacer;
+import io.github.sandydunlop.cupra.gui.CTextBox;
 
-public class NewsfeedConfigScreen extends Screen {
+
+public class NewsfeedConfigScreen extends CGUIScreen {
 	private static final Logger LOGGER = LogManager.getLogger(NewsfeedModInitializer.MOD_ID);
 	private final int VALIDATION_DELAY = 40;
 	
@@ -42,11 +50,15 @@ public class NewsfeedConfigScreen extends Screen {
 	private boolean isValidating = false;
 	private boolean needsValidating = false;
 	
-	private TextFieldWidget nameFieldWidget;
-	private TextFieldWidget urlFieldWidget;
-	private CheckboxWidget enabledCheckboxlWidget;
-	private CheckboxWidget updateCheckboxlWidget;
-	private ButtonWidget continueButton;
+	private CLabel nameLabelWidget;
+	private CTextBox nameFieldWidget;
+	private CLabel urlLabelWidget;
+	private CTextBox urlFieldWidget;
+	private CContainer checkboxContainer;
+	private CCheckBox enabledCheckboxlWidget;
+	private CCheckBox updateCheckboxlWidget;
+	private CButton cancelButton;
+	private CButton continueButton;
 
 	private Screen parent;
 	private Path configFilePath;
@@ -68,119 +80,51 @@ public class NewsfeedConfigScreen extends Screen {
 
 	@Override
 	protected void init() {
+		super.init();
 		final int WIDGET_HEIGHT = 20;
 		final int MEDIUM_VERTICAL_GAP = 10;
 		final int SMALL_VERTICAL_GAP = 5;
-		final int screenWidth = this.width;
-		final int screenHeight = this.height;
-		final int marginLeft = (int)(screenWidth * 0.1);
-		int y = screenHeight / 2 - 60;
-		TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
-		int nameLabelWidth = (int)(screenWidth * 0.8);
-		int nameLabelHeight = WIDGET_HEIGHT;
-		int nameLabelX = marginLeft;
-		TextWidget nameLabelWidget = new TextWidget(nameLabelWidth, nameLabelHeight,Text.translatable("newsfeed.config.feedName.label"), textRenderer);
-		nameLabelWidget.setX(nameLabelX);
-		nameLabelWidget.setY(y);
-		nameLabelWidget.alignLeft();
-		nameLabelWidget.setAlpha(1.0f);
-		this.addDrawableChild(nameLabelWidget);
-		y+= WIDGET_HEIGHT;
+		nameLabelWidget = new CLabel(this, Text.translatable("newsfeed.config.feedName.label"));
+		this.addToBody(nameLabelWidget);
 
-		int nameFieldWidth = (int)(screenWidth * 0.8);
-		int nameFieldHeight = WIDGET_HEIGHT;
-		int nameFieldX = marginLeft;
-		nameFieldWidget = new TextFieldWidget(textRenderer, nameFieldWidth, nameFieldHeight, Text.of("") );
-		nameFieldWidget.setX(nameFieldX);
-		nameFieldWidget.setY(y);
-		nameFieldWidget.setMaxLength(200);
+		nameFieldWidget = new CTextBox(this, feedName);
 		nameFieldWidget.setText(feedName);
-		nameFieldWidget.setEditable(true);
-		nameFieldWidget.setVisible(true);
-		this.addDrawableChild(nameFieldWidget);
-		y+= WIDGET_HEIGHT;
+		this.addToBody(nameFieldWidget);
 
-		y+=MEDIUM_VERTICAL_GAP;
+		this.addToBody(new CSpacer(MEDIUM_VERTICAL_GAP));
 
-		int urlLabelWidth = (int)(screenWidth * 0.8);
-		int urlLabelHeight = WIDGET_HEIGHT;
-		int urlLabelX = marginLeft;
-		TextWidget urlLabelWidget = new TextWidget(urlLabelWidth, urlLabelHeight,Text.translatable("newsfeed.config.feedUrl.label"), textRenderer);
-		urlLabelWidget.setX(urlLabelX);
-		urlLabelWidget.setY(y);
-		urlLabelWidget.alignLeft();
-		urlLabelWidget.setAlpha(1.0f);
-		this.addDrawableChild(urlLabelWidget);
-		y+= WIDGET_HEIGHT;
+		urlLabelWidget = new CLabel(this, Text.translatable("newsfeed.config.feedUrl.label"));
+		this.addToBody(urlLabelWidget);
 
-		int urlFieldWidth = (int)(screenWidth * 0.8) - (WIDGET_HEIGHT * 2);
-		int urlFieldHeight = WIDGET_HEIGHT;
-		int urlFieldX = marginLeft;
-		urlFieldWidget = new TextFieldWidget(textRenderer, urlFieldWidth, urlFieldHeight, Text.of("") );
-		urlFieldWidget.setX(urlFieldX);
-		urlFieldWidget.setY(y);
-		urlFieldWidget.setMaxLength(200);
+		urlFieldWidget = new CTextBox(this, feedUrl);
+		urlFieldWidget.addClearButton();
+		urlFieldWidget.addPasteButton();
 		urlFieldWidget.setText(feedUrl);
-		urlFieldWidget.setEditable(true);
-		urlFieldWidget.setVisible(true);
-		this.addDrawableChild(urlFieldWidget);
+		this.addToBody(urlFieldWidget);
 
-		int clearButtonX = urlFieldX + urlFieldWidth;
-		TextIconButtonWidget clearButton = TextIconButtonWidget.builder(Text.of(""), (btn) ->{ 
-				urlFieldWidget.setText("");
-			}, true)
-			.texture(Identifier.of(NewsfeedModInitializer.MOD_ID,"icon/clear"), 16, 16)
-			.dimension(WIDGET_HEIGHT, WIDGET_HEIGHT).build();
-		clearButton.setX(clearButtonX);
-		clearButton.setY(y);
-		clearButton.setTooltip(Tooltip.of(Text.translatable("newsfeed.config.clear.tooltip")));
-		this.addDrawableChild(clearButton);
+		this.addToBody(new CSpacer(MEDIUM_VERTICAL_GAP));
 
-		int pasteButtonX = urlFieldX + urlFieldWidth + WIDGET_HEIGHT;
-		TextIconButtonWidget pasteButton = TextIconButtonWidget.builder(Text.of(""), (btn) ->{ 
-				String text = ClipboardHelper.getClipboardText();
-				urlFieldWidget.setText(text);
-			}, true)
-			.texture(Identifier.of(NewsfeedModInitializer.MOD_ID,"icon/paste"), 16, 16)
-			.dimension(WIDGET_HEIGHT, WIDGET_HEIGHT).build();
-		pasteButton.setX(pasteButtonX);
-		pasteButton.setY(y);
-		pasteButton.setTooltip(Tooltip.of(Text.translatable("newsfeed.config.paste.tooltip")));
-		this.addDrawableChild(pasteButton);
-		y+= WIDGET_HEIGHT;
+		checkboxContainer = new CContainer(true);
+		checkboxContainer.setIsWide(true);
+		checkboxContainer.setHeight(WIDGET_HEIGHT);
 
-		y+= SMALL_VERTICAL_GAP;
-		int enabledCheckboxX = marginLeft;
-		enabledCheckboxlWidget = CheckboxWidget.builder(Text.translatable("newsfeed.config.feedEnabled.label"), textRenderer)
-			.pos(enabledCheckboxX, y)
-			.checked(feedEnabled)
-			.build();
-		this.addDrawableChild(enabledCheckboxlWidget);
+		enabledCheckboxlWidget = new CCheckBox(this, Text.translatable("newsfeed.config.feedEnabled.label"), feedEnabled);
+		checkboxContainer.add(enabledCheckboxlWidget);
 
-		int updateCheckboxX = screenWidth / 2;
-		updateCheckboxlWidget = CheckboxWidget.builder(Text.translatable("newsfeed.config.updateCheckEnabled.label"), textRenderer)
-			.pos(updateCheckboxX, y)
-			.checked(updateCheckEnabled)
-			.build();
-		this.addDrawableChild(updateCheckboxlWidget);
-		updateCheckboxlWidget.setX(screenWidth - marginLeft - updateCheckboxlWidget.getWidth());
-		y+= WIDGET_HEIGHT;
+		this.addToBody(new CSpacer(SMALL_VERTICAL_GAP));
 
-		y = screenHeight - MEDIUM_VERTICAL_GAP - WIDGET_HEIGHT;
-		int cancelButtonX = screenWidth/2 - 130;
-		ButtonWidget cancelButton = ButtonWidget.builder(Text.translatable("newsfeed.config.cancel.button"), (btn) -> {
+		updateCheckboxlWidget = new CCheckBox(this, Text.translatable("newsfeed.config.updateCheckEnabled.label"), updateCheckEnabled);
+		checkboxContainer.add(updateCheckboxlWidget);
+
+		this.addToBody(checkboxContainer);
+
+		cancelButton = new CButton(this, Text.translatable("newsfeed.config.cancel.button"), (btn) -> {
 			this.close();
-		}).build();
-		cancelButton.setWidth(120);
-		cancelButton.setHeight(WIDGET_HEIGHT);
-		cancelButton.setX(cancelButtonX);
-		cancelButton.setY(y);
-		this.addDrawableChild(cancelButton);
+		});
+		this.addToFooter(cancelButton);
 
-		y = screenHeight - MEDIUM_VERTICAL_GAP - WIDGET_HEIGHT;
-		int continueButtonX = screenWidth/2 + 10;
-		continueButton = ButtonWidget.builder(Text.translatable("newsfeed.config.continue.button"), (btn) -> {
+		continueButton = new CButton(this, Text.translatable("newsfeed.config.continue.button"), (btn) -> {
 			NewsfeedConfig.feedUrl = urlFieldWidget.getText();
 			NewsfeedConfig.feedName = nameFieldWidget.getText();
 			NewsfeedConfig.feedEnabled = enabledCheckboxlWidget.isChecked();
@@ -200,13 +144,11 @@ public class NewsfeedConfigScreen extends Screen {
 			}
 			NewsfeedClientModInitializer.updateNow();
 			this.close();
-		}).build();
-		continueButton.setWidth(120);
-		continueButton.setHeight(WIDGET_HEIGHT);
-		continueButton.setX(continueButtonX);
-		continueButton.setY(y);
-		continueButton.active = false;
-		this.addDrawableChild(continueButton);
+		});
+		continueButton.setEnabled(false);
+		this.addToFooter(continueButton);
+
+		layout();
 	}
 
 
@@ -222,7 +164,7 @@ public class NewsfeedConfigScreen extends Screen {
 		}
 
 		// If URL is changed, wait VALIDATION_DELAY ticks before checking if it's a valid feed
-		if (!urlFieldWidget.getText().equals((feedUrl))){
+		if (urlFieldWidget!= null && !urlFieldWidget.getText().equals((feedUrl))){
 			timer = VALIDATION_DELAY;
 			statusIsFading = true;
 			feedUrl = urlFieldWidget.getText();
@@ -262,16 +204,16 @@ public class NewsfeedConfigScreen extends Screen {
 		}
 
 		if (isValidating){
-			continueButton.active = false;
+			continueButton.setEnabled(false);
 		}else if(!isValidFeed && !NewsfeedConfig.feedUrl.equals(urlFieldWidget.getText())){
-			continueButton.active = false;
+			continueButton.setEnabled(false);
 		}else if (!NewsfeedConfig.feedName.equals(nameFieldWidget.getText()) ||
 			!NewsfeedConfig.feedUrl.equals(urlFieldWidget.getText()) ||
 			NewsfeedConfig.feedEnabled != enabledCheckboxlWidget.isChecked() ||
 			NewsfeedConfig.updateCheckEnabled != updateCheckboxlWidget.isChecked()){
-			continueButton.active = true;
+			continueButton.setEnabled(true);
 		}else{
-			continueButton.active = false;
+			continueButton.setEnabled(false);
 		}
 
 		// Logo and title
@@ -291,7 +233,7 @@ public class NewsfeedConfigScreen extends Screen {
 			int screenWidth = client.getWindow().getScaledWidth();
 			int screenHeight = client.getWindow().getScaledHeight();
 			int x = (screenWidth - client.textRenderer.getWidth(statusText)) / 2;
-			int y = screenHeight - 50;
+			int y = screenHeight - 60;
 			context.drawText(client.textRenderer, statusText, x, y, color, false);
 		}
 	}

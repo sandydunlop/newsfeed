@@ -50,4 +50,8 @@ public class CWidget {
     public int getWidth() {
         return width;
     }
+
+    public void layout(){
+        // This is overridden in subclasses
+    }
 }

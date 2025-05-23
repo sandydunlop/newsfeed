@@ -1,4 +1,4 @@
-package io.github.sandydunlop.newsfeed;
+package io.github.sandydunlop.cupra;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.Clipboard;

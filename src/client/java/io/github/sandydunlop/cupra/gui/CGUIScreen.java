@@ -17,7 +17,7 @@ public class CGUIScreen extends Screen{
 	private final int footerHeight = 40;
 
 
-	public CGUIScreen(Text title, Screen parent) {
+	public CGUIScreen(Screen parent, Text title) {
 		super(title);
 		this.parent = parent;
 	}
