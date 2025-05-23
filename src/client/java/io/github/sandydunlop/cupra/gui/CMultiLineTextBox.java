@@ -7,8 +7,6 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 
-import io.github.sandydunlop.newsfeed.MultiLineTextWidget;
-
 
 public class CMultiLineTextBox extends CWidget {
     private final int CONTENT_PADDING = 2;

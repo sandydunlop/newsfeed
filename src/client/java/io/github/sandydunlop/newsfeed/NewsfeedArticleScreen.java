@@ -30,7 +30,7 @@ public class NewsfeedArticleScreen extends CGUIScreen {
 
 
     public NewsfeedArticleScreen(Text title, Screen parent, RssFeed rssFeed) {
-		super(title, parent);
+		super(parent, title);
 		NewsfeedArticleScreen.rssFeed = rssFeed;
 	}
 
