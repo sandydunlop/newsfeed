@@ -1,91 +1,64 @@
 package io.github.sandydunlop.newsfeed;
 
-import java.util.List;
-
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
-import com.rometools.rome.feed.synd.SyndEntry;
+import io.github.sandydunlop.cupra.gui.CLabel;
+import io.github.sandydunlop.cupra.gui.CMultiLineTextBox;
+import io.github.sandydunlop.cupra.gui.CGUIScreen;
 
 
-public class NewsfeedArticleScreen extends Screen {
-	private Screen parent;
+public class NewsfeedArticleScreen extends CGUIScreen {
 	private static RssFeed rssFeed = null;
-	private SyndEntry entry;
-	private int currentEntry;
-	private String title;
-	private String description;
+	private int articleIndex;
+	private Article article;
 
-	List<OrderedText> wrappedDescription;
-	MultiLineTextWidget descriptionWidget;
-	TextWidget titleWidget;
+	CMultiLineTextBox descriptionWidget;
+	CLabel titleWidget;
 	ButtonWidget prevButton;
 	ButtonWidget nextButton;
+	ButtonWidget openButton;
+	ButtonWidget optionsButton;
+	ButtonWidget closeButton;
 
 
     public NewsfeedArticleScreen(Text title, Screen parent, RssFeed rssFeed) {
-		super(title);
-		this.parent = parent;
+		super(title, parent);
 		NewsfeedArticleScreen.rssFeed = rssFeed;
 	}
 
 
     @Override
 	protected void init() {
+		super.init();
 		final int WIDGET_HEIGHT = 20;
 		final int MEDIUM_VERTICAL_GAP = 10;
 		final int screenWidth = this.width;
 		final int screenHeight = this.height;
 		final int marginLeft = (int)(screenWidth * 0.1);
 		int y = 60;
-		TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
-		title = "";
-		description = "";
-		currentEntry = rssFeed.usedEntries.size() - 1;
-		if (currentEntry > -1){
-        	entry = rssFeed.getEntry(currentEntry);
-			title = entry.getTitle();
-			if (entry.getDescription() == null){
-				description = "";
-			}else{
-				description = entry.getDescription().getValue();
-			}
+		this.setTextRenderer(MinecraftClient.getInstance().textRenderer);
+
+		articleIndex = rssFeed.usedEntries.size() - 1;
+		if (articleIndex > -1){
+			article = Article.of(rssFeed.getEntry(articleIndex));
 		}else{
-			entry = null;
+			article = Article.empty() ;
 		}
 
-		int titleLabelWidth = (int)(screenWidth * 0.8);
-		int titleLabelHeight = WIDGET_HEIGHT;
-		titleWidget = new TextWidget(titleLabelWidth, titleLabelHeight,Text.of(title), textRenderer);
-		titleWidget.setX(marginLeft);
-		titleWidget.setY(y);
-		titleWidget.alignLeft();
-		titleWidget.setTooltip(Tooltip.of(Text.of(title)));
-		this.addDrawableChild(titleWidget);
-		y+= WIDGET_HEIGHT;
+		titleWidget = new CLabel(this, Text.of(article.title));
+		titleWidget.setTooltip(Tooltip.of(Text.of(article.title)));
+		descriptionWidget = new CMultiLineTextBox(this, Text.of(article.description));
 
-		int descriptionLabelWidth = (int)(screenWidth * 0.8);
-		int descriptionLabelHeight = screenHeight - y - 40;
-		int descriptionPadding = 2;
-		wrappedDescription = textRenderer.wrapLines(Text.of(description), descriptionLabelWidth);
-		descriptionWidget = new MultiLineTextWidget(wrappedDescription, textRenderer, marginLeft, y, descriptionLabelWidth, descriptionLabelHeight);
-		descriptionWidget.setX(marginLeft + descriptionPadding);
-		descriptionWidget.setY(y + descriptionPadding);
-		descriptionWidget.setWidth(descriptionLabelWidth - (descriptionPadding * 2));
-		descriptionWidget.setHeight(descriptionLabelHeight - (descriptionPadding * 2));
-		this.addDrawableChild(descriptionWidget);
-		y+= WIDGET_HEIGHT * 4;
+		layout();
 
 		int buttonCount = 5;
 		int buttonPadding = 5;
@@ -94,19 +67,13 @@ public class NewsfeedArticleScreen extends Screen {
 		y = screenHeight - WIDGET_HEIGHT - MEDIUM_VERTICAL_GAP;
 
 		prevButton = ButtonWidget.builder(Text.translatable("newsfeed.article.prev.button"), (btn) -> {
-			if (currentEntry > 0) {
-				currentEntry--;
-				entry = rssFeed.getEntry(currentEntry);
-				titleWidget.setMessage(Text.of(entry.getTitle()));
-				titleWidget.setTooltip(Tooltip.of(Text.of(entry.getTitle())));
-				if (entry.getDescription() == null){
-					description = "";
-				}else{
-					description = entry.getDescription().getValue();
-				}
-				wrappedDescription = textRenderer.wrapLines(Text.of(description), descriptionLabelWidth);
-				descriptionWidget.setLines(wrappedDescription);
-				if (currentEntry == 0) {
+			if (articleIndex > 0) {
+				articleIndex--;
+				article = Article.of(rssFeed.getEntry(articleIndex));
+				titleWidget.setText(Text.of(article.title));
+				titleWidget.setTooltip(Tooltip.of(Text.of(article.title)));
+				descriptionWidget.setText(Text.of(article.description));
+				if (articleIndex == 0) {
 					btn.active = false;
 				}else{
 					btn.active = true;
@@ -118,26 +85,20 @@ public class NewsfeedArticleScreen extends Screen {
 		prevButton.setHeight(WIDGET_HEIGHT);
 		prevButton.setX(buttonX);
 		prevButton.setY(y);
-		if (currentEntry == 0) {
+		if (articleIndex == 0) {
 			prevButton.active = false;
 		}
 		this.addDrawableChild(prevButton);
 		buttonX += buttonWidth;
 
 		nextButton = ButtonWidget.builder(Text.translatable("newsfeed.article.next.button"), (btn) -> {
-			if (currentEntry < rssFeed.usedEntries.size() - 1) {
-				currentEntry++;
-				entry = rssFeed.getEntry(currentEntry);
-				titleWidget.setMessage(Text.of(entry.getTitle()));
-				titleWidget.setTooltip(Tooltip.of(Text.of(entry.getTitle())));
-				if (entry.getDescription() == null){
-					description = "";
-				}else{
-					description = entry.getDescription().getValue();
-				}
-				wrappedDescription = textRenderer.wrapLines(Text.of(description), descriptionLabelWidth);
-				descriptionWidget.setLines(wrappedDescription);
-				if (currentEntry == rssFeed.usedEntries.size() - 1) {
+			if (articleIndex < rssFeed.usedEntries.size() - 1) {
+				articleIndex++;
+				article = Article.of(rssFeed.getEntry(articleIndex));
+				titleWidget.setText(Text.of(article.title));
+				titleWidget.setTooltip(Tooltip.of(Text.of(article.title)));
+				descriptionWidget.setText(Text.of(article.description));
+				if (articleIndex == rssFeed.usedEntries.size() - 1) {
 					btn.active = false;
 				}else{
 					btn.active = true;
@@ -149,14 +110,14 @@ public class NewsfeedArticleScreen extends Screen {
 		nextButton.setHeight(WIDGET_HEIGHT);
 		nextButton.setX(buttonX);
 		nextButton.setY(y);
-		if (currentEntry == rssFeed.usedEntries.size() - 1) {
+		if (articleIndex == rssFeed.usedEntries.size() - 1) {
 			nextButton.active = false;
 		}
 		this.addDrawableChild(nextButton);
 		buttonX += buttonWidth;
 
-		ButtonWidget openButton = ButtonWidget.builder(Text.translatable("newsfeed.article.open.button"), (btn) -> {
-			Util.getOperatingSystem().open(entry.getLink());
+		openButton = ButtonWidget.builder(Text.translatable("newsfeed.article.open.button"), (btn) -> {
+			Util.getOperatingSystem().open(article.link);
 		}).build();
 		openButton.setWidth(buttonWidth - buttonPadding);
 		openButton.setHeight(WIDGET_HEIGHT);
@@ -165,7 +126,7 @@ public class NewsfeedArticleScreen extends Screen {
 		this.addDrawableChild(openButton);
 		buttonX += buttonWidth;
 
-		ButtonWidget optionsButton = ButtonWidget.builder(Text.translatable("newsfeed.article.options.button"), (btn) -> {
+		optionsButton = ButtonWidget.builder(Text.translatable("newsfeed.article.options.button"), (btn) -> {
 			Screen screen = NewsfeedClientModInitializer.getConfigScreen(this);
 			MinecraftClient.getInstance().setScreen(screen);
 		}).build();
@@ -176,7 +137,7 @@ public class NewsfeedArticleScreen extends Screen {
 		this.addDrawableChild(optionsButton);
 		buttonX += buttonWidth;
 
-		ButtonWidget closeButton = ButtonWidget.builder(Text.translatable("newsfeed.article.close.button"), (btn) -> {
+		closeButton = ButtonWidget.builder(Text.translatable("newsfeed.article.close.button"), (btn) -> {
 			this.close();
 		}).build();
 		closeButton.setWidth(buttonWidth - buttonPadding);
@@ -216,7 +177,7 @@ public class NewsfeedArticleScreen extends Screen {
 		context.drawText(client.textRenderer, text, (logoLeft + 40) / 2, logoTop + 1, 0xFFFFFFFF, true);
 		context.getMatrices().pop();
 
-		context.fill(marginLeft, 80, this.width - marginLeft, this.height - 40, 0x88303030);
+		//context.fill(marginLeft, 80, this.width - marginLeft, this.height - 40, 0x88303030);
     }
 
 
@@ -228,9 +189,4 @@ public class NewsfeedArticleScreen extends Screen {
 		context.drawHorizontalLine(0, this.width, this.height - 40, 0xFF3F3F3F);
 	}
 
-
-	@Override
-	public void close() {
-		this.client.setScreen(this.parent);
-	}
 }
