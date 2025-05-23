@@ -3,29 +3,26 @@ package io.github.sandydunlop.cupra.gui;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.Text;
 
 public class CContainer extends CWidget {
-    private final CGUIScreen parent;
 	private List<CWidget> widgets;
-    private TextRenderer textRenderer;
-
+    private boolean isHorizontal = false;
 	final int WIDGET_HEIGHT = 20;
 	final int MEDIUM_VERTICAL_GAP = 10;
 
 
-    public CContainer(CGUIScreen parent) {
-		this.parent = parent;
+    public CContainer() {
         init();
 	}
 
+
+    public CContainer(boolean isHorizontal) {
+        this.isHorizontal = isHorizontal;
+        init();
+	}
+
+
     public CContainer(CGUIScreen parent, int x, int y, int width, int height) {
-		this.parent = parent;
         this.setX(x);
         this.setY(y);
         this.setWidth(width);
@@ -34,24 +31,25 @@ public class CContainer extends CWidget {
 	}
 
 
-    //@Override
 	protected void init() {
 		widgets = new ArrayList<>();
     }
 
-	// @Override
-	// public void close() {
-    //     this.client.setScreen(parent);
-	// }
 
-    // protected <T extends Element & Drawable & Selectable> T addDrawableChild(T drawableElement) {
-	// 	T r = super.addDrawableChild(drawableElement);
-	// 	return r;
-	// }
 
-	public void setTextRenderer(TextRenderer textRenderer) {
-		this.textRenderer = textRenderer;
-	}
+
+    public void setIsHorizontal(boolean flag){
+        isHorizontal = flag;
+    }
+
+    public boolean getIsHorizontal(){
+        return isHorizontal;
+    }
+
+
+    public List<CWidget> getWidgets(){
+        return widgets;
+    }
 
 
 	public void add(CWidget widget){
@@ -59,15 +57,40 @@ public class CContainer extends CWidget {
 	}
 
 
+    public void layout(){
+        if (isHorizontal){
+            horizontalLayout();
+        }else{
+            verticalLayout();
+        }
+    }
 
-	public void layout(){
-		final int screenWidth = getWidth();
+
+    private void horizontalLayout(){
+        int footerButtonSpacing = 10;
+		int layoutX;
+        int layoutY = (int)((getHeight()/2) - 10);
+        int buttonWidth = getWidth() / 4;
+        if (widgets.size() > 3){
+            buttonWidth = (int)((getWidth()+footerButtonSpacing)/widgets.size());
+        }
+		int btnsWidth = buttonWidth * widgets.size();
+		layoutX = (int)(getWidth()/2 - (btnsWidth/2)) + 10;
+		for (CWidget widget : widgets) {
+			widget.setWidth(buttonWidth - footerButtonSpacing);
+			widget.setHeight(WIDGET_HEIGHT);
+			widget.setX(layoutX + getX());
+			widget.setY(layoutY + getY());
+			layoutX += buttonWidth;
+		}
+    }
+
+
+	private void verticalLayout(){
 		final int screenHeight = getHeight();
-		final int marginLeft = 0; //(int)(screenWidth * 0.1);
-
-		int topSectionHeight = 0;
-		int bottomSectionHeight = 0;
-
+		final int marginLeft = 0;
+		final int marginTop = 0;
+		final int bottomSectionHeight = 0;
 		int nonexHeight = 0;
 		List<CWidget> expandables = new ArrayList<>();
 		for (CWidget widget : widgets) {
@@ -78,20 +101,16 @@ public class CContainer extends CWidget {
 				nonexHeight += WIDGET_HEIGHT;
 			}
 		}
-		int expandableScreenHeight = screenHeight - topSectionHeight - bottomSectionHeight - nonexHeight;
+		int expandableScreenHeight = screenHeight - marginTop - bottomSectionHeight - nonexHeight;
 		for(CWidget widget : expandables) {
 			widget.setHeight(expandableScreenHeight / expandables.size());
 		}
-
-		int layoutY = topSectionHeight;
-
+		int layoutY = marginTop;
 		for (CWidget widget : widgets) {
 			widget.setWidth(getWidth());
 			widget.setX(marginLeft + getX());
 			widget.setY(layoutY + getY());
 			layoutY += widget.getHeight();
 		}
-
     }
-
 }

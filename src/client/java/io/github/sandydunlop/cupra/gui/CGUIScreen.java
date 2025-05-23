@@ -12,6 +12,9 @@ public class CGUIScreen extends Screen{
 	private CContainer header;
 	private CContainer body;
 	private CContainer footer;
+	private final float marginX = 0.1f;
+	private final int headerHeight = 40;
+	private final int footerHeight = 40;
 
 
 	public CGUIScreen(Text title, Screen parent) {
@@ -28,16 +31,13 @@ public class CGUIScreen extends Screen{
 
     @Override
 	protected void init() {
-		header = new CContainer(this);
-		body = new CContainer(this);
-		footer = new CContainer(this);
+		header = new CContainer(true);
+		body = new CContainer(false);
+		footer = new CContainer(true);
     }
 
 
 	private void resizeContainers(){
-		float marginX = 0.1f;
-		int headerHeight = 40;
-		int footerHeight = 40;
 		header.setX((int)(marginX * this.width));
 		header.setY(0);
 		header.setWidth((int)(this.width * (1-(marginX * 2))));
@@ -46,9 +46,9 @@ public class CGUIScreen extends Screen{
 		body.setY(headerHeight);
 		body.setWidth((int)(this.width * (1-(marginX * 2))));
 		body.setHeight(this.height - (headerHeight + footerHeight));
-		footer.setX((int)(marginX * this.width));
+		footer.setX(10);
 		footer.setY(this.height - footerHeight);
-		footer.setWidth((int)(this.width * (1-(marginX * 2))));
+		footer.setWidth(this.width - 20);
 		footer.setHeight(footerHeight);
 	}
 
@@ -87,6 +87,8 @@ public class CGUIScreen extends Screen{
 
 	public void layout(){
 		resizeContainers();
+		header.layout();
 		body.layout();
+		footer.layout();
 	}
 }
