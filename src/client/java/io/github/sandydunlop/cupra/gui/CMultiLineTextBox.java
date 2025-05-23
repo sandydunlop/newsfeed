@@ -24,7 +24,7 @@ public class CMultiLineTextBox extends CWidget {
         widget.setWidth(descriptionLabelWidth);
         setText(text);
         //MultiLineTextWidget(wrappedDescription, textRenderer, marginLeft, y, descriptionLabelWidth, descriptionLabelHeight);
-        screen.add(this);
+        //screen.add(this);
 		screen.addDrawableChild(widget);
     }
 

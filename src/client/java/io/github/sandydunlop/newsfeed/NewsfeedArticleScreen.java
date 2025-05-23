@@ -57,6 +57,8 @@ public class NewsfeedArticleScreen extends CGUIScreen {
 		titleWidget = new CLabel(this, Text.of(article.title));
 		titleWidget.setTooltip(Tooltip.of(Text.of(article.title)));
 		descriptionWidget = new CMultiLineTextBox(this, Text.of(article.description));
+		this.addToBody(titleWidget);
+		this.addToBody(descriptionWidget);
 
 		layout();
 

@@ -13,7 +13,7 @@ public class CLabel extends CWidget {
     public CLabel(CGUIScreen screen, Text text) {
         widget = new TextWidget(text, screen.getTextRenderer());
         widget.alignLeft();
-        screen.add(this);
+        //screen.add(this);
 		screen.addDrawableChild(widget);
     }
 
