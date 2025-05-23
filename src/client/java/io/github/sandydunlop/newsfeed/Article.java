@@ -2,7 +2,6 @@ package io.github.sandydunlop.newsfeed;
 
 import com.rometools.rome.feed.synd.SyndEntry;
 
-import net.minecraft.text.Text;
 
 public class Article {
     public String title;

@@ -26,23 +26,23 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.lwjgl.glfw.GLFW;
 
-import io.github.sandydunlop.cupra.UpdateChecker;
+import io.github.sandydunlop.cupra.ModUtils;
 
 
 public class NewsfeedClientModInitializer implements ClientModInitializer {
 	private static final Logger LOGGER = LogManager.getLogger(NewsfeedModInitializer.MOD_ID);
 	private static final Identifier RENDER_LAYER = Identifier.of(NewsfeedModInitializer.MOD_ID);
-	public static int tock = 0; //20 ticks = 1 second
+	private static int tock = 0; //20 ticks = 1 second
 	private static final int ONE_MINUTE = 1200; // 20 ticks * 60 seconds
-	private static int interval = ONE_MINUTE;
+	private static final int interval = ONE_MINUTE;
 	private static boolean doneStartupNotifications = false;
 	private static RssFeed rssFeed;
 	private static Path configFilePath = null;
-	public static NewsfeedConfig config = new NewsfeedConfig();
 
 
 	@Override
 	public void onInitializeClient() {
+		ModUtils.toAssist(this);
 		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
 		// Initialize drawContext before using it
 		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> layeredDrawer.attachLayerBefore(IdentifiedLayer.CHAT, RENDER_LAYER, NewsfeedClientModInitializer::render));
@@ -102,10 +102,9 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 		}
 		if (!doneStartupNotifications && tock > 100) {
 			if (NewsfeedConfig.updateCheckEnabled) {
-				UpdateChecker updateChecker = new UpdateChecker(NewsfeedModInitializer.MOD_ID);
-				if (updateChecker.isUpdateAvailable()) {
+				if (ModUtils.isUpdateAvailable()) {
 					LOGGER.info("Update available for " + NewsfeedModInitializer.MOD_ID);
-					String msg = String.format("Update available for %s: %s", NewsfeedModInitializer.MOD_ID, updateChecker.getLatestVersion());
+					String msg = String.format("Update available for %s: %s", NewsfeedModInitializer.MOD_ID, ModUtils.getLatestVersion());
 					LOGGER.info(msg);
 					if (MinecraftClient.getInstance().player != null)
 						MinecraftClient.getInstance().player.sendMessage(Text.of(msg), true);
