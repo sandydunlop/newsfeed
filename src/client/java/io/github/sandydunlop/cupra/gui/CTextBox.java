@@ -19,7 +19,6 @@ public class CTextBox extends CWidget {
 
     public CTextBox(CGUIScreen screen, String text) {
         this.screen = screen;
-        System.out.println("TextBox.CTextBox");
         widget = new TextFieldWidget(screen.getTextRenderer(), 100, WIDGET_SIZE, Text.of(""));
         widget.setEditable(true);
         widget.setMaxLength(200);
@@ -30,7 +29,6 @@ public class CTextBox extends CWidget {
 
 
     public void setText(String text) {
-        System.out.println("TextBox.setText: " + text);
         widget.setMessage(Text.of(text));
     }
 
