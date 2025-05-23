@@ -32,13 +32,12 @@ import io.github.sandydunlop.cupra.ModUtils;
 public class NewsfeedClientModInitializer implements ClientModInitializer {
 	private static final Logger LOGGER = LogManager.getLogger(NewsfeedModInitializer.MOD_ID);
 	private static final Identifier RENDER_LAYER = Identifier.of(NewsfeedModInitializer.MOD_ID);
-	public static int tock = 0; //20 ticks = 1 second
+	private static int tock = 0; //20 ticks = 1 second
 	private static final int ONE_MINUTE = 1200; // 20 ticks * 60 seconds
-	private static int interval = ONE_MINUTE;
+	private static final int interval = ONE_MINUTE;
 	private static boolean doneStartupNotifications = false;
 	private static RssFeed rssFeed;
 	private static Path configFilePath = null;
-	public static NewsfeedConfig config = new NewsfeedConfig();
 
 
 	@Override
