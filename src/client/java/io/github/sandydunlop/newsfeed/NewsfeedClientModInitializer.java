@@ -60,7 +60,7 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (keyBinding1.wasPressed()) {
-				Screen screen = getArticleScreen(client.currentScreen);
+				Screen screen = getArticleScreen(null);
 				MinecraftClient.getInstance().setScreen(screen);
 			}
 		});
