@@ -1,6 +1,6 @@
 package io.github.sandydunlop.cupra.gui;
 
-import io.github.sandydunlop.newsfeed.ClipboardHelper;
+import io.github.sandydunlop.cupra.ClipboardHelper;
 import io.github.sandydunlop.newsfeed.NewsfeedModInitializer;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.TextFieldWidget;

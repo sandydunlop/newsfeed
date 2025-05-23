@@ -26,6 +26,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.lwjgl.glfw.GLFW;
 
+import io.github.sandydunlop.cupra.UpdateChecker;
+
 
 public class NewsfeedClientModInitializer implements ClientModInitializer {
 	private static final Logger LOGGER = LogManager.getLogger(NewsfeedModInitializer.MOD_ID);
