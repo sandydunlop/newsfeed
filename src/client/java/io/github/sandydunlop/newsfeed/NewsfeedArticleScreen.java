@@ -10,8 +10,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
 import io.github.sandydunlop.cupra.gui.CButton;
+import io.github.sandydunlop.cupra.gui.CContainer;
 import io.github.sandydunlop.cupra.gui.CLabel;
-import io.github.sandydunlop.cupra.gui.CMultiLineTextBox;
+import io.github.sandydunlop.cupra.gui.CListBox;
+import io.github.sandydunlop.cupra.gui.CMultiLineLabel;
+import io.github.sandydunlop.cupra.gui.CSpacer;
 import io.github.sandydunlop.cupra.gui.CGUIScreen;
 
 
@@ -20,8 +23,9 @@ public class NewsfeedArticleScreen extends CGUIScreen {
 	private int articleIndex;
 	private Article article;
 
-	CMultiLineTextBox descriptionWidget;
 	CLabel titleWidget;
+	CListBox inbox;
+	CMultiLineLabel descriptionWidget;
 	CButton prevButton;
 	CButton nextButton;
 	CButton openButton;
@@ -38,6 +42,7 @@ public class NewsfeedArticleScreen extends CGUIScreen {
     @Override
 	protected void init() {
 		super.init();
+		final int SMALL_VERTICAL_GAP = 5;
 		this.setTextRenderer(MinecraftClient.getInstance().textRenderer);
 
 		articleIndex = rssFeed.usedEntries.size() - 1;
@@ -50,7 +55,13 @@ public class NewsfeedArticleScreen extends CGUIScreen {
 		titleWidget = new CLabel(this, Text.of(article.title));
 		titleWidget.setTooltip(Tooltip.of(Text.of(article.title)));
 		this.addToBody(titleWidget);
-		descriptionWidget = new CMultiLineTextBox(this, Text.of(article.description));
+
+		inbox = new CListBox(this, Text.of(article.description));
+		this.addToBody(inbox);
+
+		this.addToBody(new CSpacer(SMALL_VERTICAL_GAP));
+
+		descriptionWidget = new CMultiLineLabel(this, Text.of(article.description));
 		this.addToBody(descriptionWidget);
 
 		prevButton = new CButton(this, Text.translatable("newsfeed.article.prev.button"), (btn) -> {

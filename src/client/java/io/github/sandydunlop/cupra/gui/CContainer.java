@@ -111,7 +111,9 @@ public class CContainer extends CWidget {
 		int nonexHeight = 0;
 		List<CWidget> expandables = new ArrayList<>();
 		for (CWidget widget : widgets) {
-			if (widget instanceof CMultiLineTextBox){
+			if (widget instanceof CMultiLineLabel){
+				expandables.add(widget);
+			}else if (widget instanceof CListBox){
 				expandables.add(widget);
 			}else if (widget instanceof CSpacer){
 				nonexHeight += ((CSpacer)widget).getHeight();

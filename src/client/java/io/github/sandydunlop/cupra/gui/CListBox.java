@@ -8,7 +8,7 @@ import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 
 
-public class CMultiLineTextBox extends CWidget {
+public class CListBox extends CWidget {
     private final int CONTENT_PADDING = 2;
     private MultiLineTextWidget widget = null;
     private Text text = null;
@@ -16,7 +16,7 @@ public class CMultiLineTextBox extends CWidget {
     private Screen screen = null;
 
 
-    public CMultiLineTextBox(CGUIScreen screen, Text text) {
+    public CListBox(CGUIScreen screen, Text text) {
         this.screen = screen;
 		int descriptionLabelWidth = (int)(screen.width * 0.8);
         widget = new MultiLineTextWidget(screen.getTextRenderer());
@@ -60,11 +60,12 @@ public class CMultiLineTextBox extends CWidget {
     
 
     public void setHeight(int height) {
+        super.setHeight(height);
         widget.setHeight(height);
     }
 
 
     public int getHeight() {
-        return widget.getHeight();
+        return super.getHeight();
     }
 }
