@@ -15,19 +15,17 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
 import io.github.sandydunlop.cupra.gui.CButton;
-import io.github.sandydunlop.cupra.gui.CContainer;
 import io.github.sandydunlop.cupra.gui.CLabel;
-import io.github.sandydunlop.cupra.gui.CListBox;
 import io.github.sandydunlop.cupra.gui.CMultiLineLabel;
 import io.github.sandydunlop.cupra.gui.CScrollable;
 import io.github.sandydunlop.cupra.gui.CSpacer;
-import io.github.sandydunlop.cupra.gui.CWidget;
 import io.github.sandydunlop.cupra.gui.ItemCard;
-import io.github.sandydunlop.cupra.gui.ItemCardContainer;
+import io.github.sandydunlop.cupra.gui.CScrollableContents;
 import io.github.sandydunlop.cupra.gui.CGUIScreen;
 
 
 public class NewsfeedArticleScreen extends CGUIScreen {
+    private final int ITEM_PADDING = 1;
 	private static RssFeed rssFeed = null;
 	private int articleIndex;
 	private Article article;
@@ -40,8 +38,7 @@ public class NewsfeedArticleScreen extends CGUIScreen {
 	CButton openButton;
 	CButton optionsButton;
 	CButton closeButton;
-
-	ItemCardContainer cardContainer;
+	CScrollableContents cardContainer;
 
 
     public NewsfeedArticleScreen(Text title, Screen parent, RssFeed rssFeed) {
@@ -138,22 +135,15 @@ public class NewsfeedArticleScreen extends CGUIScreen {
 
 
 	private CScrollable makeInbox(){
-		int h = 95;
-		cardContainer = new ItemCardContainer(width, h); //TODO: Work these out later
-
-		/* Random items for now */
-		MinecraftClient mc = MinecraftClient.getInstance();
-		ItemStack stack = mc.player.getMainHandStack();
-		cardContainer.addItem(new ItemCard(this, stack, stack.getName().getString()));
+		cardContainer = new CScrollableContents(MinecraftClient.getInstance().textRenderer.fontHeight + ITEM_PADDING*2);
 
 		for (int i = 0; i < 39; i++) {
 			ItemStack st = new ItemStack(getRandom());
-			ItemCard card = new ItemCard(this, st, st.getName().getString());
-			card.setHeight(20);//TODO is this right?
+			ItemCard card = new ItemCard(st.getName().getString());
 			cardContainer.addItem(card);
 		}
 
-		CScrollable inbox = new CScrollable(this, 50,50,0,cardContainer.getHeight());
+		CScrollable inbox = new CScrollable(this, 50,50,0,0,cardContainer.getHeight());
 		inbox.setContent(cardContainer);
 		return inbox;
 	}
@@ -179,8 +169,8 @@ public class NewsfeedArticleScreen extends CGUIScreen {
 
 		inbox.enableScissor(context);//TODO is this  right?
 		inbox.renderWidget(context, mouseX, mouseY, delta);
-		cardContainer.setPos(inbox.getX(), inbox.getY());
-		cardContainer.setSize(inbox.getWidth(), inbox.getHeight());
+		//cardContainer.setPos(inbox.getX(), inbox.getY());
+		//cardContainer.setSize(inbox.getWidth(), inbox.getHeight());
 		cardContainer.renderAll((int)inbox.getScrollAmount(), context, mouseX, mouseY, delta);
 		context.disableScissor();
 
