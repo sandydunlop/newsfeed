@@ -1,10 +1,15 @@
 package io.github.sandydunlop.newsfeed;
 
+import java.util.Random;
+import net.minecraft.item.Item;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -14,7 +19,11 @@ import io.github.sandydunlop.cupra.gui.CContainer;
 import io.github.sandydunlop.cupra.gui.CLabel;
 import io.github.sandydunlop.cupra.gui.CListBox;
 import io.github.sandydunlop.cupra.gui.CMultiLineLabel;
+import io.github.sandydunlop.cupra.gui.CScrollable;
 import io.github.sandydunlop.cupra.gui.CSpacer;
+import io.github.sandydunlop.cupra.gui.CWidget;
+import io.github.sandydunlop.cupra.gui.ItemCard;
+import io.github.sandydunlop.cupra.gui.ItemCardContainer;
 import io.github.sandydunlop.cupra.gui.CGUIScreen;
 
 
@@ -24,13 +33,15 @@ public class NewsfeedArticleScreen extends CGUIScreen {
 	private Article article;
 
 	CLabel titleWidget;
-	CListBox inbox;
+	CScrollable inbox; //TODO: CListBox
 	CMultiLineLabel descriptionWidget;
 	CButton prevButton;
 	CButton nextButton;
 	CButton openButton;
 	CButton optionsButton;
 	CButton closeButton;
+
+	ItemCardContainer cardContainer;
 
 
     public NewsfeedArticleScreen(Text title, Screen parent, RssFeed rssFeed) {
@@ -56,7 +67,9 @@ public class NewsfeedArticleScreen extends CGUIScreen {
 		titleWidget.setTooltip(Tooltip.of(Text.of(article.title)));
 		this.addToBody(titleWidget);
 
-		inbox = new CListBox(this, Text.of(article.description));
+		// TODO: Add a scroll bar to the list box
+		//inbox = new CListBox(this, Text.of(article.description));
+		inbox = makeInbox();
 		this.addToBody(inbox);
 
 		this.addToBody(new CSpacer(SMALL_VERTICAL_GAP));
@@ -124,6 +137,35 @@ public class NewsfeedArticleScreen extends CGUIScreen {
     }
 
 
+	private CScrollable makeInbox(){
+		int h = 95;
+		cardContainer = new ItemCardContainer(width, h); //TODO: Work these out later
+
+		/* Random items for now */
+		MinecraftClient mc = MinecraftClient.getInstance();
+		ItemStack stack = mc.player.getMainHandStack();
+		cardContainer.addItem(new ItemCard(this, stack, stack.getName().getString()));
+
+		for (int i = 0; i < 39; i++) {
+			ItemStack st = new ItemStack(getRandom());
+			ItemCard card = new ItemCard(this, st, st.getName().getString());
+			card.setHeight(20);//TODO is this right?
+			cardContainer.addItem(card);
+		}
+
+		CScrollable inbox = new CScrollable(this, 50,50,0,cardContainer.getHeight());
+		inbox.setContent(cardContainer);
+		return inbox;
+	}
+
+
+	public Item getRandom() {
+		Random r = new Random();
+		int i = r.nextInt(Registries.ITEM.size() + 1);
+		return Registries.ITEM.get(i);
+	}
+
+
     @Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (client.player != null){
@@ -134,6 +176,13 @@ public class NewsfeedArticleScreen extends CGUIScreen {
 		if (client.player == null){
 			drawBackground(context);
 		}
+
+		inbox.enableScissor(context);//TODO is this  right?
+		inbox.renderWidget(context, mouseX, mouseY, delta);
+		cardContainer.setPos(inbox.getX(), inbox.getY());
+		cardContainer.setSize(inbox.getWidth(), inbox.getHeight());
+		cardContainer.renderAll((int)inbox.getScrollAmount(), context, mouseX, mouseY, delta);
+		context.disableScissor();
 
 		// Logo and title
 		int logoTop = 5;
