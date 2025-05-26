@@ -69,4 +69,10 @@ public class CWidget extends ClickableWidget{
     public void layout(){
         // This is overridden in subclasses
     }
+
+
+    @Override
+    public void onClick(double mouseX, double mouseY) {
+        System.out.println("CWidget clicked at: " + mouseX + ", " + mouseY);
+    }
 }

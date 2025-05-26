@@ -11,28 +11,29 @@ import net.minecraft.client.input.KeyCodes;
 import net.minecraft.text.Text;
 
 
-public class ItemCard extends PressableWidget {
+public class CListBoxEntry extends PressableWidget {
 	private boolean initialized = false;
 	private TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 	private final String title;
 	int renderY;
 
 
-	public ItemCard(String title) {
+	public CListBoxEntry(String title) {
 		super(0, 0, 0, 0, Text.literal(""));
 		this.title = title;
 	}
 
 
 	@Override
-	public void onPress() {
-		System.out.println("ItemCard pressed: " + title);
-	};
+	public void onPress() {};
 
 
-	public void renderF(int scroll, DrawContext context, int mouseX, int mouseY, float delta) {
+	public void renderF(int scroll, DrawContext context, int mouseX, int mouseY, float delta, boolean isSelected) {
 		renderY = getY() - scroll;
 		int backgroundColor = isHovered(mouseX, mouseY) ? 0xFF0000FF : 0xFF000080; // Blue when hovered, dark blue otherwise
+		if (isSelected) {
+			backgroundColor = 0xFF008000; // Green when selected
+		}
         context.fill(getX(), renderY, getX() + getWidth(), renderY + getHeight(), backgroundColor);
 		context.drawTextWithShadow(textRenderer, title, getX() + 1, renderY + 1, Color.WHITE.getRGB());
 	}
@@ -50,6 +51,21 @@ public class ItemCard extends PressableWidget {
 	}
 
 
+	//TODO
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		System.out.println("ItemCard mouseClicked: " + title + " at " + mouseX + ", " + mouseY);
+        // if (!this.isSelectButton(button)) {
+        //     return false;
+        // }
+        // this.updateScrollingState(mouseX, mouseY, button);
+        if (!this.isMouseOver(mouseX, mouseY)) {
+            return false;
+        }
+        //E lv = this.getEntryAtPosition(mouseX, mouseY);
+		return true;
+	}
+			
 	public boolean isHovered(int mouseX, int mouseY) {
 		return mouseX >= getX() && mouseX <= getX() + getWidth() && mouseY >= renderY && mouseY < renderY + getHeight();
 	}
@@ -69,4 +85,9 @@ public class ItemCard extends PressableWidget {
 
 	@Override
 	protected void appendClickableNarrations(NarrationMessageBuilder var1) {}
+
+
+	public String getTitle() {
+		return title;
+	}
 }

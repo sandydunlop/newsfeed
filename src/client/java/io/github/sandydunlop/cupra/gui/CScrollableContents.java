@@ -13,7 +13,9 @@ public class CScrollableContents {
     int height = 0;
     int itemHeight = 0;
     double scrollAmount = 0;
-	List<ItemCard> cards = new ArrayList<ItemCard>();
+	List<CListBoxEntry> items = new ArrayList<CListBoxEntry>();
+    CListBoxEntry selected = null;
+    int selectedIndex = -1;
 
 
 	public CScrollableContents(int itemHeight) {
@@ -25,6 +27,11 @@ public class CScrollableContents {
     public void setPos(int x, int y){
         originX = x;
         originY = y;
+    }
+
+
+    public List<CListBoxEntry> children() {
+        return items;
     }
 
 
@@ -43,10 +50,10 @@ public class CScrollableContents {
     }
 
 
-	public void addItem(ItemCard itemcard) {
+	public void addItem(CListBoxEntry itemcard) {
         height += itemHeight;
         itemcard.setHeight(itemHeight);;
-		cards.add(itemcard);
+		items.add(itemcard);
 	}
 
 
@@ -55,17 +62,29 @@ public class CScrollableContents {
 	}
 
 
+    public void setSelected(CListBoxEntry selected) {
+        this.selected = selected;
+		for (CListBoxEntry entry : items) {
+            if (entry.equals(selected)) {
+                selectedIndex = items.indexOf(entry);
+                System.out.println("Selected item: " + entry.getTitle());
+                break;
+            }
+        }
+    }
+
+
 	public void renderAll(int scroll, DrawContext context, int mouseX, int mouseY, float delta) {
-        int i = 0;
-		for (ItemCard card : cards) {
+        for (int i=0; i<items.size(); i++) {
+            CListBoxEntry card = items.get(i);
             int x = originX;
             int y = originY + (itemHeight*i);
             card.setX(x);
             card.setY(y);
             card.setWidth(width);
             scroll = (int)(scrollAmount);
-			card.renderF(scroll, context, mouseX, mouseY, delta);
-            i++;
+            boolean isSelected = i == selectedIndex;
+			card.renderF(scroll, context, mouseX, mouseY, delta, isSelected);
 		}
 	}
 }

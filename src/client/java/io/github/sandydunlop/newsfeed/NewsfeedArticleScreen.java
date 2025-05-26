@@ -17,21 +17,20 @@ import net.minecraft.util.Util;
 import io.github.sandydunlop.cupra.gui.CButton;
 import io.github.sandydunlop.cupra.gui.CLabel;
 import io.github.sandydunlop.cupra.gui.CMultiLineLabel;
-import io.github.sandydunlop.cupra.gui.CScrollable;
+import io.github.sandydunlop.cupra.gui.CListBox;
 import io.github.sandydunlop.cupra.gui.CSpacer;
-import io.github.sandydunlop.cupra.gui.ItemCard;
+import io.github.sandydunlop.cupra.gui.CListBoxEntry;
 import io.github.sandydunlop.cupra.gui.CScrollableContents;
 import io.github.sandydunlop.cupra.gui.CGUIScreen;
 
 
 public class NewsfeedArticleScreen extends CGUIScreen {
-    private final int ITEM_PADDING = 1;
 	private static RssFeed rssFeed = null;
 	private int articleIndex;
 	private Article article;
 
 	CLabel titleWidget;
-	CScrollable inbox; //TODO: CListBox
+	CListBox inbox; //TODO: CListBox
 	CMultiLineLabel descriptionWidget;
 	CButton prevButton;
 	CButton nextButton;
@@ -134,17 +133,15 @@ public class NewsfeedArticleScreen extends CGUIScreen {
     }
 
 
-	private CScrollable makeInbox(){
-		cardContainer = new CScrollableContents(MinecraftClient.getInstance().textRenderer.fontHeight + ITEM_PADDING*2);
+	private CListBox makeInbox(){
+		CListBox inbox = new CListBox(this);
 
 		for (int i = 0; i < 39; i++) {
 			ItemStack st = new ItemStack(getRandom());
-			ItemCard card = new ItemCard(st.getName().getString());
-			cardContainer.addItem(card);
+			CListBoxEntry card = new CListBoxEntry(st.getName().getString());
+			inbox.addItem(card);
 		}
 
-		CScrollable inbox = new CScrollable(this, 50,50,0,0,cardContainer.getHeight());
-		inbox.setContent(cardContainer);
 		return inbox;
 	}
 
@@ -167,12 +164,15 @@ public class NewsfeedArticleScreen extends CGUIScreen {
 			drawBackground(context);
 		}
 
-		inbox.enableScissor(context);//TODO is this  right?
-		inbox.renderWidget(context, mouseX, mouseY, delta);
+		//inbox.enableScissor(context);//TODO is this  right?
+		
+		//TODO
+		//inbox.renderWidget(context, mouseX, mouseY, delta);
+		
 		//cardContainer.setPos(inbox.getX(), inbox.getY());
 		//cardContainer.setSize(inbox.getWidth(), inbox.getHeight());
-		cardContainer.renderAll((int)inbox.getScrollAmount(), context, mouseX, mouseY, delta);
-		context.disableScissor();
+		//cardContainer.renderAll((int)inbox.getScrollAmount(), context, mouseX, mouseY, delta);
+		//context.disableScissor();
 
 		// Logo and title
 		int logoTop = 5;

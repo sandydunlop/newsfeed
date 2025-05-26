@@ -3,8 +3,6 @@ package io.github.sandydunlop.cupra.gui;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jetbrains.annotations.Nullable;
-
 
 public class CContainer extends CWidget {
 	private List<CWidget> widgets;
@@ -12,8 +10,6 @@ public class CContainer extends CWidget {
 	private boolean isWide = false;
 	final int WIDGET_HEIGHT = 20;
 	final int MEDIUM_VERTICAL_GAP = 10;
-	protected int contentHeight = 0;
-    //private Element focusedElement;
 
 
     public CContainer(boolean isHorizontal) {
@@ -33,13 +29,6 @@ public class CContainer extends CWidget {
 
 	protected void init() {
 		widgets = new ArrayList<>();
-    }
-
-
-	//TODO: Here to move to CScrollable
-    public int getContentHeight()
-    {
-        return this.contentHeight;
     }
 
 
@@ -119,7 +108,7 @@ public class CContainer extends CWidget {
 		for (CWidget widget : widgets) {
 			if (widget instanceof CMultiLineLabel){
 				expandables.add(widget);
-			}else if (widget instanceof CScrollable){
+			}else if (widget instanceof CListBox){
 				expandables.add(widget);
 			}else if (widget instanceof CListBox){
 				expandables.add(widget);
