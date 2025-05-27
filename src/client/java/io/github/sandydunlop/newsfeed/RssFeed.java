@@ -26,6 +26,7 @@ public class RssFeed
 	public URL feedSource;
 	String feedTitle;
 	MinecraftClient client;
+	private List<RssUpdateListener> listeners = new ArrayList<>();
 
 
     public RssFeed()
@@ -43,7 +44,6 @@ public class RssFeed
 
 	private boolean hasUrlChanged(){
 		if (NewsfeedConfig.feedUrl != null && !NewsfeedConfig.feedUrl.equals(feedSource.toString())){
-			System.out.println("URL has changed");
 			return true;
 		}else{
 			return false;
@@ -55,11 +55,10 @@ public class RssFeed
 		try{
 			if (NewsfeedConfig.feedUrl!= null && !NewsfeedConfig.feedUrl.isEmpty()&& currentEntries.size() == 0) {
 				int suppressedCount = 0;
-				feedTitle = NewsfeedConfig.feedName;
 				feedSource = URI.create(NewsfeedConfig.feedUrl).toURL();
-				System.out.println("init loading from " + feedSource.toString());
 				SyndFeedInput input = new SyndFeedInput();
 				SyndFeed feed = input.build(new XmlReader(feedSource));
+				feedTitle = feed.getTitle();
 				List<SyndEntry> entries = feed.getEntries();
 				for (SyndEntry entry : entries) {
 					usedEntries.add(entry);
@@ -67,6 +66,8 @@ public class RssFeed
 				}
 				String msg= String.format("%s feed loaded. Suppressing %d old articles.", feedTitle, suppressedCount);
 				LOGGER.info(msg);
+				RssUpdateEvent event = new RssUpdateEvent(this);
+				fireRssUpdateEvent(event);
 			}
 		}catch(IOException e){
 			String msg = String.format("Invalid feed at %s", feedSource.toString(), null);
@@ -94,7 +95,6 @@ public class RssFeed
 				URL tryFeedSource = null;
 				try {
 					if (currentEntries.size() == 0) {
-						feedTitle = NewsfeedConfig.feedName;
 						tryFeedSource = URI.create(NewsfeedConfig.feedUrl).toURL();
 						if (tryFeedSource == null) {
 							LOGGER.error("Feed URL is invalid.");
@@ -103,6 +103,7 @@ public class RssFeed
 						}
 						SyndFeedInput input = new SyndFeedInput();
 						SyndFeed feed = input.build(new XmlReader(tryFeedSource));
+						feedTitle = feed.getTitle();
 						List<SyndEntry> entries = feed.getEntries();
 						for (SyndEntry entry : entries) {
 							if (!alreadyGot(entry)) {
@@ -127,7 +128,7 @@ public class RssFeed
 
 	public void update()
 	{
-		if (currentEntries.size() > 0) {
+		if (currentEntries.size() > 0 && this.feedSource.toString().equals(NewsfeedConfig.feedUrl)) {
 			if (NewsfeedConfig.feedEnabled){
 				SyndEntry toDisplay = null;
 				for (SyndEntry entry : currentEntries) {
@@ -139,6 +140,8 @@ public class RssFeed
 					}
 				}
 				if (toDisplay != null) {
+					RssUpdateEvent event = new RssUpdateEvent(this);
+					fireRssUpdateEvent(event);
 					String msg = String.format("%s: %s", feedTitle, toDisplay.getTitle());
 					LOGGER.info(msg);
 					if (client!=null && client.player!=null)
@@ -176,5 +179,25 @@ public class RssFeed
 			}
 		}
 		return false;
+	}
+
+
+	public void removeRssUpdateListener(RssUpdateListener listener) {
+		listeners.remove(listener);
+	}
+
+
+	public void addRssUpdateListener(RssUpdateListener listener) {
+		if (listeners == null) {
+			listeners = new ArrayList<>();
+		}
+		listeners.add(listener);
+	}
+
+
+	private void fireRssUpdateEvent(RssUpdateEvent event) {
+		for (RssUpdateListener listener : listeners) {
+			listener.feedUpdated(event);
+		}
 	}
 }

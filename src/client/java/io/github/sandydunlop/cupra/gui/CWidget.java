@@ -5,6 +5,7 @@ import net.minecraft.text.Text;
 
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 
+
 public class CWidget extends ClickableWidget{
     private int x;
     private int y;
@@ -68,11 +69,5 @@ public class CWidget extends ClickableWidget{
 
     public void layout(){
         // This is overridden in subclasses
-    }
-
-
-    @Override
-    public void onClick(double mouseX, double mouseY) {
-        System.out.println("CWidget clicked at: " + mouseX + ", " + mouseY);
     }
 }

@@ -62,15 +62,27 @@ public class CScrollableContents {
 	}
 
 
+    public void clear() {
+        items.clear();
+        height = 0;
+        selected = null;
+        selectedIndex = -1;
+    }
+
+
     public void setSelected(CListBoxEntry selected) {
         this.selected = selected;
 		for (CListBoxEntry entry : items) {
             if (entry.equals(selected)) {
                 selectedIndex = items.indexOf(entry);
-                System.out.println("Selected item: " + entry.getTitle());
                 break;
             }
         }
+    }
+
+
+    public CListBoxEntry getSelected() {
+        return selected;
     }
 
 

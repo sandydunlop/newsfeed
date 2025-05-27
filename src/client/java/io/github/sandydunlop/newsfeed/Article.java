@@ -7,6 +7,8 @@ public class Article {
     public String title;
     public String description;
     public String link;
+    public SyndEntry syndEntry;
+
 
     public static Article of(SyndEntry entry) {
         String title = "";
@@ -17,13 +19,15 @@ public class Article {
         if (entry.getDescription() != null) {
             description = entry.getDescription().getValue();
         }
-        Article article = new Article(title, description, entry.getLink());
+        Article article = new Article(title, description, entry.getLink(), entry);
         return article;
     }
+
 
     public static Article empty() {
         return new Article();
     }
+
 
     private Article() {
         this.title = "";
@@ -31,9 +35,16 @@ public class Article {
         this.link = "";
     }
 
-    private Article(String title, String description, String link) {
+
+    private Article(String title, String description, String link, SyndEntry syndEntry) {
+        this.syndEntry = syndEntry;
         this.title = title;
         this.description = description;
         this.link = link;
+    }
+
+
+    public SyndEntry getEntry() {
+        return syndEntry;
     }
 }

@@ -1,7 +1,5 @@
 package io.github.sandydunlop.cupra.gui;
 
-import java.awt.Color;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -16,11 +14,13 @@ public class CListBoxEntry extends PressableWidget {
 	private TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 	private final String title;
 	int renderY;
+	Object value;
 
 
-	public CListBoxEntry(String title) {
+	public CListBoxEntry(String title, Object value) {
 		super(0, 0, 0, 0, Text.literal(""));
 		this.title = title;
+		this.value = value;
 	}
 
 
@@ -28,14 +28,31 @@ public class CListBoxEntry extends PressableWidget {
 	public void onPress() {};
 
 
+	public Object getValue() {
+		return value;
+	}
+
+
 	public void renderF(int scroll, DrawContext context, int mouseX, int mouseY, float delta, boolean isSelected) {
 		renderY = getY() - scroll;
-		int backgroundColor = isHovered(mouseX, mouseY) ? 0xFF0000FF : 0xFF000080; // Blue when hovered, dark blue otherwise
+		int backgroundColor = 0x88303030;
+		int textColor = 0xFF808080;
+		if (isHovered(mouseX, mouseY)){
+			backgroundColor = 0xFF3B4017;
+		}
 		if (isSelected) {
-			backgroundColor = 0xFF008000; // Green when selected
+			backgroundColor = 0xFFB2C248;
+			textColor = 0xFF000000;
 		}
         context.fill(getX(), renderY, getX() + getWidth(), renderY + getHeight(), backgroundColor);
-		context.drawTextWithShadow(textRenderer, title, getX() + 1, renderY + 1, Color.WHITE.getRGB());
+		if (isHovered(mouseX, mouseY)){
+			int borderColor = 0xFF626B27;
+			context.drawHorizontalLine(getX(), getX() + getWidth() - 1, renderY, borderColor);
+			context.drawHorizontalLine(getX(), getX() + getWidth() - 1, renderY + getHeight() -1, borderColor);
+			context.drawVerticalLine(getX(), renderY, renderY + getHeight() - 1, borderColor);
+			context.drawVerticalLine(getX() + getWidth() - 1, renderY + getHeight() - 1, renderY, borderColor);
+		}
+		context.drawText(textRenderer, title, getX() + 2, renderY + 2, textColor, false);
 	}
 
 
@@ -44,27 +61,6 @@ public class CListBoxEntry extends PressableWidget {
 		this.drawScrollableText(context, textRenderer, 2, color);
 	}
 
-
-	@Override
-	public void onClick(double mouseX, double mouseY) {
-		System.out.println("ItemCard clicked: " + title);
-	}
-
-
-	//TODO
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		System.out.println("ItemCard mouseClicked: " + title + " at " + mouseX + ", " + mouseY);
-        // if (!this.isSelectButton(button)) {
-        //     return false;
-        // }
-        // this.updateScrollingState(mouseX, mouseY, button);
-        if (!this.isMouseOver(mouseX, mouseY)) {
-            return false;
-        }
-        //E lv = this.getEntryAtPosition(mouseX, mouseY);
-		return true;
-	}
 			
 	public boolean isHovered(int mouseX, int mouseY) {
 		return mouseX >= getX() && mouseX <= getX() + getWidth() && mouseY >= renderY && mouseY < renderY + getHeight();
@@ -90,4 +86,9 @@ public class CListBoxEntry extends PressableWidget {
 	public String getTitle() {
 		return title;
 	}
+
+
+    public void ifPresent(Object object) {
+		return;
+    }
 }

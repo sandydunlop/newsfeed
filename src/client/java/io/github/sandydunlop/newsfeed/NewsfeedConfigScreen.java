@@ -42,8 +42,6 @@ public class NewsfeedConfigScreen extends CGUIScreen {
 	private boolean isValidating = false;
 	private boolean needsValidating = false;
 	
-	private CLabel nameLabelWidget;
-	private CTextBox nameFieldWidget;
 	private CLabel urlLabelWidget;
 	private CTextBox urlFieldWidget;
 	private CContainer checkboxContainer;
@@ -76,13 +74,6 @@ public class NewsfeedConfigScreen extends CGUIScreen {
 		final int WIDGET_HEIGHT = 20;
 		final int MEDIUM_VERTICAL_GAP = 10;
 		final int SMALL_VERTICAL_GAP = 5;
-
-		nameLabelWidget = new CLabel(this, Text.translatable("newsfeed.config.feedName.label"));
-		this.addToBody(nameLabelWidget);
-
-		nameFieldWidget = new CTextBox(this, feedName);
-		nameFieldWidget.setText(feedName);
-		this.addToBody(nameFieldWidget);
 
 		this.addToBody(new CSpacer(MEDIUM_VERTICAL_GAP));
 
@@ -118,12 +109,10 @@ public class NewsfeedConfigScreen extends CGUIScreen {
 
 		continueButton = new CButton(this, Text.translatable("newsfeed.config.continue.button"), (btn) -> {
 			NewsfeedConfig.feedUrl = urlFieldWidget.getText();
-			NewsfeedConfig.feedName = nameFieldWidget.getText();
 			NewsfeedConfig.feedEnabled = enabledCheckboxlWidget.isChecked();
 			NewsfeedConfig.updateCheckEnabled = updateCheckboxlWidget.isChecked();
 
 			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("feedName", nameFieldWidget.getText());
 			jsonObject.put("feedUrl", urlFieldWidget.getText());
 			jsonObject.put("feedEnabled", enabledCheckboxlWidget.isChecked());
 			jsonObject.put("updateCheckEnabled", updateCheckboxlWidget.isChecked());
@@ -199,8 +188,7 @@ public class NewsfeedConfigScreen extends CGUIScreen {
 			continueButton.setEnabled(false);
 		}else if(!isValidFeed && !NewsfeedConfig.feedUrl.equals(urlFieldWidget.getText())){
 			continueButton.setEnabled(false);
-		}else if (!NewsfeedConfig.feedName.equals(nameFieldWidget.getText()) ||
-			!NewsfeedConfig.feedUrl.equals(urlFieldWidget.getText()) ||
+		}else if (!NewsfeedConfig.feedUrl.equals(urlFieldWidget.getText()) ||
 			NewsfeedConfig.feedEnabled != enabledCheckboxlWidget.isChecked() ||
 			NewsfeedConfig.updateCheckEnabled != updateCheckboxlWidget.isChecked()){
 			continueButton.setEnabled(true);

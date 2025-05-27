@@ -1,31 +1,30 @@
 package io.github.sandydunlop.cupra.gui;
 
-import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
+import io.github.sandydunlop.newsfeed.ListBoxSelectionChangedEvent;
+import io.github.sandydunlop.newsfeed.ListBoxSelectionChangedListener;
 import io.github.sandydunlop.newsfeed.NewsfeedModInitializer;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 
 public class CListBox extends CWidget {
-    private final int ITEM_PADDING = 1;
+    private final int ITEM_PADDING = 2;
 	private static final Identifier SCROLLER_TEXTURE = Identifier.of(NewsfeedModInitializer.MOD_ID,"widget/scroller");
     private double scrollAmount;
     private boolean scrolling;
     private CScrollableContents content;
     CGUIScreen parent = null;
-    CListBoxEntry selected = null;
     int headerHeight = 0; //TODO: Make this work
 	protected int contentHeight = 0;
+	private List<ListBoxSelectionChangedListener> listeners = new ArrayList<>();
 
 
     public CListBox(CGUIScreen parent) {
@@ -39,6 +38,24 @@ public class CListBox extends CWidget {
         this.content = widget;
         this.contentHeight = widget.getHeight();
         this.setHeight(this.contentHeight);
+    }
+
+
+    public void setSelected(CListBoxEntry entry) {
+        content.setSelected(entry);
+        ListBoxSelectionChangedEvent event = new ListBoxSelectionChangedEvent(this);
+        fireListBoxSelectionChangedEvent(event);
+    }
+
+
+    public void scrollToSelected(){
+        CListBoxEntry selected = content.selected;
+        if (selected != null && selected.getY() - content.scrollAmount< this.getY()) {
+            this.scrollAmount = Math.max(0, selected.getY() - this.getY());
+        }
+        if (selected != null && selected.getY() - content.scrollAmount + selected.getHeight() > this.getBottom()) {
+            this.scrollAmount = Math.min(getMaxScroll(), selected.getY() - this.getY() - this.getHeight() + selected.getHeight() );
+        }
     }
 
 
@@ -65,6 +82,15 @@ public class CListBox extends CWidget {
 
 	public void addItem(CListBoxEntry item) {
         content.addItem(item);
+        if (content.children().size() == 1) {
+            content.setSelected(item);
+        }
+    }
+
+
+    public void clear() {
+        content.clear();
+        this.scrollAmount = 0.0;
     }
 
 
@@ -94,7 +120,7 @@ public class CListBox extends CWidget {
 
 
     public void enableScissor(DrawContext context) {
-    	context.enableScissor(this.getX(), this.getY(), this.getRight(), this.getBottom());
+    	context.enableScissor(this.getX(), this.getY(), this.getRight() - 6, this.getBottom());
     }
 
 
@@ -153,7 +179,7 @@ public class CListBox extends CWidget {
 
     @Nullable
     public CListBoxEntry getSelectedOrNull() {
-        return this.selected;
+        return content.selected;
     }
     
     
@@ -167,8 +193,10 @@ public class CListBox extends CWidget {
             // If the click is not on the scrollbar, we handle it as a normal click
             CListBoxEntry entry = this.getEntryAtPosition(mouseX, mouseY);
             if (entry != null) {
-                selected = entry;
-                content.setSelected(entry);
+                {
+                    setSelected(entry);
+                    scrollToSelected();
+                }
                 return true;
             }
         }
@@ -215,115 +243,22 @@ public class CListBox extends CWidget {
     }
 
 
-    //TODO: Use this
-    protected void drawSelectionHighlight(DrawContext context, int y, int entryWidth, int entryHeight, int borderColor, int fillColor) {
-    	
-        int i = this.getX() + (this.getWidth() - entryWidth) / 2;
-        int j = this.getX() + (this.getWidth() + entryWidth) / 2;
-        
-        context.fill(i, y - 2, j, y + entryHeight + 2, borderColor);
-        context.fill(i + 1, y - 1, j - 1, y + entryHeight + 1, fillColor);
-    }
-
-	// @Override
-	// public List<? extends Element> children() {
-		
-	// 	return null;
-	// }
-
-	// @Override
-	// protected void appendClickableNarrations(NarrationMessageBuilder var1) {}
+	public void removeListBoxSelectionChangedListener(ListBoxSelectionChangedListener listener) {
+		listeners.remove(listener);
+	}
 
 
-    @Override
-    public void onClick(double mouseX, double mouseY) {
-        System.out.println("CScrollable clicked at: " + mouseX + ", " + mouseY);
-    }
+	public void addListBoxSelectionChangedListener(ListBoxSelectionChangedListener listener) {
+		if (listeners == null) {
+			listeners = new ArrayList<>();
+		}
+		listeners.add(listener);
+	}
 
 
-//  @Environment(value=EnvType.CLIENT)
-//     class Entries
-//     extends AbstractList<E> {
-//         private final List<E> entries = Lists.newArrayList();
-
-//         Entries() {
-//         }
-
-//         @Override
-//         public E get(int i) {
-//             return (Entry)this.entries.get(i);
-//         }
-
-//         @Override
-//         public int size() {
-//             return this.entries.size();
-//         }
-
-//         @Override
-//         public E set(int i, E arg) {
-//             Entry lv = (Entry)this.entries.set(i, arg);
-//             EntryListWidget.this.setEntryParentList(arg);
-//             return lv;
-//         }
-
-//         @Override
-//         public void add(int i, E arg) {
-//             this.entries.add(i, arg);
-//             EntryListWidget.this.setEntryParentList(arg);
-//         }
-
-//         @Override
-//         public E remove(int i) {
-//             return (Entry)this.entries.remove(i);
-//         }
-
-//         @Override
-//         public /* synthetic */ Object remove(int index) {
-//             return this.remove(index);
-//         }
-
-//         @Override
-//         public /* synthetic */ void add(int index, Object entry) {
-//             this.add(index, (E)((Entry)entry));
-//         }
-
-//         @Override
-//         public /* synthetic */ Object set(int index, Object entry) {
-//             return this.set(index, (E)((Entry)entry));
-//         }
-
-//         @Override
-//         public /* synthetic */ Object get(int index) {
-//             return this.get(index);
-//         }
-//     }
-
-
-//     @Environment(value=EnvType.CLIENT)
-//     protected static abstract class Entry<E extends Entry<E>> implements Element {
-//         @Deprecated
-//         EntryListWidget<E> parentList;
-
-//         protected Entry() {
-//         }
-
-//         @Override
-//         public void setFocused(boolean focused) {
-//         }
-
-//         @Override
-//         public boolean isFocused() {
-//             return this.parentList.getFocused() == this;
-//         }
-
-//         public abstract void render(DrawContext var1, int var2, int var3, int var4, int var5, int var6, int var7, int var8, boolean var9, float var10);
-
-//         public void drawBorder(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-//         }
-
-//         @Override
-//         public boolean isMouseOver(double mouseX, double mouseY) {
-//             return Objects.equals(this.parentList.getEntryAtPosition(mouseX, mouseY), this);
-//         }
-//     }    
+	private void fireListBoxSelectionChangedEvent(ListBoxSelectionChangedEvent event) {
+		for (ListBoxSelectionChangedListener listener : listeners) {
+			listener.selectionChanged(event);
+		}
+	}
 }

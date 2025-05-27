@@ -1,18 +1,14 @@
 package io.github.sandydunlop.newsfeed;
 
-import java.util.Random;
-import net.minecraft.item.Item;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+
+import com.rometools.rome.feed.synd.SyndEntry;
 
 import io.github.sandydunlop.cupra.gui.CButton;
 import io.github.sandydunlop.cupra.gui.CLabel;
@@ -24,13 +20,12 @@ import io.github.sandydunlop.cupra.gui.CScrollableContents;
 import io.github.sandydunlop.cupra.gui.CGUIScreen;
 
 
-public class NewsfeedArticleScreen extends CGUIScreen {
+public class NewsfeedArticleScreen extends CGUIScreen implements RssUpdateListener, ListBoxSelectionChangedListener {
 	private static RssFeed rssFeed = null;
 	private int articleIndex;
 	private Article article;
-
 	CLabel titleWidget;
-	CListBox inbox; //TODO: CListBox
+	CListBox inbox;
 	CMultiLineLabel descriptionWidget;
 	CButton prevButton;
 	CButton nextButton;
@@ -52,65 +47,30 @@ public class NewsfeedArticleScreen extends CGUIScreen {
 		final int SMALL_VERTICAL_GAP = 5;
 		this.setTextRenderer(MinecraftClient.getInstance().textRenderer);
 
-		articleIndex = rssFeed.usedEntries.size() - 1;
-		if (articleIndex > -1){
-			article = Article.of(rssFeed.getEntry(articleIndex));
-		}else{
-			article = Article.empty() ;
-		}
-
-		titleWidget = new CLabel(this, Text.of(article.title));
-		titleWidget.setTooltip(Tooltip.of(Text.of(article.title)));
-		this.addToBody(titleWidget);
-
-		// TODO: Add a scroll bar to the list box
-		//inbox = new CListBox(this, Text.of(article.description));
-		inbox = makeInbox();
+		inbox = new CListBox(this);
 		this.addToBody(inbox);
 
 		this.addToBody(new CSpacer(SMALL_VERTICAL_GAP));
 
-		descriptionWidget = new CMultiLineLabel(this, Text.of(article.description));
+		descriptionWidget = new CMultiLineLabel(this, Text.of(""));
 		this.addToBody(descriptionWidget);
 
 		prevButton = new CButton(this, Text.translatable("newsfeed.article.prev.button"), (btn) -> {
 			if (articleIndex > 0) {
 				articleIndex--;
 				article = Article.of(rssFeed.getEntry(articleIndex));
-				titleWidget.setText(Text.of(article.title));
-				titleWidget.setTooltip(Tooltip.of(Text.of(article.title)));
-				descriptionWidget.setText(Text.of(article.description));
-				if (articleIndex == 0) {
-					btn.setEnabled(false);
-				}else{
-					btn.setEnabled(true);
-				}
-				nextButton.setEnabled(true);
+				selectArticle(article);
 			}
 		});
-		if (articleIndex == 0) {
-			prevButton.setEnabled(false);
-		}
 		this.addToFooter(prevButton);
 
 		nextButton = new CButton(this, Text.translatable("newsfeed.article.next.button"), (btn) -> {
 			if (articleIndex < rssFeed.usedEntries.size() - 1) {
 				articleIndex++;
 				article = Article.of(rssFeed.getEntry(articleIndex));
-				titleWidget.setText(Text.of(article.title));
-				titleWidget.setTooltip(Tooltip.of(Text.of(article.title)));
-				descriptionWidget.setText(Text.of(article.description));
-				if (articleIndex == rssFeed.usedEntries.size() - 1) {
-					btn.setEnabled(false);
-				}else{
-					btn.setEnabled(true);
-				}
-				prevButton.setEnabled(true);
+				selectArticle(article);
 			}
 		});
-		if (articleIndex == rssFeed.usedEntries.size() - 1) {
-			nextButton.setEnabled(false);
-		}
 		this.addToFooter(nextButton);
 
 		openButton = new CButton(this, Text.translatable("newsfeed.article.open.button"), (btn) -> {
@@ -129,27 +89,36 @@ public class NewsfeedArticleScreen extends CGUIScreen {
 		});
 		this.addToFooter(closeButton);
 
+		updateInbox();
+		articleIndex = rssFeed.usedEntries.size() - 1;
+		if (articleIndex > -1){
+			article = Article.of(rssFeed.getEntry(articleIndex));
+		}else{
+			article = Article.empty() ;
+		}
+		populate(article);
 		layout();
+		rssFeed.addRssUpdateListener(this);
+		inbox.addListBoxSelectionChangedListener(this);
     }
 
 
-	private CListBox makeInbox(){
-		CListBox inbox = new CListBox(this);
-
-		for (int i = 0; i < 39; i++) {
-			ItemStack st = new ItemStack(getRandom());
-			CListBoxEntry card = new CListBoxEntry(st.getName().getString());
-			inbox.addItem(card);
+	private void populate(Article article)
+	{
+		if (article == null) {
+			article = Article.empty();
 		}
-
-		return inbox;
-	}
-
-
-	public Item getRandom() {
-		Random r = new Random();
-		int i = r.nextInt(Registries.ITEM.size() + 1);
-		return Registries.ITEM.get(i);
+		descriptionWidget.setText(Text.of(article.title + "\n\n" + article.description));
+		if (articleIndex == rssFeed.usedEntries.size() - 1) {
+			nextButton.setEnabled(false);
+		}else{
+			nextButton.setEnabled(true);
+		}
+		if (articleIndex == 0) {
+			prevButton.setEnabled(false);
+		}else{
+			prevButton.setEnabled(true);
+		}
 	}
 
 
@@ -163,16 +132,6 @@ public class NewsfeedArticleScreen extends CGUIScreen {
 		if (client.player == null){
 			drawBackground(context);
 		}
-
-		//inbox.enableScissor(context);//TODO is this  right?
-		
-		//TODO
-		//inbox.renderWidget(context, mouseX, mouseY, delta);
-		
-		//cardContainer.setPos(inbox.getX(), inbox.getY());
-		//cardContainer.setSize(inbox.getWidth(), inbox.getHeight());
-		//cardContainer.renderAll((int)inbox.getScrollAmount(), context, mouseX, mouseY, delta);
-		//context.disableScissor();
 
 		// Logo and title
 		int logoTop = 5;
@@ -199,4 +158,61 @@ public class NewsfeedArticleScreen extends CGUIScreen {
 		context.drawHorizontalLine(0, this.width, this.height - 40, 0xFF3F3F3F);
 	}
 
+
+	@Override
+	public void feedUpdated(RssUpdateEvent event) {
+		updateInbox();
+	}
+
+
+	@Override
+	public void selectionChanged(ListBoxSelectionChangedEvent event) {
+		if (inbox.getSelectedOrNull() != null) {
+			CListBoxEntry inboxSelection = inbox.getSelectedOrNull();
+			SyndEntry selectedEntry = (SyndEntry)inboxSelection.getValue();
+			for (SyndEntry entry : rssFeed.usedEntries) {
+				if (entry.equals(selectedEntry)) {
+					articleIndex = rssFeed.usedEntries.indexOf(entry);
+					article = Article.of(entry);
+					populate(article);
+					return;
+				}
+			}
+			article = Article.empty();
+			populate(article);
+		}		
+	}
+
+
+	private void updateInbox() {
+		inbox.clear();
+		if (rssFeed.usedEntries.size() > 0) {
+			articleIndex = rssFeed.usedEntries.size() - 1;
+			article = Article.of(rssFeed.getEntry(articleIndex));
+			populate(article);
+			for(int i=rssFeed.usedEntries.size() - 1; i >= 0; i--) {
+				SyndEntry entry = rssFeed.usedEntries.get(i);
+				CListBoxEntry listItem = new CListBoxEntry(entry.getTitle(), entry);
+				inbox.addItem(listItem);
+			}
+		} else {
+			article = Article.empty();
+			populate(article);
+		}
+	}
+
+
+	private void selectArticle(Article article) {
+		if (article != null && article.getEntry() != null) {
+			inbox.children().forEach(entry -> {
+				if (entry instanceof CListBoxEntry listBoxEntry) {
+					if (listBoxEntry.getValue().equals(article.getEntry())) {
+						inbox.setSelected(listBoxEntry);
+						inbox.scrollToSelected();
+					}
+				}
+			});
+		}
+		inbox.setSelected(null);
+	}
 }
