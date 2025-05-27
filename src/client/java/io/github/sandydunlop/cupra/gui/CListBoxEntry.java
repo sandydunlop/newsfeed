@@ -5,12 +5,11 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.PressableWidget;
-import net.minecraft.client.input.KeyCodes;
 import net.minecraft.text.Text;
 
+import io.github.sandydunlop.cupra.gui.palette.ColorPalette;
 
 public class CListBoxEntry extends PressableWidget {
-	private boolean initialized = false;
 	private TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 	private final String title;
 	int renderY;
@@ -35,18 +34,18 @@ public class CListBoxEntry extends PressableWidget {
 
 	public void renderF(int scroll, DrawContext context, int mouseX, int mouseY, float delta, boolean isSelected) {
 		renderY = getY() - scroll;
-		int backgroundColor = 0x88303030;
-		int textColor = 0xFF808080;
+		int backgroundColor = CWidget.color.REGULAR_BACKGROUND;
+		int textColor = CWidget.color.REGULAR_TEXT;
 		if (isHovered(mouseX, mouseY)){
-			backgroundColor = 0xFF3B4017;
+			backgroundColor = CWidget.color.HOVERED_BACKGROUND;
 		}
 		if (isSelected) {
-			backgroundColor = 0xFFB2C248;
-			textColor = 0xFF000000;
+			backgroundColor = CWidget.color.SELECTED_BACKGROUND;
+			textColor = CWidget.color.SELECTED_TEXT;
 		}
         context.fill(getX(), renderY, getX() + getWidth(), renderY + getHeight(), backgroundColor);
 		if (isHovered(mouseX, mouseY)){
-			int borderColor = 0xFF626B27;
+			int borderColor = CWidget.color.HOVERED_BORDER;
 			context.drawHorizontalLine(getX(), getX() + getWidth() - 1, renderY, borderColor);
 			context.drawHorizontalLine(getX(), getX() + getWidth() - 1, renderY + getHeight() -1, borderColor);
 			context.drawVerticalLine(getX(), renderY, renderY + getHeight() - 1, borderColor);
@@ -64,18 +63,6 @@ public class CListBoxEntry extends PressableWidget {
 			
 	public boolean isHovered(int mouseX, int mouseY) {
 		return mouseX >= getX() && mouseX <= getX() + getWidth() && mouseY >= renderY && mouseY < renderY + getHeight();
-	}
-
-
-	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (!initialized || !this.active || !this.visible) return false;
-		if (KeyCodes.isToggle(keyCode)) {
-			this.playDownSound(MinecraftClient.getInstance().getSoundManager());
-			this.onPress();
-			return true;
-		}
-		return false;
 	}
 
 
