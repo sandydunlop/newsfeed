@@ -30,6 +30,7 @@ public class CTextBox extends CWidget {
 
     public void setText(String text) {
         widget.setText(text);
+        widget.setCursorToStart(false);
     }
 
 
