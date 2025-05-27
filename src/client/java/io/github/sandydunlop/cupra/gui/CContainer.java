@@ -12,11 +12,6 @@ public class CContainer extends CWidget {
 	final int MEDIUM_VERTICAL_GAP = 10;
 
 
-    public CContainer() {
-        init();
-	}
-
-
     public CContainer(boolean isHorizontal) {
         this.isHorizontal = isHorizontal;
         init();
@@ -37,7 +32,7 @@ public class CContainer extends CWidget {
     }
 
 
-    public void setIsHorizontal(boolean flag){
+	public void setIsHorizontal(boolean flag){
         isHorizontal = flag;
     }
 
@@ -111,7 +106,11 @@ public class CContainer extends CWidget {
 		int nonexHeight = 0;
 		List<CWidget> expandables = new ArrayList<>();
 		for (CWidget widget : widgets) {
-			if (widget instanceof CMultiLineTextBox){
+			if (widget instanceof CMultiLineLabel){
+				expandables.add(widget);
+			}else if (widget instanceof CListBox){
+				expandables.add(widget);
+			}else if (widget instanceof CListBox){
 				expandables.add(widget);
 			}else if (widget instanceof CSpacer){
 				nonexHeight += ((CSpacer)widget).getHeight();

@@ -1,14 +1,30 @@
 package io.github.sandydunlop.cupra.gui;
 
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.text.Text;
 
-public class CWidget {
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+
+
+public class CWidget extends ClickableWidget{
     private int x;
     private int y;
     private int width;
     private int height;
 
+    @Override
+    protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+        // Implement narration logic or leave empty if not needed
+    }
+
+    @Override
+    protected void renderWidget(net.minecraft.client.gui.DrawContext context, int mouseX, int mouseY, float delta) {
+        // Implement rendering logic or leave empty if not needed
+    }
+
 
     public CWidget() {
+        super(0,0,0,0, Text.of(""));
     }
 
 

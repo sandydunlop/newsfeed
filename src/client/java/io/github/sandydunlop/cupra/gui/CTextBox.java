@@ -29,7 +29,7 @@ public class CTextBox extends CWidget {
 
 
     public void setText(String text) {
-        widget.setMessage(Text.of(text));
+        widget.setText(text);
     }
 
 

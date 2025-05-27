@@ -58,7 +58,7 @@ public class MultiLineTextWidget extends AbstractTextWidget {
     
     @Override
     protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-        int descriptionPadding = 2; //TODO
+        int descriptionPadding = 2;
         int lineY = y + descriptionPadding;
         context.fill(x, y, this.width + x, this.height + y, 0x88303030);
         if (lines != null) {

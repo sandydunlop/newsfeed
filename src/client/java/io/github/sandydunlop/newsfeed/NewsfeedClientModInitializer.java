@@ -38,6 +38,12 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 	private static boolean doneStartupNotifications = false;
 	private static RssFeed rssFeed;
 	private static Path configFilePath = null;
+	public static final KeyBinding newsfeedKeyBind = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+		"newsfeed.keybinds.open", // The translation key of the keybinding's name
+		InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
+		GLFW.GLFW_KEY_N, // The keycode of the key
+		"newsfeed.keybinds.title" // The translation key of the keybinding's category.
+	));
 
 
 	@Override
@@ -50,15 +56,8 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 		rssFeed = new RssFeed();
 		rssFeed.setClient(MinecraftClient.getInstance());
 
-		KeyBinding keyBinding1 = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-			"newsfeed.keybinds.open", // The translation key of the keybinding's name
-			InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
-			GLFW.GLFW_KEY_N, // The keycode of the key
-			"newsfeed.keybinds.title" // The translation key of the keybinding's category.
-		));
-
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			while (keyBinding1.wasPressed()) {
+			while (newsfeedKeyBind.wasPressed()) {
 				Screen screen = getArticleScreen(null);
 				MinecraftClient.getInstance().setScreen(screen);
 			}
@@ -73,7 +72,6 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 		try {
 			String json = IOUtils.toString(configFilePath.toUri(), Charset.forName("UTF-8"));
 			JSONObject jsonObject = new JSONObject(json);
-			NewsfeedConfig.feedName = jsonObject.getString("feedName");
 			NewsfeedConfig.feedUrl = jsonObject.getString("feedUrl");
 			NewsfeedConfig.feedEnabled = jsonObject.getBoolean("feedEnabled");
 			NewsfeedConfig.updateCheckEnabled = jsonObject.getBoolean("updateCheckEnabled");
