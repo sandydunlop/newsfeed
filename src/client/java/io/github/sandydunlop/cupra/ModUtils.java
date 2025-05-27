@@ -129,7 +129,7 @@ public class ModUtils {
                             return false;
                         }
                         
-                        if (releaseGameVersion.equals(currentMinecraftVersion)) {
+                        if (releaseGameVersion != null && releaseGameVersion.equals(currentMinecraftVersion)) {
                             if (releaseModVersion.compareTo(latestModVersion) > 0) {
                                 latestModVersion = releaseModVersion;
                             } 
