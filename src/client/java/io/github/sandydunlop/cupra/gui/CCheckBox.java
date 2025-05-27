@@ -2,7 +2,6 @@ package io.github.sandydunlop.cupra.gui;
 
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.CheckboxWidget;
-import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.text.Text;
 
 
