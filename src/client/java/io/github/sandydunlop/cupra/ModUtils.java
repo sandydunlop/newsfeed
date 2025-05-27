@@ -129,13 +129,13 @@ public class ModUtils {
                             return false;
                         }
                         
-                        if (releaseGameVersion.equals(currentMinecraftVersion)) {
+                        if (releaseGameVersion != null && releaseGameVersion.equals(currentMinecraftVersion)) {
                             if (releaseModVersion.compareTo(latestModVersion) > 0) {
                                 latestModVersion = releaseModVersion;
                             } 
                         }
                     }
-                    if (!latestModVersion.equals(currentModVersion)){
+                    if (latestModVersion != null && !latestModVersion.equals(currentModVersion)){
                         return true;
                     }
                 }
