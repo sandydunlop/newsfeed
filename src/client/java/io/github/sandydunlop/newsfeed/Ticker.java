@@ -91,6 +91,7 @@ public class Ticker {
 
     public void render() {
         if (segments != null && !segments.isEmpty()){
+    		context.fill(0, 0, context.getScaledWindowWidth(), 32, 0x77000000);
             int x = -scrollAmount;
             for (int i=0; i<segments.size(); i++) {
                 try{
