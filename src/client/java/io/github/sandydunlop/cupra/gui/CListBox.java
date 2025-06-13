@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
-import io.github.sandydunlop.newsfeed.ListBoxSelectionChangedEvent;
-import io.github.sandydunlop.newsfeed.ListBoxSelectionChangedListener;
+import io.github.sandydunlop.cupra.gui.events.CListBoxSelectionChangedEvent;
+import io.github.sandydunlop.cupra.gui.events.CListBoxSelectionChangedListener;
 import io.github.sandydunlop.newsfeed.NewsfeedModInitializer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -24,7 +24,7 @@ public class CListBox extends CWidget {
     CGUIScreen parent = null;
     int headerHeight = 0; //TODO: Make this work
 	protected int contentHeight = 0;
-	private List<ListBoxSelectionChangedListener> listeners = new ArrayList<>();
+	private List<CListBoxSelectionChangedListener> listeners = new ArrayList<>();
 
 
     public CListBox(CGUIScreen parent) {
@@ -43,7 +43,7 @@ public class CListBox extends CWidget {
 
     public void setSelected(CListBoxEntry entry) {
         content.setSelected(entry);
-        ListBoxSelectionChangedEvent event = new ListBoxSelectionChangedEvent(this);
+        CListBoxSelectionChangedEvent event = new CListBoxSelectionChangedEvent(this);
         fireListBoxSelectionChangedEvent(event);
     }
 
@@ -243,12 +243,12 @@ public class CListBox extends CWidget {
     }
 
 
-	public void removeListBoxSelectionChangedListener(ListBoxSelectionChangedListener listener) {
+	public void removeListBoxSelectionChangedListener(CListBoxSelectionChangedListener listener) {
 		listeners.remove(listener);
 	}
 
 
-	public void addListBoxSelectionChangedListener(ListBoxSelectionChangedListener listener) {
+	public void addListBoxSelectionChangedListener(CListBoxSelectionChangedListener listener) {
 		if (listeners == null) {
 			listeners = new ArrayList<>();
 		}
@@ -256,8 +256,8 @@ public class CListBox extends CWidget {
 	}
 
 
-	private void fireListBoxSelectionChangedEvent(ListBoxSelectionChangedEvent event) {
-		for (ListBoxSelectionChangedListener listener : listeners) {
+	private void fireListBoxSelectionChangedEvent(CListBoxSelectionChangedEvent event) {
+		for (CListBoxSelectionChangedListener listener : listeners) {
 			listener.selectionChanged(event);
 		}
 	}
