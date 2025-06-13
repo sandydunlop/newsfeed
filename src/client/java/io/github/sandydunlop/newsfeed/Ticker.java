@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 
 
 public class Ticker {
-	private DrawContext context;
+	private DrawContext context = null;
 	private FontSpec font = null;
     List<String> headlines = null;
     List<Segment> segments = null;

@@ -162,7 +162,8 @@ public class RssFeed
 					}
 				}
 			}
-		}else if (currentEntries.size() == 0){
+		}else if (currentEntries.size() == 0 ||
+				!this.feedSource.toString().equals(NewsfeedConfig.feedUrl)){
 			fetch();
 		}
 	}
