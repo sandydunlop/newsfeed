@@ -15,7 +15,7 @@ When a new article is published to the feed, a notification will appear in the g
 ![](https://sandydunlop.github.io/media/newsfeed/screenshot-art-0.png)
 *news article being displayed*
 
-![](https://sandydunlop.github.io/media/newsfeed/screenshot-hug-0.png)
+![](https://sandydunlop.github.io/media/newsfeed/screenshot-hud-0.png)
 *news headline being displayed*
 
 ## Installation

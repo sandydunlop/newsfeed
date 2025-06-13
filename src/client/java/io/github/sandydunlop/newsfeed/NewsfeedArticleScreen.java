@@ -15,12 +15,14 @@ import io.github.sandydunlop.cupra.gui.CLabel;
 import io.github.sandydunlop.cupra.gui.CMultiLineLabel;
 import io.github.sandydunlop.cupra.gui.CListBox;
 import io.github.sandydunlop.cupra.gui.CSpacer;
+import io.github.sandydunlop.cupra.gui.events.CListBoxSelectionChangedEvent;
+import io.github.sandydunlop.cupra.gui.events.CListBoxSelectionChangedListener;
 import io.github.sandydunlop.cupra.gui.CListBoxEntry;
 import io.github.sandydunlop.cupra.gui.CScrollableContents;
 import io.github.sandydunlop.cupra.gui.CGUIScreen;
 
 
-public class NewsfeedArticleScreen extends CGUIScreen implements RssUpdateListener, ListBoxSelectionChangedListener {
+public class NewsfeedArticleScreen extends CGUIScreen implements RssUpdateListener, CListBoxSelectionChangedListener {
 	private static RssFeed rssFeed = null;
 	private int articleIndex;
 	private Article article;
@@ -166,7 +168,7 @@ public class NewsfeedArticleScreen extends CGUIScreen implements RssUpdateListen
 
 
 	@Override
-	public void selectionChanged(ListBoxSelectionChangedEvent event) {
+	public void selectionChanged(CListBoxSelectionChangedEvent event) {
 		if (inbox.getSelectedOrNull() != null) {
 			CListBoxEntry inboxSelection = inbox.getSelectedOrNull();
 			SyndEntry selectedEntry = (SyndEntry)inboxSelection.getValue();

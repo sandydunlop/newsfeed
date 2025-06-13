@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -26,6 +25,7 @@ public class RssFeed
 	public URL feedSource;
 	String feedTitle;
 	MinecraftClient client;
+	Ticker ticker = null;
 	private List<RssUpdateListener> listeners = new ArrayList<>();
 
 
@@ -39,6 +39,11 @@ public class RssFeed
 
 	public void setClient(MinecraftClient client){
 		this.client = client;
+	}
+
+
+	public void setTicker(Ticker ticker){
+		this.ticker = ticker;
 	}
 
 
@@ -72,8 +77,11 @@ public class RssFeed
 		}catch(IOException e){
 			String msg = String.format("Invalid feed at %s", feedSource.toString(), null);
 			LOGGER.error(msg);
-			if (client!=null && client.player!=null)
-				client.player.sendMessage(Text.of(msg), false);
+			if (client!=null && client.player!=null) {
+				if (ticker != null) {
+					ticker.display(msg);
+				}
+			}
 		}catch(FeedException e){
 			LOGGER.error("FeedException: {}", e.getMessage());
 		}
@@ -115,8 +123,11 @@ public class RssFeed
 				}catch(IOException e){
 					String msg = String.format("Invalid feed at %s", tryFeedSource.toString(), null);
 					LOGGER.error(msg);
-					if (client!=null && client.player!=null)
-						client.player.sendMessage(Text.of(msg), false);
+					if (client!=null && client.player!=null) {
+						if (ticker != null) {
+							ticker.display(msg);
+						}
+					}
 				}catch(FeedException e){
 					LOGGER.error("FeedException1: {}", e.getMessage());
 				} 
@@ -142,10 +153,13 @@ public class RssFeed
 				if (toDisplay != null) {
 					RssUpdateEvent event = new RssUpdateEvent(this);
 					fireRssUpdateEvent(event);
-					String msg = String.format("%s: %s", feedTitle, toDisplay.getTitle());
+					String msg = toDisplay.getTitle();
 					LOGGER.info(msg);
-					if (client!=null && client.player!=null)
-						client.player.sendMessage(Text.of(msg), true);
+					if (client!=null && client.player!=null) {
+						if (ticker != null) {
+							ticker.display(msg);
+						}
+					}
 				}
 			}
 		}else if (currentEntries.size() == 0){
