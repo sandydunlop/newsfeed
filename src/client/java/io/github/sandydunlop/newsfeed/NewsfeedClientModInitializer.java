@@ -16,7 +16,6 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import org.apache.commons.io.IOUtils;
@@ -27,6 +26,7 @@ import org.json.JSONObject;
 import org.lwjgl.glfw.GLFW;
 
 import io.github.sandydunlop.cupra.ModUtils;
+import io.github.sandydunlop.cupra.common.fonts.FontSpec;
 
 
 public class NewsfeedClientModInitializer implements ClientModInitializer {
@@ -37,6 +37,8 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 	private static final int interval = ONE_MINUTE;
 	private static boolean doneStartupNotifications = false;
 	private static RssFeed rssFeed;
+	private static FontSpec font = null;
+	private static Ticker ticker = null;
 	private static Path configFilePath = null;
 	public static final KeyBinding newsfeedKeyBind = KeyBindingHelper.registerKeyBinding(new KeyBinding(
 		"newsfeed.keybinds.open", // The translation key of the keybinding's name
@@ -94,6 +96,16 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 
 
 	private static void render(DrawContext context, RenderTickCounter tickCounter) {
+		if (ticker == null) {
+			font = new FontSpec()
+				.setName("jd-lcd-rounded-regular")
+				.setSize(30)
+				.setColor(0xFFCCFF00)
+				.setMonospaced(true)
+				.setShadow(true);
+			ticker = new Ticker(context, font);
+			rssFeed.setTicker(ticker);
+		}
 		if (tock++ > interval) {
 			tock = 0;
 			rssFeed.update();
@@ -104,12 +116,14 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 					LOGGER.info("Update available for " + NewsfeedModInitializer.MOD_ID);
 					String msg = String.format("Update available for %s: %s", NewsfeedModInitializer.MOD_ID, ModUtils.getLatestVersion());
 					LOGGER.info(msg);
-					if (MinecraftClient.getInstance().player != null)
-						MinecraftClient.getInstance().player.sendMessage(Text.of(msg), true);
+					if (MinecraftClient.getInstance().player != null) {
+						ticker.display(msg);
+					}
 				}
 			}
 			doneStartupNotifications = true;
 		}
+		ticker.render();
 	}
 
 
