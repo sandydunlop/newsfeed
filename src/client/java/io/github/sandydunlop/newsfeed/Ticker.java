@@ -76,7 +76,7 @@ public class Ticker {
             }
             segment.key = "ticker" + i;
             NativeImage nativeImage = new NativeImage(segment.width, bmf.getHeight(), false);
-            NativeImageBackedTexture segmentTexture = new NativeImageBackedTexture(segment.key, segment.width, bmf.getHeight(), false);
+            NativeImageBackedTexture segmentTexture = new NativeImageBackedTexture(segment.width, bmf.getHeight(), false);
             segmentTexture.setImage(nativeImage);
             drawToNativeImage(segmentTexture, segmentImage, 0, 0, segment.width, bmf.getHeight());
             Identifier identifier = Identifier.of(segment.key);
