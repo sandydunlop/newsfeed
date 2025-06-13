@@ -135,7 +135,7 @@ public class ModUtils {
                             } 
                         }
                     }
-                    if (!latestModVersion.equals(currentModVersion)){
+                    if (latestModVersion != null && !latestModVersion.equals(currentModVersion)){
                         return true;
                     }
                 }
