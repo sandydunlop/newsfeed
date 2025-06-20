@@ -40,6 +40,8 @@ dependencies {
 	modImplementation include("com.rometools:rome-utils:${project.rome_version}")
 	modImplementation include ("org.json:json:${project.json_java_version}")
 	modApi "com.terraformersmc:modmenu:${project.mod_menu_version}"
+
+    implementation 'com.dorkbox:Notify:4.5'
 }
 
 processResources {

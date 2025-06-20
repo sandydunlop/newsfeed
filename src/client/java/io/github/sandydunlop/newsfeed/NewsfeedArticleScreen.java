@@ -10,35 +10,35 @@ import net.minecraft.util.Util;
 
 import com.rometools.rome.feed.synd.SyndEntry;
 
-import io.github.sandydunlop.cupra.gui.CButton;
-import io.github.sandydunlop.cupra.gui.CLabel;
-import io.github.sandydunlop.cupra.gui.CMultiLineLabel;
-import io.github.sandydunlop.cupra.gui.CListBox;
-import io.github.sandydunlop.cupra.gui.CSpacer;
-import io.github.sandydunlop.cupra.gui.events.CListBoxSelectionChangedEvent;
-import io.github.sandydunlop.cupra.gui.events.CListBoxSelectionChangedListener;
-import io.github.sandydunlop.cupra.gui.CListBoxEntry;
-import io.github.sandydunlop.cupra.gui.CScrollableContents;
-import io.github.sandydunlop.cupra.gui.CGUIScreen;
+import io.github.sandydunlop.cupra.common.widgets.CButton;
+import io.github.sandydunlop.cupra.common.widgets.CContainer;
+import io.github.sandydunlop.cupra.common.widgets.CFormattedLabel;
+import io.github.sandydunlop.cupra.common.widgets.CLabel;
+import io.github.sandydunlop.cupra.common.widgets.CListBox;
+import io.github.sandydunlop.cupra.common.widgets.CSpacer;
+import io.github.sandydunlop.cupra.common.events.CListBoxSelectionChangedEvent;
+import io.github.sandydunlop.cupra.common.events.CListBoxSelectionChangedListener;
+import io.github.sandydunlop.cupra.common.widgets.CListBoxEntry;
 
 
-public class NewsfeedArticleScreen extends CGUIScreen implements RssUpdateListener, CListBoxSelectionChangedListener {
+public class NewsfeedArticleScreen extends Screen implements RssUpdateListener, CListBoxSelectionChangedListener {
 	private static RssFeed rssFeed = null;
 	private int articleIndex;
 	private Article article;
 	CLabel titleWidget;
 	CListBox inbox;
-	CMultiLineLabel descriptionWidget;
+	CFormattedLabel descriptionWidget;
 	CButton prevButton;
 	CButton nextButton;
 	CButton openButton;
 	CButton optionsButton;
 	CButton closeButton;
-	CScrollableContents cardContainer;
+	CContainer articleScreen;
+	CContainer footer;
 
 
     public NewsfeedArticleScreen(Text title, Screen parent, RssFeed rssFeed) {
-		super(parent, title);
+		super(title);
 		NewsfeedArticleScreen.rssFeed = rssFeed;
 	}
 
@@ -47,17 +47,16 @@ public class NewsfeedArticleScreen extends CGUIScreen implements RssUpdateListen
 	protected void init() {
 		super.init();
 		final int SMALL_VERTICAL_GAP = 5;
-		this.setTextRenderer(MinecraftClient.getInstance().textRenderer);
+		
+		articleScreen = new CContainer();
 
-		inbox = new CListBox(this);
-		this.addToBody(inbox);
+		inbox = new CListBox(articleScreen);
 
-		this.addToBody(new CSpacer(SMALL_VERTICAL_GAP));
+		new CSpacer(articleScreen, SMALL_VERTICAL_GAP);
 
-		descriptionWidget = new CMultiLineLabel(this, Text.of(""));
-		this.addToBody(descriptionWidget);
-
-		prevButton = new CButton(this, Text.translatable("newsfeed.article.prev.button"), (btn) -> {
+		descriptionWidget = new CFormattedLabel(articleScreen);
+		
+		prevButton = new CButton(articleScreen, "newsfeed.article.prev.button", click -> {
 			if (articleIndex > 0) {
 				articleIndex--;
 				article = Article.of(rssFeed.getEntry(articleIndex));
@@ -66,7 +65,7 @@ public class NewsfeedArticleScreen extends CGUIScreen implements RssUpdateListen
 		});
 		this.addToFooter(prevButton);
 
-		nextButton = new CButton(this, Text.translatable("newsfeed.article.next.button"), (btn) -> {
+		nextButton = new CButton(articleScreen, Text.translatable("newsfeed.article.next.button"), (btn) -> {
 			if (articleIndex < rssFeed.usedEntries.size() - 1) {
 				articleIndex++;
 				article = Article.of(rssFeed.getEntry(articleIndex));
@@ -75,18 +74,18 @@ public class NewsfeedArticleScreen extends CGUIScreen implements RssUpdateListen
 		});
 		this.addToFooter(nextButton);
 
-		openButton = new CButton(this, Text.translatable("newsfeed.article.open.button"), (btn) -> {
+		openButton = new CButton(articleScreen, Text.translatable("newsfeed.article.open.button"), (btn) -> {
 			Util.getOperatingSystem().open(article.link);
 		});
 		this.addToFooter(openButton);
 
-		optionsButton = new CButton(this, Text.translatable("newsfeed.article.options.button"), (btn) -> {
+		optionsButton = new CButton(articleScreen, Text.translatable("newsfeed.article.options.button"), (btn) -> {
 			Screen screen = NewsfeedClientModInitializer.getConfigScreen(this);
 			MinecraftClient.getInstance().setScreen(screen);
 		});
 		this.addToFooter(optionsButton);
 
-		closeButton = new CButton(this, Text.translatable("newsfeed.article.close.button"), (btn) -> {
+		closeButton = new CButton(articleScreen, Text.translatable("newsfeed.article.close.button"), (btn) -> {
 			this.close();
 		});
 		this.addToFooter(closeButton);
