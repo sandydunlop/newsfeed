@@ -1,4 +1,4 @@
-package io.github.sandydunlop.newsfeed;
+package io.github.sandydunlop.newsfeed.app;
 
 import java.util.EventObject;
 

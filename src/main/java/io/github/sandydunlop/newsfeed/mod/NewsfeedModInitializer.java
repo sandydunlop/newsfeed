@@ -1,4 +1,4 @@
-package io.github.sandydunlop.newsfeed;
+package io.github.sandydunlop.newsfeed.mod;
 
 import net.fabricmc.api.ModInitializer;
 

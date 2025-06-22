@@ -1,7 +1,8 @@
-package io.github.sandydunlop.newsfeed;
+package io.github.sandydunlop.newsfeed.mod;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
+
 
 public class ModMenuIntegration implements ModMenuApi {
     @Override

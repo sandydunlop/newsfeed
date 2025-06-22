@@ -1,4 +1,4 @@
-package io.github.sandydunlop.newsfeed;
+package io.github.sandydunlop.newsfeed.mod;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -25,8 +25,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.lwjgl.glfw.GLFW;
 
-import io.github.sandydunlop.cupra.ModUtils;
 import io.github.sandydunlop.cupra.common.fonts.FontSpec;
+import io.github.sandydunlop.cupra.platform.minecraft.MinecraftServices;
+import io.github.sandydunlop.newsfeed.app.Newsfeed;
+import io.github.sandydunlop.newsfeed.app.NewsfeedConfig;
+import io.github.sandydunlop.newsfeed.app.RssFeed;
+import io.github.sandydunlop.newsfeed.app.Ticker;
+import io.github.sandydunlop.newsfeed.mod.NewsfeedModInitializer;
 
 
 public class NewsfeedClientModInitializer implements ClientModInitializer {
@@ -50,13 +55,18 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
+		MinecraftServices platformServices = MinecraftServices.getInstance();
 		ModUtils.toAssist(this);
 		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
 		// Initialize drawContext before using it
 		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> layeredDrawer.attachLayerBefore(IdentifiedLayer.CHAT, RENDER_LAYER, NewsfeedClientModInitializer::render));
 		NewsfeedClientModInitializer.loadConfig();
 		rssFeed = new RssFeed();
-		rssFeed.setClient(MinecraftClient.getInstance());
+
+		Newsfeed app = new Newsfeed();
+		platformServices.setApp(app);
+		
+		//rssFeed.setClient(MinecraftClient.getInstance());
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (newsfeedKeyBind.wasPressed()) {
@@ -86,12 +96,12 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 
 
 	public static Screen getArticleScreen(Screen parent) {
-		return new NewsfeedArticleScreen(net.minecraft.text.Text.of("article"), parent, rssFeed);
+		return new ModMainScreen(parent);
 	}
 
 
 	public static Screen getConfigScreen(Screen parent) {
-		return new NewsfeedConfigScreen(net.minecraft.text.Text.translatable("newsfeed.config.title"), parent, configFilePath);
+		return new ModConfigScreen(net.minecraft.text.Text.translatable("newsfeed.config.title"), parent, configFilePath);
 	}
 
 

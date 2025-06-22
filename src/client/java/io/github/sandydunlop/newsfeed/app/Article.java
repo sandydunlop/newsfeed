@@ -1,6 +1,8 @@
-package io.github.sandydunlop.newsfeed;
+package io.github.sandydunlop.newsfeed.app;
 
 import com.rometools.rome.feed.synd.SyndEntry;
+
+import io.github.sandydunlop.cupra.common.widgets.CListBoxEntry;
 
 
 public class Article {

@@ -1,12 +1,10 @@
-package io.github.sandydunlop.newsfeed;
+package io.github.sandydunlop.newsfeed.app;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
-import net.minecraft.client.MinecraftClient;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -17,14 +15,12 @@ import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 
 
-public class RssFeed
-{
-	private static final Logger LOGGER = LogManager.getLogger(NewsfeedModInitializer.MOD_ID);
+public class RssFeed {
+	private static final Logger LOGGER = LogManager.getLogger("newsfeed");
 	List<SyndEntry> currentEntries;
 	List<SyndEntry> usedEntries;
 	public URL feedSource;
 	String feedTitle;
-	MinecraftClient client;
 	Ticker ticker = null;
 	private List<RssUpdateListener> listeners = new ArrayList<>();
 
@@ -34,11 +30,6 @@ public class RssFeed
 		currentEntries = new ArrayList<SyndEntry>();
 		usedEntries = new ArrayList<SyndEntry>();
 		init();
-	}
-
-
-	public void setClient(MinecraftClient client){
-		this.client = client;
 	}
 
 
@@ -77,11 +68,11 @@ public class RssFeed
 		}catch(IOException e){
 			String msg = String.format("Invalid feed at %s", feedSource.toString(), null);
 			LOGGER.error(msg);
-			if (client!=null && client.player!=null) {
+			//if (client!=null && client.player!=null) {
 				if (ticker != null) {
 					ticker.display(msg);
 				}
-			}
+			//}
 		}catch(FeedException e){
 			LOGGER.error("FeedException: {}", e.getMessage());
 		}
@@ -123,11 +114,11 @@ public class RssFeed
 				}catch(IOException e){
 					String msg = String.format("Invalid feed at %s", tryFeedSource.toString(), null);
 					LOGGER.error(msg);
-					if (client!=null && client.player!=null) {
+					//if (client!=null && client.player!=null) {
 						if (ticker != null) {
 							ticker.display(msg);
 						}
-					}
+					//}
 				}catch(FeedException e){
 					LOGGER.error("FeedException1: {}", e.getMessage());
 				} 
@@ -155,11 +146,11 @@ public class RssFeed
 					fireRssUpdateEvent(event);
 					String msg = toDisplay.getTitle();
 					LOGGER.info(msg);
-					if (client!=null && client.player!=null) {
+					//if (client!=null && client.player!=null) {
 						if (ticker != null) {
 							ticker.display(msg);
 						}
-					}
+					//}
 				}
 			}
 		}else if (currentEntries.size() == 0 ||
