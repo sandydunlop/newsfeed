@@ -14,6 +14,8 @@ import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 
+import io.github.sandydunlop.cupra.platform.PlatformServices;
+
 
 public class RssFeed {
 	private static final Logger LOGGER = LogManager.getLogger("newsfeed");
@@ -21,7 +23,6 @@ public class RssFeed {
 	List<SyndEntry> usedEntries;
 	public URL feedSource;
 	String feedTitle;
-	Ticker ticker = null;
 	private List<RssUpdateListener> listeners = new ArrayList<>();
 
 
@@ -30,11 +31,6 @@ public class RssFeed {
 		currentEntries = new ArrayList<SyndEntry>();
 		usedEntries = new ArrayList<SyndEntry>();
 		init();
-	}
-
-
-	public void setTicker(Ticker ticker){
-		this.ticker = ticker;
 	}
 
 
@@ -68,11 +64,7 @@ public class RssFeed {
 		}catch(IOException e){
 			String msg = String.format("Invalid feed at %s", feedSource.toString(), null);
 			LOGGER.error(msg);
-			//if (client!=null && client.player!=null) {
-				if (ticker != null) {
-					ticker.display(msg);
-				}
-			//}
+			PlatformServices.getInstance().showNotification(msg);
 		}catch(FeedException e){
 			LOGGER.error("FeedException: {}", e.getMessage());
 		}
@@ -114,11 +106,7 @@ public class RssFeed {
 				}catch(IOException e){
 					String msg = String.format("Invalid feed at %s", tryFeedSource.toString(), null);
 					LOGGER.error(msg);
-					//if (client!=null && client.player!=null) {
-						if (ticker != null) {
-							ticker.display(msg);
-						}
-					//}
+					PlatformServices.getInstance().showNotification(msg);
 				}catch(FeedException e){
 					LOGGER.error("FeedException1: {}", e.getMessage());
 				} 
@@ -146,11 +134,7 @@ public class RssFeed {
 					fireRssUpdateEvent(event);
 					String msg = toDisplay.getTitle();
 					LOGGER.info(msg);
-					//if (client!=null && client.player!=null) {
-						if (ticker != null) {
-							ticker.display(msg);
-						}
-					//}
+					PlatformServices.getInstance().showNotification(msg);
 				}
 			}
 		}else if (currentEntries.size() == 0 ||

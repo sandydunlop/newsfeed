@@ -5,6 +5,7 @@ import io.github.sandydunlop.cupra.platform.desktop.DesktopServices;
 
 
 public class Newsfeed extends CupraApp {
+	private static RssFeed rssFeed = null;
     private static NewsfeedScreen mainScreen = null;
 
     @Override
@@ -16,11 +17,22 @@ public class Newsfeed extends CupraApp {
         System.setProperty("apple.awt.application.appearance", "system");
         DesktopServices.getInstance();
         Newsfeed newsfeedApp = new Newsfeed();
-        newsfeedApp.open(Newsfeed.getMainScreen());
+        newsfeedApp.display();
     }
 
-    public Newsfeed(){
-        // Nothing to see here
+    public Newsfeed() {
+        getRssFeed();
+    }
+
+    public void display() {
+        openScreen(getMainScreen());
+    }
+
+    public static RssFeed getRssFeed() {
+        if (rssFeed == null) {
+            rssFeed = new RssFeed();
+        }
+        return rssFeed;
     }
 
     public static NewsfeedScreen getMainScreen() {

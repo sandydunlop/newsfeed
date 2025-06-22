@@ -27,11 +27,10 @@ import org.lwjgl.glfw.GLFW;
 
 import io.github.sandydunlop.cupra.common.fonts.FontSpec;
 import io.github.sandydunlop.cupra.platform.minecraft.MinecraftServices;
+import io.github.sandydunlop.cupra.platform.minecraft.Ticker;
 import io.github.sandydunlop.newsfeed.app.Newsfeed;
 import io.github.sandydunlop.newsfeed.app.NewsfeedConfig;
 import io.github.sandydunlop.newsfeed.app.RssFeed;
-import io.github.sandydunlop.newsfeed.app.Ticker;
-import io.github.sandydunlop.newsfeed.mod.NewsfeedModInitializer;
 
 
 public class NewsfeedClientModInitializer implements ClientModInitializer {
@@ -41,8 +40,6 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 	private static final int ONE_MINUTE = 1200; // 20 ticks * 60 seconds
 	private static final int interval = ONE_MINUTE;
 	private static boolean doneStartupNotifications = false;
-	private static RssFeed rssFeed;
-	private static FontSpec font = null;
 	private static Ticker ticker = null;
 	private static Path configFilePath = null;
 	public static final KeyBinding newsfeedKeyBind = KeyBindingHelper.registerKeyBinding(new KeyBinding(
@@ -60,13 +57,10 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
 		// Initialize drawContext before using it
 		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> layeredDrawer.attachLayerBefore(IdentifiedLayer.CHAT, RENDER_LAYER, NewsfeedClientModInitializer::render));
-		NewsfeedClientModInitializer.loadConfig();
-		rssFeed = new RssFeed();
 
+		loadConfig();
 		Newsfeed app = new Newsfeed();
 		platformServices.setApp(app);
-		
-		//rssFeed.setClient(MinecraftClient.getInstance());
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (newsfeedKeyBind.wasPressed()) {
@@ -106,19 +100,9 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 
 
 	private static void render(DrawContext context, RenderTickCounter tickCounter) {
-		if (ticker == null) {
-			font = new FontSpec()
-				.setName("jd-lcd-rounded-regular")
-				.setSize(30)
-				.setColor(0xFFCCFF00)
-				.setMonospaced(true)
-				.setShadow(true);
-			ticker = new Ticker(context, font);
-			rssFeed.setTicker(ticker);
-		}
 		if (tock++ > interval) {
 			tock = 0;
-			rssFeed.update();
+			Newsfeed.getRssFeed().update();
 		}
 		if (!doneStartupNotifications && tock > 100) {
 			if (NewsfeedConfig.updateCheckEnabled) {
@@ -133,7 +117,7 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 			}
 			doneStartupNotifications = true;
 		}
-		ticker.render();
+		MinecraftServices.getTicker().render(context);
 	}
 
 

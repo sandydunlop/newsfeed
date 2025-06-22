@@ -36,7 +36,7 @@ public class NewsfeedScreen extends CupraScreen implements RssUpdateListener {
         this.setPadding(5);
         this.setAlignHorizontal(Align.Horizontal.SPREAD);
 
-        rssFeed = new RssFeed();
+        rssFeed = Newsfeed.getRssFeed();
 
         header = new CContainer(this, true);
         header.setPadding(4);
