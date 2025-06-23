@@ -35,7 +35,7 @@ public class ModMainScreen extends CupraMinecraftScreen {
 	protected void init() {
 		super.init();
 		MinecraftServices platformServices = MinecraftServices.getInstance();
-		platformServices.getApp().display();
+		platformServices.getApp().run();
 		layoutAppScreen();
     }
 

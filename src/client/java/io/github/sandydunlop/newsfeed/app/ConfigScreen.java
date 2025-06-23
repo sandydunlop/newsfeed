@@ -21,6 +21,7 @@ import io.github.sandydunlop.cupra.common.util.Align;
 import io.github.sandydunlop.cupra.common.widgets.CButton;
 import io.github.sandydunlop.cupra.common.widgets.CCheckBox;
 import io.github.sandydunlop.cupra.common.widgets.CContainer;
+import io.github.sandydunlop.cupra.common.widgets.CDropdownTextBox;
 import io.github.sandydunlop.cupra.common.widgets.CFormattedLabel;
 import io.github.sandydunlop.cupra.common.widgets.CLabel;
 import io.github.sandydunlop.cupra.common.widgets.CListBox;
@@ -52,7 +53,7 @@ public class ConfigScreen extends CupraScreen {
 	private CContainer footer;
 
 	private CLabel urlLabelWidget;
-	private CTextBox urlFieldWidget;
+	private CDropdownTextBox urlFieldWidget;
 	private CContainer checkboxContainer;
     private CContainer buttonContainer;
 	private CCheckBox enabledCheckboxlWidget;
@@ -70,7 +71,8 @@ public class ConfigScreen extends CupraScreen {
 
 	public ConfigScreen() {
 		super();
-		suggestSize(400,300);
+		setTitle("Config");
+		suggestSize(440,300);
 		feedName = NewsfeedConfig.feedName;
 		feedUrl = NewsfeedConfig.feedUrl;
 		feedEnabled = NewsfeedConfig.feedEnabled;
@@ -92,10 +94,16 @@ public class ConfigScreen extends CupraScreen {
 
 		urlLabelWidget = new CLabel(body, "Feed URL");
 
-		urlFieldWidget = new CTextBox(body, feedUrl);
+		urlFieldWidget = new CDropdownTextBox(body, feedUrl);
+		urlFieldWidget.setWidth(400);
 		// urlFieldWidget.addClearButton();
 		// urlFieldWidget.addPasteButton();
 		urlFieldWidget.setText(feedUrl);
+		urlFieldWidget.add(new CListBoxEntry("https://www.reddit.com/r/AskReddit/new/.rss", null));
+		urlFieldWidget.add(new CListBoxEntry("https://feeds.bbci.co.uk/news/world/rss.xml", null));
+		urlFieldWidget.onSelectionChanged(entry -> {
+
+		});
 
         new CSpacer(body, MEDIUM_VERTICAL_GAP);
 

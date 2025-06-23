@@ -1,5 +1,10 @@
 package io.github.sandydunlop.newsfeed.app;
 
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+
 import io.github.sandydunlop.cupra.common.CupraApp;
 import io.github.sandydunlop.cupra.platform.desktop.DesktopServices;
 
@@ -8,6 +13,7 @@ public class Newsfeed extends CupraApp {
 	private static RssFeed rssFeed = null;
     private static MainScreen mainScreen = null;
     private static ConfigScreen configScreen = null;
+    private static BackgroundThread backgroundThread = null;
 
     @Override
     public String getName() {
@@ -15,17 +21,21 @@ public class Newsfeed extends CupraApp {
     }
 
     public static void main(String[] args) {
-        System.setProperty("apple.awt.application.appearance", "system");
         DesktopServices.getInstance();
         Newsfeed newsfeedApp = new Newsfeed();
-        newsfeedApp.display();
+        newsfeedApp.run();
     }
+
 
     public Newsfeed() {
-        getRssFeed();
+        // getRssFeed();
     }
 
-    public void display() {
+    public void run() {
+        if (backgroundThread == null) {
+            backgroundThread = new BackgroundThread();
+            backgroundThread.start();
+        }
         openScreen(getMainScreen());
     }
 

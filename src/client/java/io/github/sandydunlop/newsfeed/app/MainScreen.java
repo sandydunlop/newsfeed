@@ -31,11 +31,14 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 	CContainer footer;
 
     
-	public MainScreen(){
+	public MainScreen() {
+		super();
+
 		final int SMALL_VERTICAL_GAP = 5;
         this.setPadding(5);
         this.setAlignHorizontal(Align.Horizontal.SPREAD);
 
+		setTitle("Newsfeed");
         rssFeed = Newsfeed.getRssFeed();
 
         header = new CContainer(this, true);
