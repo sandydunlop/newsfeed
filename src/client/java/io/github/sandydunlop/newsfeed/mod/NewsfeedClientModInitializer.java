@@ -1,7 +1,7 @@
 package io.github.sandydunlop.newsfeed.mod;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 import net.fabricmc.api.ClientModInitializer;
@@ -57,7 +57,7 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 		// Initialize drawContext before using it
 		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> layeredDrawer.attachLayerBefore(IdentifiedLayer.CHAT, RENDER_LAYER, NewsfeedClientModInitializer::render));
 
-		loadConfig();
+		NewsfeedConfig.loadConfig(FabricLoader.getInstance().getConfigDir().resolve(NewsfeedModInitializer.MOD_ID + ".json"));
 		Newsfeed app = new Newsfeed();
 		platformServices.setApp(app);
 
@@ -70,22 +70,22 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 	}
 
 
-	public static void loadConfig() {
-		if (NewsfeedConfig.configFilePath == null) {
-			NewsfeedConfig.configFilePath = FabricLoader.getInstance().getConfigDir().resolve(NewsfeedModInitializer.MOD_ID + ".json");
-		}
-		try {
-			String json = IOUtils.toString(NewsfeedConfig.configFilePath.toUri(), Charset.forName("UTF-8"));
-			JSONObject jsonObject = new JSONObject(json);
-			NewsfeedConfig.feedUrl = jsonObject.getString("feedUrl");
-			NewsfeedConfig.feedEnabled = jsonObject.getBoolean("feedEnabled");
-			NewsfeedConfig.updateCheckEnabled = jsonObject.getBoolean("updateCheckEnabled");
-		} catch(JSONException e){
-			LOGGER.error("Problem loading config: {}", e.getMessage());
-		} catch(IOException e){
-			LOGGER.error("Unable to read config file: {}", e.getMessage());
-		}
-	}
+	// public static void loadConfig() {
+	// 	if (NewsfeedConfig.configFilePath == null) {
+	// 		NewsfeedConfig.configFilePath = FabricLoader.getInstance().getConfigDir().resolve(NewsfeedModInitializer.MOD_ID + ".json");
+	// 	}
+	// 	try {
+	// 		String json = IOUtils.toString(NewsfeedConfig.configFilePath.toUri(), StandardCharsets.UTF_8);
+	// 		JSONObject jsonObject = new JSONObject(json);
+	// 		NewsfeedConfig.feedUrl = jsonObject.getString("feedUrl");
+	// 		NewsfeedConfig.feedEnabled = jsonObject.getBoolean("feedEnabled");
+	// 		NewsfeedConfig.updateCheckEnabled = jsonObject.getBoolean("updateCheckEnabled");
+	// 	} catch(JSONException e){
+	// 		LOGGER.error("Problem loading config: {}", e.getMessage());
+	// 	} catch(IOException e){
+	// 		LOGGER.error("Unable to read config file: {}", e.getMessage());
+	// 	}
+	// }
 
 
 	public static Screen getArticleScreen(Screen parent) {

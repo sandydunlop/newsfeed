@@ -126,19 +126,9 @@ public class ConfigScreen extends CupraScreen {
 			NewsfeedConfig.feedUrl = urlFieldWidget.getText();
 			NewsfeedConfig.feedEnabled = enabledCheckboxlWidget.isChecked();
 			NewsfeedConfig.updateCheckEnabled = updateCheckboxlWidget.isChecked();
+			NewsfeedConfig.saveConfig();
 
-			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("feedUrl", urlFieldWidget.getText());
-			jsonObject.put("feedEnabled", enabledCheckboxlWidget.isChecked());
-			jsonObject.put("updateCheckEnabled", updateCheckboxlWidget.isChecked());
-
-			try (FileWriter file = new FileWriter(NewsfeedConfig.configFilePath.toString(), StandardCharsets.UTF_8)) {
-				file.write(jsonObject.toString(4));
-				file.flush();
-			} catch (IOException e) {
-				LOGGER.error("Problem saving config: {}", e.getMessage());
-			}
-			NewsfeedClientModInitializer.updateNow();
+			//NewsfeedClientModInitializer.updateNow(); ///TODO
 			this.close();
 		});
 		continueButton.setEnabled(false);

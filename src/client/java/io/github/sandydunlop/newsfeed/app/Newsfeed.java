@@ -7,6 +7,8 @@ import javax.swing.JMenuItem;
 
 import io.github.sandydunlop.cupra.common.CupraApp;
 import io.github.sandydunlop.cupra.platform.desktop.DesktopServices;
+import io.github.sandydunlop.newsfeed.mod.NewsfeedModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
 
 
 public class Newsfeed extends CupraApp {
@@ -21,7 +23,8 @@ public class Newsfeed extends CupraApp {
     }
 
     public static void main(String[] args) {
-        DesktopServices.getInstance();
+        DesktopServices platformServices = DesktopServices.getInstance();
+		NewsfeedConfig.loadConfig(platformServices.getConfigDir().resolve("newsfeed.json"));
         Newsfeed newsfeedApp = new Newsfeed();
         newsfeedApp.run();
     }
