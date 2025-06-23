@@ -140,6 +140,16 @@ public class ConfigScreen extends CupraScreen {
 	}
 
 
+	@Override
+	public void onClose() {
+		if (thread != null && thread.isAlive()){
+			LOGGER.info("Validation thread interrupted");
+			thread.interrupt();
+			thread = null;
+		}
+	}
+
+
 	public void validationChecker() {
 		do {
 			redraw = false;
@@ -205,7 +215,7 @@ public class ConfigScreen extends CupraScreen {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 			//LOGGER.info("Validation thread running: {}", Thread.currentThread().isAlive());
 		} while (!Thread.interrupted());
