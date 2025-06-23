@@ -41,7 +41,6 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 	private static final int interval = ONE_MINUTE;
 	private static boolean doneStartupNotifications = false;
 	private static Ticker ticker = null;
-	private static Path configFilePath = null;
 	public static final KeyBinding newsfeedKeyBind = KeyBindingHelper.registerKeyBinding(new KeyBinding(
 		"newsfeed.keybinds.open", // The translation key of the keybinding's name
 		InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
@@ -72,11 +71,11 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 
 
 	public static void loadConfig() {
-		if (configFilePath == null) {
-			configFilePath = FabricLoader.getInstance().getConfigDir().resolve(NewsfeedModInitializer.MOD_ID + ".json");
+		if (NewsfeedConfig.configFilePath == null) {
+			NewsfeedConfig.configFilePath = FabricLoader.getInstance().getConfigDir().resolve(NewsfeedModInitializer.MOD_ID + ".json");
 		}
 		try {
-			String json = IOUtils.toString(configFilePath.toUri(), Charset.forName("UTF-8"));
+			String json = IOUtils.toString(NewsfeedConfig.configFilePath.toUri(), Charset.forName("UTF-8"));
 			JSONObject jsonObject = new JSONObject(json);
 			NewsfeedConfig.feedUrl = jsonObject.getString("feedUrl");
 			NewsfeedConfig.feedEnabled = jsonObject.getBoolean("feedEnabled");
@@ -95,7 +94,7 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 
 
 	public static Screen getConfigScreen(Screen parent) {
-		return new ModConfigScreen(net.minecraft.text.Text.translatable("newsfeed.config.title"), parent, configFilePath);
+		return new ModConfigScreen(net.minecraft.text.Text.translatable("newsfeed.config.title"), parent);
 	}
 
 

@@ -14,7 +14,7 @@ import io.github.sandydunlop.cupra.common.widgets.CSpacer;
 import io.github.sandydunlop.cupra.platform.PlatformServices;
 
 
-public class NewsfeedScreen extends CupraScreen implements RssUpdateListener {
+public class MainScreen extends CupraScreen implements RssUpdateListener {
 	private static RssFeed rssFeed = null;
 	private int articleIndex;
 	private Article article;
@@ -31,7 +31,7 @@ public class NewsfeedScreen extends CupraScreen implements RssUpdateListener {
 	CContainer footer;
 
     
-	public NewsfeedScreen(){
+	public MainScreen(){
 		final int SMALL_VERTICAL_GAP = 5;
         this.setPadding(5);
         this.setAlignHorizontal(Align.Horizontal.SPREAD);
@@ -99,7 +99,7 @@ public class NewsfeedScreen extends CupraScreen implements RssUpdateListener {
 		optionsButton = new CButton(footer, "Options", click -> {
 			// Screen screen = NewsfeedClientModInitializer.getConfigScreen(this);
 			// MinecraftClient.getInstance().setScreen(screen);
-            PlatformServices.getInstance().showNotification("Hello");
+            PlatformServices.getInstance().getApp().openScreen(this, Newsfeed.getConfigScreen());
 		});
 
 		closeButton = new CButton(footer, "Close", click -> {

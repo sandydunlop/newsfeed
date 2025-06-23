@@ -6,7 +6,8 @@ import io.github.sandydunlop.cupra.platform.desktop.DesktopServices;
 
 public class Newsfeed extends CupraApp {
 	private static RssFeed rssFeed = null;
-    private static NewsfeedScreen mainScreen = null;
+    private static MainScreen mainScreen = null;
+    private static ConfigScreen configScreen = null;
 
     @Override
     public String getName() {
@@ -35,10 +36,17 @@ public class Newsfeed extends CupraApp {
         return rssFeed;
     }
 
-    public static NewsfeedScreen getMainScreen() {
+    public static MainScreen getMainScreen() {
         if (mainScreen == null) {
-            mainScreen = new NewsfeedScreen();
+            mainScreen = new MainScreen();
         }
         return mainScreen;
+    }
+
+    public static ConfigScreen getConfigScreen() {
+        if (configScreen == null) {
+            configScreen = new ConfigScreen();
+        }
+        return configScreen;
     }
 }
