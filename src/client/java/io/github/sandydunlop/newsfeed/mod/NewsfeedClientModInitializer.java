@@ -101,8 +101,9 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 	private static void render(DrawContext context, RenderTickCounter tickCounter) {
 		if (tock++ > interval) {
 			tock = 0;
-			Newsfeed.getRssFeed().update();
+			//Newsfeed.getRssFeed().update();
 		}
+		//TODO Move this out of render method into new thread
 		if (!doneStartupNotifications && tock > 100) {
 			if (NewsfeedConfig.updateCheckEnabled) {
 				if (ModUtils.isUpdateAvailable()) {

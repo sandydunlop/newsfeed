@@ -23,7 +23,6 @@ public class RssFeed {
 	List<SyndEntry> usedEntries;
 	public URL feedSource;
 	String feedTitle;
-	private List<RssUpdateListener> listeners = new ArrayList<>();
 
 
     public RssFeed()
@@ -58,8 +57,6 @@ public class RssFeed {
 				}
 				String msg= String.format("%s feed loaded. Suppressing %d old articles.", feedTitle, suppressedCount);
 				LOGGER.info(msg);
-				RssUpdateEvent event = new RssUpdateEvent(this);
-				fireRssUpdateEvent(event);
 			}
 		}catch(IOException e){
 			String msg = String.format("Invalid feed at %s", feedSource.toString(), null);
@@ -71,38 +68,41 @@ public class RssFeed {
 	}
 
 
-	private void fetch()
+	public void fetch()
 	{
 		if (NewsfeedConfig.feedUrl!=null && !NewsfeedConfig.feedUrl.isEmpty()){
+			for (SyndEntry entry : currentEntries) {
+				usedEntries.add(entry);
+			}
+			currentEntries.clear();
 			if (hasUrlChanged()){
 				String msg = "Feed URL has changed. Reloading feed.";
 				LOGGER.info(msg);
-				currentEntries.clear();
-				usedEntries.clear();
+				//usedEntries.clear();
 				init();
 				return;	
 			}
-			Thread thread = new Thread(() -> {
+			//Thread thread = new Thread(() -> {
 				URL tryFeedSource = null;
 				try {
-					if (currentEntries.size() == 0) {
-						tryFeedSource = URI.create(NewsfeedConfig.feedUrl).toURL();
-						if (tryFeedSource == null) {
-							LOGGER.error("Feed URL is invalid.");
-							feedSource = null;
-							return;
-						}
-						SyndFeedInput input = new SyndFeedInput();
-						SyndFeed feed = input.build(new XmlReader(tryFeedSource));
-						feedTitle = feed.getTitle();
-						List<SyndEntry> entries = feed.getEntries();
-						for (SyndEntry entry : entries) {
-							if (!alreadyGot(entry)) {
-								currentEntries.add(entry);
-							}
-						}
-						feedSource = tryFeedSource;
+					tryFeedSource = URI.create(NewsfeedConfig.feedUrl).toURL();
+					if (tryFeedSource == null) {
+						LOGGER.error("Feed URL is invalid.");
+						feedSource = null;
+						return;
 					}
+					SyndFeedInput input = new SyndFeedInput();
+					SyndFeed feed = input.build(new XmlReader(tryFeedSource));
+					feedTitle = feed.getTitle();
+					List<SyndEntry> entries = feed.getEntries();
+					for (SyndEntry entry : entries) {
+						if (!alreadyUsed(entry)) {
+							currentEntries.add(entry);
+							PlatformServices.getInstance().showNotification(entry.getTitle());
+						}
+					}
+					feedSource = tryFeedSource;
+					
 				}catch(IOException e){
 					String msg = String.format("Invalid feed at %s", tryFeedSource.toString(), null);
 					LOGGER.error(msg);
@@ -110,8 +110,8 @@ public class RssFeed {
 				}catch(FeedException e){
 					LOGGER.error("FeedException1: {}", e.getMessage());
 				} 
-			});
-			thread.start();
+			// });
+			// thread.start();
 		}
 	}
 	
@@ -126,15 +126,14 @@ public class RssFeed {
 						toDisplay = entry;
 						usedEntries.add(entry);
 						currentEntries.remove(entry);
-						break;
+						//break;
+						PlatformServices.getInstance().showNotification(entry.getTitle());
 					}
 				}
 				if (toDisplay != null) {
-					RssUpdateEvent event = new RssUpdateEvent(this);
-					fireRssUpdateEvent(event);
 					String msg = toDisplay.getTitle();
 					LOGGER.info(msg);
-					PlatformServices.getInstance().showNotification(msg);
+					// PlatformServices.getInstance().showNotification(msg);
 				}
 			}
 		}else if (currentEntries.size() == 0 ||
@@ -172,22 +171,4 @@ public class RssFeed {
 	}
 
 
-	public void removeRssUpdateListener(RssUpdateListener listener) {
-		listeners.remove(listener);
-	}
-
-
-	public void addRssUpdateListener(RssUpdateListener listener) {
-		if (listeners == null) {
-			listeners = new ArrayList<>();
-		}
-		listeners.add(listener);
-	}
-
-
-	private void fireRssUpdateEvent(RssUpdateEvent event) {
-		for (RssUpdateListener listener : listeners) {
-			listener.feedUpdated(event);
-		}
-	}
 }

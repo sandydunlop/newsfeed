@@ -12,7 +12,6 @@ import net.fabricmc.loader.api.FabricLoader;
 
 
 public class Newsfeed extends CupraApp {
-	private static RssFeed rssFeed = null;
     private static MainScreen mainScreen = null;
     private static ConfigScreen configScreen = null;
     private static BackgroundThread backgroundThread = null;
@@ -31,7 +30,7 @@ public class Newsfeed extends CupraApp {
 
 
     public Newsfeed() {
-        // getRssFeed();
+        // Nothing to initialize here, as the run method will handle it.
     }
 
     public void run() {
@@ -40,13 +39,6 @@ public class Newsfeed extends CupraApp {
             backgroundThread.start();
         }
         openScreen(getMainScreen());
-    }
-
-    public static RssFeed getRssFeed() {
-        if (rssFeed == null) {
-            rssFeed = new RssFeed();
-        }
-        return rssFeed;
     }
 
     public static MainScreen getMainScreen() {

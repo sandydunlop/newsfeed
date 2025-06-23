@@ -1,5 +1,8 @@
 package io.github.sandydunlop.newsfeed.app;
 
+import java.util.Date;
+import java.util.List;
+
 import com.rometools.rome.feed.synd.SyndEntry;
 
 import io.github.sandydunlop.cupra.common.CupraScreen;
@@ -15,8 +18,8 @@ import io.github.sandydunlop.cupra.platform.PlatformServices;
 
 
 public class MainScreen extends CupraScreen implements RssUpdateListener {
-	private static RssFeed rssFeed = null;
-	private int articleIndex;
+	// private static RssFeed rssFeed = null;
+	private int articleIndex = -1;
 	private Article article;
 	CLabel titleWidget;
 	CListBox inbox;
@@ -29,6 +32,7 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 	CContainer header;
 	CContainer body;
 	CContainer footer;
+	long lastUpdateTime = 0;
 
     
 	public MainScreen() {
@@ -39,7 +43,7 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
         this.setAlignHorizontal(Align.Horizontal.SPREAD);
 
 		setTitle("Newsfeed");
-        rssFeed = Newsfeed.getRssFeed();
+        // rssFeed = Newsfeed.getRssFeed(); //TODO---------------------
 
         header = new CContainer(this, true);
         header.setPadding(4);
@@ -58,17 +62,20 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
         titleWidget.setHeight(28);
 
         inbox = new CListBox(body, selectionChanged -> {
-			SyndEntry selectedEntry = (SyndEntry)selectionChanged.getValue();
-			for (SyndEntry entry : rssFeed.usedEntries) {
-				if (entry.equals(selectedEntry)) {
-					articleIndex = rssFeed.usedEntries.indexOf(entry);
-					article = Article.of(entry);
-					populate(article);
-					return;
-				}
-			}
-			article = Article.empty();
+			article =  (Article)selectionChanged.getValue();
 			populate(article);
+			return;
+			// SyndEntry selectedEntry = (SyndEntry)selectionChanged.getValue();
+			// for (SyndEntry entry : rssFeed.usedEntries) {
+			// 	if (entry.equals(selectedEntry)) {
+			// 		articleIndex = rssFeed.usedEntries.indexOf(entry);
+			// 		article = Article.of(entry);
+			// 		populate(article);
+			// 		return;
+			// 	}
+			// }
+			// article = Article.empty();
+			// populate(article);
         });
         inbox.setExpandable(true);
 
@@ -77,19 +84,22 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
         descriptionWidget.setExpandable(true);
 
 		prevButton = new CButton(footer, "Prev", click -> {
-			if (articleIndex > 0) {
-				articleIndex--;
-				article = Article.of(rssFeed.getEntry(articleIndex));
-				selectArticle(article);
-			}
+			//TODO: Use selected info from listbox
+			CListBoxEntry selected = inbox.getSelected();
+			inbox.getIndexOf(selected);
+			// if (articleIndex > 0) {
+			// 	articleIndex--;
+			// 	article = Article.of(rssFeed.getEntry(articleIndex));
+			// 	selectArticle(article);
+			// }
 		});
 
 		nextButton = new CButton(footer, "Next", click -> {
-			if (articleIndex < rssFeed.usedEntries.size() - 1) {
-				articleIndex++;
-				article = Article.of(rssFeed.getEntry(articleIndex));
-				selectArticle(article);
-			}
+			// if (articleIndex < rssFeed.usedEntries.size() - 1) {
+			// 	articleIndex++;
+			// 	article = Article.of(rssFeed.getEntry(articleIndex));
+			// 	selectArticle(article);
+			// }
 		});
 
 		openButton = new CButton(footer, "Open Link", click -> {
@@ -109,18 +119,17 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 			this.close();
 		});
 
-		updateInbox();
-		articleIndex = rssFeed.usedEntries.size() - 1;
-		if (articleIndex > -1){
-			article = Article.of(rssFeed.getEntry(articleIndex));
-		}else{
-			article = Article.empty() ;
-		}
-		populate(article);
-		rssFeed.addRssUpdateListener(this);
-        rssFeed.init();
-        rssFeed.update();
     }
+
+
+	@Override
+	public void onShow() {
+		lastUpdateTime = new Date().getTime();
+		updateInbox();
+		article = Article.empty() ;
+		populate(article);
+		Inbox.getInstance().addRssUpdateListener(this);
+	}
 
 
 	private void populate(Article article)
@@ -128,7 +137,7 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 		if (article == null) {
 			article = Article.empty();
 		}
-        titleWidget.setText(rssFeed.feedTitle);
+        //titleWidget.setText(rssFeed.feedTitle);
         CLabel heading = new CLabel(null, article.title).bold();
         descriptionWidget.clear();
         descriptionWidget.add(heading);
@@ -137,7 +146,7 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
         descriptionWidget.add(new CLabel(null, article.description));
         descriptionWidget.layout();
 
-        nextButton.setEnabled(articleIndex != rssFeed.usedEntries.size() - 1);
+        nextButton.setEnabled(articleIndex != inbox.contents().size() - 1);
         prevButton.setEnabled(articleIndex != 0);
     }
 
@@ -150,20 +159,35 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 
 
 	private void updateInbox() {
-		inbox.clear();
-		if (!rssFeed.usedEntries.isEmpty()) {
-			articleIndex = rssFeed.usedEntries.size() - 1;
-			article = Article.of(rssFeed.getEntry(articleIndex));
-			populate(article);
-			for(int i=rssFeed.usedEntries.size() - 1; i >= 0; i--) {
-				SyndEntry entry = rssFeed.usedEntries.get(i);
-				CListBoxEntry listItem = new CListBoxEntry(entry.getTitle(), entry.getLink(), entry);
-				inbox.add(listItem);
+		List<Article> recentArticles = Inbox.getInstance().getArticlesSince(lastUpdateTime);
+		if (recentArticles.size() > 0) {
+			for (int i = recentArticles.size() - 1; i >= 0; i--) {
+				Article article = recentArticles.get(i);
+				inbox.insertAt(0, new CListBoxEntry(article.title, article.getKey(), article));
 			}
-		} else {
-			article = Article.empty();
-			populate(article);
+			CListBoxEntry top = inbox.getEntry(0);
+			inbox.scrollTo(top);
+			if (inbox.count() > 0 && articleIndex == -1) {
+				articleIndex = 0;
+				inbox.setSelected(top);
+			}
 		}
+		
+		// inbox.clear();
+		// if (!rssFeed.usedEntries.isEmpty()) {
+		// 	articleIndex = rssFeed.usedEntries.size() - 1;
+		// 	article = Article.of(rssFeed.getEntry(articleIndex));
+		// 	populate(article);
+		// 	for(int i=rssFeed.usedEntries.size() - 1; i >= 0; i--) {
+		// 		SyndEntry entry = rssFeed.usedEntries.get(i);
+		// 		CListBoxEntry listItem = new CListBoxEntry(entry.getTitle(), entry.getLink(), entry);
+		// 		inbox.add(listItem);
+		// 	}
+		// } else {
+		// 	article = Article.empty();
+		// 	populate(article);
+		// }
+		lastUpdateTime = new Date().getTime();
 	}
 
 
