@@ -19,18 +19,13 @@ import net.minecraft.util.math.ColorHelper;
 
 public class MainScreen extends CupraScreen implements RssUpdateListener {
 	private Article article;
-	CLabel titleWidget;
-	CListBox inbox;
-	CFormattedLabel descriptionWidget;
-	CButton prevButton;
-	CButton nextButton;
-	CButton openButton;
-	CButton optionsButton;
-	CButton closeButton;
-	CContainer header;
-	CContainer body;
-	CContainer footer;
-	long lastUpdateTime = 0;
+	private CLabel titleWidget;
+	private CListBox inbox;
+	private CFormattedLabel articleText;
+	private CButton prevButton;
+	private CButton nextButton;
+	private long lastUpdateTime = 0;
+	private boolean articleIsSelected = false;
 
     
 	public MainScreen() {
@@ -42,14 +37,14 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 
 		setTitle("Newsfeed");
 
-        header = new CContainer(this, true);
+        CContainer header = new CContainer(this, true);
         header.setPadding(4);
 
-        body = new CContainer(this);
+        CContainer body = new CContainer(this);
         body.setPadding(0);
         body.setExpandable(true);
 
-        footer = new CContainer(this, true);
+        CContainer footer = new CContainer(this, true);
         footer.setAlignHorizontal(Align.Horizontal.SPREAD);  //TODO: Make this work
         footer.setPadding(10);
 
@@ -60,20 +55,20 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 
         inbox = new CListBox(body, selectionChanged -> {
 			article =  (Article)selectionChanged.getValue();
-			populate(article);
+			populate();
 			return;
         });
         inbox.setExpandable(true);
 
 		new CSpacer(body, SMALL_VERTICAL_GAP);
 
-		descriptionWidget = new CFormattedLabel(body);
-        descriptionWidget.setExpandable(true);
+		articleText = new CFormattedLabel(body);
+        articleText.setExpandable(true);
 
 		int halfway = ColorHelper.lerp(0.5f, 
 				CWidget.getPalette().REGULAR_BACKGROUND, 
 				CWidget.getPalette().INPUT_BACKGROUND);
-		descriptionWidget.setBackgroundColor(halfway);
+		articleText.setBackgroundColor(halfway);
 
 		prevButton = new CButton(footer, "Prev", click -> {
 			inbox.setSelectedIndex(inbox.getSelectedIndex() + 1);
@@ -83,17 +78,17 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 			inbox.setSelectedIndex(inbox.getSelectedIndex() - 1);
 		});
 
-		openButton = new CButton(footer, "Open Link", click -> {
+		new CButton(footer, "Open Link", click -> {
 			CListBoxEntry selected = inbox.getSelected();
             article = (Article)selected.getValue();
             PlatformServices.getInstance().openLinkInBrowser(article.link);
 		});
 
-		optionsButton = new CButton(footer, "Options", click -> {
+		new CButton(footer, "Options", click -> {
             PlatformServices.getInstance().getApp().openScreen(this, Newsfeed.getConfigScreen());
 		});
 
-		closeButton = new CButton(footer, "Close", click -> {
+		new CButton(footer, "Close", click -> {
 			this.close();
 		});
 
@@ -109,11 +104,17 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 		if (selected != null) {
 			article = (Article) selected.getValue();
 		}
-		populate(article);
+		populate();
 	}
 
 
-	private void populate(Article article){
+	@Override
+	public void feedUpdated(RssUpdateEvent event) {
+		updateInbox();
+	}
+
+
+	private void populate() {
 		if (article == null) {
 			article = Article.empty();
 		}
@@ -121,22 +122,17 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
         titleWidget.setText("Newsfeed");
         
 		CLabel heading = new CLabel(null, article.title).bold();
-		descriptionWidget.clear();
-        descriptionWidget.add(heading);
-        descriptionWidget.add(CFormattedLabel.newLine());
-        descriptionWidget.add(CFormattedLabel.newLine());
-        descriptionWidget.add(new CLabel(null, article.description));
-        descriptionWidget.layout();
+		articleText.clear();
+        articleText.add(heading);
+        articleText.add(CFormattedLabel.newLine());
+        articleText.add(CFormattedLabel.newLine());
+        articleText.add(new CLabel(null, article.description));
+        articleText.layout();
 
         prevButton.setEnabled(inbox.getSelectedIndex() < inbox.count() - 1);
         nextButton.setEnabled(inbox.getSelectedIndex() > 0);
+		PlatformServices.getInstance().render();
     }
-
-
-	@Override
-	public void feedUpdated(RssUpdateEvent event) {
-		updateInbox();
-	}
 
 
 	private synchronized void updateInbox() {
@@ -148,9 +144,12 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 			}
 			CListBoxEntry latest = inbox.getEntry(0);
 			inbox.scrollTo(latest);
-			if (inbox.count() > 0 && inbox.getSelectedIndex() == -1) {
+			if (inbox.count() > 0 && !articleIsSelected) {
 				inbox.setSelected(latest);
+				article = (Article) latest.getValue();
+				articleIsSelected = true;
 			}
+			populate();
 		}
 		lastUpdateTime = new Date().getTime();
 	}
