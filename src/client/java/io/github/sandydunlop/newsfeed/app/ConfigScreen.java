@@ -51,7 +51,6 @@ public class ConfigScreen extends CupraScreen {
 	public boolean feedEnabled = true;
 	public boolean updateCheckEnabled = true;
 	private Thread thread = null;
-	private boolean redraw = false; //NOSONAR - It tells me to make this a local variable, it's modified in a thread so I can't
 
 	public ConfigScreen() {
 		super();
@@ -133,22 +132,12 @@ public class ConfigScreen extends CupraScreen {
 
 	public void validationChecker() {
 		do {
-			redraw = false;
 			// If URL is changed, wait VALIDATION_DELAY ticks before checking if it's a valid feed
 			if (urlFieldWidget!= null && !urlFieldWidget.getText().equals((feedUrl))){
 				timer = VALIDATION_DELAY;
-				// statusIsFading = true;
 				feedUrl = urlFieldWidget.getText();
 				isValidFeed = false;
 			}
-
-			// if (statusIsFading){
-			// 	if (statusAlpha > 0.01f){
-			// 		statusAlpha -= 0.01f;
-			// 	}else{
-			// 		statusIsFading = false;
-			// 	}
-			// }
 
 			if (timer > 0){
 				if (--timer == 0) {
@@ -161,16 +150,13 @@ public class ConfigScreen extends CupraScreen {
 				needsValidating = false;
 				Thread thread = new Thread(() -> {
 					if (validateFeed()){
-						// statusIsFading = true;
 						isValidFeed = true;
 						statusLabel.setText("");
-						redraw = true;
+						PlatformServices.getInstance().render();
 					}else{
 						statusLabel.setText("newsfeed.config.invalid.status");
-						redraw = true;
-						// statusAlpha = 1.0f;
-						// statusIsFading = false;
 						isValidFeed = false;
+						PlatformServices.getInstance().render();
 					}
 					isValidating = false;
 				});
@@ -189,16 +175,14 @@ public class ConfigScreen extends CupraScreen {
 			}else{
 				continueButton.setEnabled(false);
 			}
-			if (continueButtonEnabled != continueButton.isEnabled() || redraw) {
+			if (continueButtonEnabled != continueButton.isEnabled()) {
 				PlatformServices.getInstance().render();
 			}
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
-				//e.printStackTrace();
 			}
-			//LOGGER.info("Validation thread running: {}", Thread.currentThread().isAlive());
 		} while (!Thread.interrupted());
 		if (thread != null && thread.isAlive()){
 			LOGGER.info("Validation thread interrupted");

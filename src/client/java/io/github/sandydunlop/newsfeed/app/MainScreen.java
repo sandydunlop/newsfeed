@@ -18,7 +18,6 @@ import net.minecraft.util.math.ColorHelper;
 
 
 public class MainScreen extends CupraScreen implements RssUpdateListener {
-	private int articleIndex = -1;
 	private Article article;
 	CLabel titleWidget;
 	CListBox inbox;
@@ -61,7 +60,6 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 
         inbox = new CListBox(body, selectionChanged -> {
 			article =  (Article)selectionChanged.getValue();
-			System.out.println("Selected index: " + inbox.getSelectedIndex());
 			populate(article);
 			return;
         });
@@ -110,9 +108,6 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 		CListBoxEntry selected = inbox.getSelected();
 		if (selected != null) {
 			article = (Article) selected.getValue();
-			articleIndex = inbox.getIndexOf(selected);
-		} else {
-			articleIndex = -1;
 		}
 		populate(article);
 	}
@@ -153,20 +148,10 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 			}
 			CListBoxEntry latest = inbox.getEntry(0);
 			inbox.scrollTo(latest);
-			if (inbox.count() > 0 && articleIndex == -1) {
-				articleIndex = 0;
+			if (inbox.count() > 0 && inbox.getSelectedIndex() == -1) {
 				inbox.setSelected(latest);
 			}
-			//PlatformServices.getInstance().render();
 		}
 		lastUpdateTime = new Date().getTime();
-	}
-
-
-	private void selectArticle(Article article) {
-		if (article != null && article.getEntry() != null) {
-            CListBoxEntry entry = inbox.getEntry(article.getKey());
-            inbox.setSelected(entry);
-		}
 	}
 }
