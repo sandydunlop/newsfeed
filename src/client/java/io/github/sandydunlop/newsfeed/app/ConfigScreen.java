@@ -127,13 +127,13 @@ public class ConfigScreen extends CupraScreen {
 			NewsfeedConfig.feedEnabled = enabledCheckboxlWidget.isChecked();
 			NewsfeedConfig.updateCheckEnabled = updateCheckboxlWidget.isChecked();
 			NewsfeedConfig.saveConfig();
-
-			//NewsfeedClientModInitializer.updateNow(); ///TODO
+			Newsfeed.getBackgroundThread().restart();
 			this.close();
 		});
 		continueButton.setEnabled(false);
 
 		thread = new Thread(this::validationChecker);
+		thread.setName("Newsfeed Validation Thread");
 		thread.start();
 	}
 
@@ -141,7 +141,6 @@ public class ConfigScreen extends CupraScreen {
 	@Override
 	public void onClose() {
 		if (thread != null && thread.isAlive()){
-			LOGGER.info("Validation thread interrupted");
 			thread.interrupt();
 			thread = null;
 		}

@@ -4,27 +4,47 @@ import java.util.List;
 
 import com.rometools.rome.feed.synd.SyndEntry;
 
+
 public class BackgroundThread extends Thread {
     private final int SLEEP_TIME = 10000; // 10 seconds
     private final Runnable runnable;
     private boolean checkingForUpdates = false;
+    private boolean foundUpdates = false;
+    private boolean keepRunning = true;
     private RssFeed rssFeed = null;
     private String lastFeedUrl = "";
 
 
     public BackgroundThread() {
+        super("Newsfeed Background Thread");
         this.runnable = () -> {
-            try {
-                do {
-                    // Placeholder for background task
-                    System.out.println("Background thread: tick");
+            do {
+                try {
                     checkForUpdates();
                     Thread.sleep(SLEEP_TIME);
-                } while (true);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                } catch (Exception ignore) {
+                    // Ignore
+                }
+            } while (keepRunning);
         };
+    }
+
+
+    public void restart(){
+        if (this.isAlive()) {
+            this.interrupt();
+        }
+    }
+
+
+    public void terminate(){
+        if (this.isAlive()) {
+            this.interrupt();
+            this.keepRunning = false;
+        }
     }
 
 
@@ -36,20 +56,20 @@ public class BackgroundThread extends Thread {
             e.printStackTrace();
         }
     }
+
+
+    private boolean urlHasChanged(){
+        return rssFeed != null && rssFeed.getFeedSource() != null && !rssFeed.getFeedSource().toString().equals(lastFeedUrl);
+    }
     
 
     private void checkForUpdates() {
         if (checkingForUpdates) {
-            System.out.println("Already checking for updates, skipping this tick.");
             return;
         }
         checkingForUpdates = true;
 
-        if (rssFeed != null && rssFeed.getFeedSource() != null && !rssFeed.getFeedSource().toString().equals(lastFeedUrl)) {
-            rssFeed = null;
-        }
-
-        if (rssFeed == null) {
+        if (rssFeed == null || urlHasChanged()) {
             System.out.println("Initializing...");
             rssFeed = new RssFeed();
             rssFeed.init();
@@ -59,6 +79,10 @@ public class BackgroundThread extends Thread {
         System.out.println("Checking for updates...");
         rssFeed.fetch();
         addToInbox(rssFeed.currentEntries);
+        if (foundUpdates) {
+            Inbox.getInstance().updateEnded();
+            foundUpdates = false;
+        }
         checkingForUpdates = false;
     }
 
@@ -67,8 +91,7 @@ public class BackgroundThread extends Thread {
         for (SyndEntry entry : entries) {
             Article article = Article.of(entry);
             Inbox.getInstance().addArticle(article);
-            System.out.println("Added article to inbox: " + article.title);
+            foundUpdates = true;
         }
-        Inbox.getInstance().updateEnded();
     }   
 }

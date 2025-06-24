@@ -15,7 +15,6 @@ import io.github.sandydunlop.cupra.common.widgets.CSpacer;
 import io.github.sandydunlop.cupra.common.widgets.CWidget;
 import io.github.sandydunlop.cupra.platform.PlatformServices;
 import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.MathHelper;
 
 
 public class MainScreen extends CupraScreen implements RssUpdateListener {

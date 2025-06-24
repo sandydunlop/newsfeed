@@ -80,43 +80,33 @@ public class RssFeed {
 				usedEntries.add(entry);
 			}
 			currentEntries.clear();
-			if (hasUrlChanged()){
-				String msg = "Feed URL has changed. Reloading feed.";
-				LOGGER.info(msg);
-				//usedEntries.clear();
-				init();
-				return;	
-			}
-			//Thread thread = new Thread(() -> {
-				URL tryFeedSource = null;
-				try {
-					tryFeedSource = URI.create(NewsfeedConfig.feedUrl).toURL();
-					if (tryFeedSource == null) {
-						LOGGER.error("Feed URL is invalid.");
-						feedSource = null;
-						return;
+			URL tryFeedSource = null;
+			try {
+				tryFeedSource = URI.create(NewsfeedConfig.feedUrl).toURL();
+				if (tryFeedSource == null) {
+					LOGGER.error("Feed URL is invalid.");
+					feedSource = null;
+					return;
+				}
+				SyndFeedInput input = new SyndFeedInput();
+				SyndFeed feed = input.build(new XmlReader(tryFeedSource));
+				feedTitle = feed.getTitle();
+				List<SyndEntry> entries = feed.getEntries();
+				for (SyndEntry entry : entries) {
+					if (!alreadyUsed(entry)) {
+						currentEntries.add(entry);
+						PlatformServices.getInstance().showNotification(entry.getTitle());
 					}
-					SyndFeedInput input = new SyndFeedInput();
-					SyndFeed feed = input.build(new XmlReader(tryFeedSource));
-					feedTitle = feed.getTitle();
-					List<SyndEntry> entries = feed.getEntries();
-					for (SyndEntry entry : entries) {
-						if (!alreadyUsed(entry)) {
-							currentEntries.add(entry);
-							PlatformServices.getInstance().showNotification(entry.getTitle());
-						}
-					}
-					feedSource = tryFeedSource;
-					
-				}catch(IOException e){
-					String msg = String.format("Invalid feed at %s", tryFeedSource.toString(), null);
-					LOGGER.error(msg);
-					PlatformServices.getInstance().showNotification(msg);
-				}catch(FeedException e){
-					LOGGER.error("FeedException1: {}", e.getMessage());
-				} 
-			// });
-			// thread.start();
+				}
+				feedSource = tryFeedSource;
+				
+			}catch(IOException e){
+				String msg = String.format("Invalid feed at %s", tryFeedSource.toString(), null);
+				LOGGER.error(msg);
+				PlatformServices.getInstance().showNotification(msg);
+			}catch(FeedException e){
+				LOGGER.error("FeedException1: {}", e.getMessage());
+			} 
 		}
 	}
 	

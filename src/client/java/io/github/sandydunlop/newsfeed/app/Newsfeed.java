@@ -9,6 +9,7 @@ public class Newsfeed extends CupraApp {
     private static ConfigScreen configScreen = null;
     private static BackgroundThread backgroundThread = null;
 
+
     @Override
     public String getName() {
         return "Newsfeed";
@@ -26,13 +27,21 @@ public class Newsfeed extends CupraApp {
         // Nothing to initialize here, as the run method will handle it.
     }
 
+
     public void run() {
+        getBackgroundThread();
+        openScreen(getMainScreen());
+    }
+
+
+    public static BackgroundThread getBackgroundThread() {
         if (backgroundThread == null) {
             backgroundThread = new BackgroundThread();
             backgroundThread.start();
         }
-        openScreen(getMainScreen());
+        return backgroundThread;
     }
+
 
     public static MainScreen getMainScreen() {
         if (mainScreen == null) {
@@ -40,6 +49,7 @@ public class Newsfeed extends CupraApp {
         }
         return mainScreen;
     }
+
 
     public static ConfigScreen getConfigScreen() {
         if (configScreen == null) {

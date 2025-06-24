@@ -2,9 +2,11 @@ package io.github.sandydunlop.newsfeed.mod;
 
 import java.nio.file.Path;
 
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Identifier;
@@ -37,6 +39,12 @@ public class ModMainScreen extends CupraMinecraftScreen {
 		MinecraftServices platformServices = MinecraftServices.getInstance();
 		platformServices.getApp().run();
 		layoutAppScreen();
+
+		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+			while (NewsfeedClientModInitializer.newsfeedKeyBind.wasPressed()) {
+				MinecraftClient.getInstance().setScreen(null);
+			}
+		});
     }
 
 

@@ -6,6 +6,7 @@ import java.util.List;
 public class Inbox {
     private static Inbox instance = null;
     private List<Article> articles = new ArrayList<>();
+    private List<String> keys = new ArrayList<>();
 	private List<RssUpdateListener> listeners = new ArrayList<>();
     private int articleCount = 0;
 
@@ -21,9 +22,12 @@ public class Inbox {
     }
 
     public void addArticle(Article article) {
-        // Logic to add an article to the inbox
-        articles.add(article); //TODO use getKey to avoid duplicates
-        //System.out.println("Article added: " + article.title);
+        if (keys.contains(article.getKey())) {
+            // Article already exists, do not add it again
+            return;
+        }
+        articles.add(article);
+        keys.add(article.getKey());
     }
 
 
