@@ -9,7 +9,7 @@ public class BackgroundThread extends Thread {
     private final Runnable runnable;
     private boolean checkingForUpdates = false;
     private RssFeed rssFeed = null;
-
+    private String lastFeedUrl = "";
 
 
     public BackgroundThread() {
@@ -27,9 +27,6 @@ public class BackgroundThread extends Thread {
         };
     }
 
-    // public BackgroundThread(Runnable runnable) {
-    //     this.runnable = runnable;
-    // }
 
     @Override
     public void run() {
@@ -48,11 +45,16 @@ public class BackgroundThread extends Thread {
         }
         checkingForUpdates = true;
 
+        if (rssFeed != null && rssFeed.getFeedSource() != null && !rssFeed.getFeedSource().toString().equals(lastFeedUrl)) {
+            rssFeed = null;
+        }
+
         if (rssFeed == null) {
             System.out.println("Initializing...");
             rssFeed = new RssFeed();
             rssFeed.init();
             addToInbox(rssFeed.usedEntries);
+            lastFeedUrl = rssFeed.getFeedSource().toString();
         }
         System.out.println("Checking for updates...");
         rssFeed.fetch();

@@ -1,14 +1,7 @@
 package io.github.sandydunlop.newsfeed.app;
 
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-
 import io.github.sandydunlop.cupra.common.CupraApp;
 import io.github.sandydunlop.cupra.platform.desktop.DesktopServices;
-import io.github.sandydunlop.newsfeed.mod.NewsfeedModInitializer;
-import net.fabricmc.loader.api.FabricLoader;
 
 
 public class Newsfeed extends CupraApp {

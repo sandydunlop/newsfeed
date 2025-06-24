@@ -3,8 +3,6 @@ package io.github.sandydunlop.newsfeed.app;
 import java.util.Date;
 import java.util.List;
 
-import com.rometools.rome.feed.synd.SyndEntry;
-
 import io.github.sandydunlop.cupra.common.CupraScreen;
 import io.github.sandydunlop.cupra.common.util.Align;
 import io.github.sandydunlop.cupra.common.widgets.CButton;
@@ -14,11 +12,13 @@ import io.github.sandydunlop.cupra.common.widgets.CLabel;
 import io.github.sandydunlop.cupra.common.widgets.CListBox;
 import io.github.sandydunlop.cupra.common.widgets.CListBoxEntry;
 import io.github.sandydunlop.cupra.common.widgets.CSpacer;
+import io.github.sandydunlop.cupra.common.widgets.CWidget;
 import io.github.sandydunlop.cupra.platform.PlatformServices;
+import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.MathHelper;
 
 
 public class MainScreen extends CupraScreen implements RssUpdateListener {
-	// private static RssFeed rssFeed = null;
 	private int articleIndex = -1;
 	private Article article;
 	CLabel titleWidget;
@@ -43,7 +43,6 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
         this.setAlignHorizontal(Align.Horizontal.SPREAD);
 
 		setTitle("Newsfeed");
-        // rssFeed = Newsfeed.getRssFeed(); //TODO---------------------
 
         header = new CContainer(this, true);
         header.setPadding(4);
@@ -65,23 +64,18 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 			article =  (Article)selectionChanged.getValue();
 			populate(article);
 			return;
-			// SyndEntry selectedEntry = (SyndEntry)selectionChanged.getValue();
-			// for (SyndEntry entry : rssFeed.usedEntries) {
-			// 	if (entry.equals(selectedEntry)) {
-			// 		articleIndex = rssFeed.usedEntries.indexOf(entry);
-			// 		article = Article.of(entry);
-			// 		populate(article);
-			// 		return;
-			// 	}
-			// }
-			// article = Article.empty();
-			// populate(article);
         });
         inbox.setExpandable(true);
 
 		new CSpacer(body, SMALL_VERTICAL_GAP);
-        descriptionWidget = new CFormattedLabel(body);
+
+		descriptionWidget = new CFormattedLabel(body);
         descriptionWidget.setExpandable(true);
+
+		int halfway = ColorHelper.lerp(0.5f, 
+				CWidget.getPalette().REGULAR_BACKGROUND, 
+				CWidget.getPalette().INPUT_BACKGROUND);
+		descriptionWidget.setBackgroundColor(halfway);
 
 		prevButton = new CButton(footer, "Prev", click -> {
 			//TODO: Use selected info from listbox
@@ -104,14 +98,11 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 
 		openButton = new CButton(footer, "Open Link", click -> {
 			CListBoxEntry selected = inbox.getSelected();
-            SyndEntry selectedEntry = (SyndEntry)selected.getValue();
-            String address = selectedEntry.getLink();
-            PlatformServices.getInstance().openLinkInBrowser(address);
+            article = (Article)selected.getValue();
+            PlatformServices.getInstance().openLinkInBrowser(article.link);
 		});
 
 		optionsButton = new CButton(footer, "Options", click -> {
-			// Screen screen = NewsfeedClientModInitializer.getConfigScreen(this);
-			// MinecraftClient.getInstance().setScreen(screen);
             PlatformServices.getInstance().getApp().openScreen(this, Newsfeed.getConfigScreen());
 		});
 
@@ -125,21 +116,21 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 	@Override
 	public void onShow() {
 		lastUpdateTime = new Date().getTime();
-		updateInbox();
 		article = Article.empty() ;
 		populate(article);
 		Inbox.getInstance().addRssUpdateListener(this);
 	}
 
 
-	private void populate(Article article)
-	{
+	private void populate(Article article){
 		if (article == null) {
 			article = Article.empty();
 		}
         //titleWidget.setText(rssFeed.feedTitle);
-        CLabel heading = new CLabel(null, article.title).bold();
-        descriptionWidget.clear();
+        titleWidget.setText("Newsfeed");
+        
+		CLabel heading = new CLabel(null, article.title).bold();
+		descriptionWidget.clear();
         descriptionWidget.add(heading);
         descriptionWidget.add(CFormattedLabel.newLine());
         descriptionWidget.add(CFormattedLabel.newLine());
@@ -151,49 +142,34 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
     }
 
 
-
 	@Override
 	public void feedUpdated(RssUpdateEvent event) {
 		updateInbox();
 	}
 
 
-	private void updateInbox() {
+	private synchronized void updateInbox() {
 		List<Article> recentArticles = Inbox.getInstance().getArticlesSince(lastUpdateTime);
-		if (recentArticles.size() > 0) {
+		if (!recentArticles.isEmpty()) {
 			for (int i = recentArticles.size() - 1; i >= 0; i--) {
-				Article article = recentArticles.get(i);
-				inbox.insertAt(0, new CListBoxEntry(article.title, article.getKey(), article));
+				Article newArticle = recentArticles.get(i);
+				inbox.insertAt(0, new CListBoxEntry(newArticle.title, newArticle.getKey(), newArticle));
 			}
-			CListBoxEntry top = inbox.getEntry(0);
-			inbox.scrollTo(top);
+			CListBoxEntry latest = inbox.getEntry(0);
+			inbox.scrollTo(latest);
 			if (inbox.count() > 0 && articleIndex == -1) {
 				articleIndex = 0;
-				inbox.setSelected(top);
+				inbox.setSelected(latest);
 			}
+			//PlatformServices.getInstance().render();
 		}
-		
-		// inbox.clear();
-		// if (!rssFeed.usedEntries.isEmpty()) {
-		// 	articleIndex = rssFeed.usedEntries.size() - 1;
-		// 	article = Article.of(rssFeed.getEntry(articleIndex));
-		// 	populate(article);
-		// 	for(int i=rssFeed.usedEntries.size() - 1; i >= 0; i--) {
-		// 		SyndEntry entry = rssFeed.usedEntries.get(i);
-		// 		CListBoxEntry listItem = new CListBoxEntry(entry.getTitle(), entry.getLink(), entry);
-		// 		inbox.add(listItem);
-		// 	}
-		// } else {
-		// 	article = Article.empty();
-		// 	populate(article);
-		// }
 		lastUpdateTime = new Date().getTime();
 	}
 
 
 	private void selectArticle(Article article) {
 		if (article != null && article.getEntry() != null) {
-            CListBoxEntry entry = inbox.getEntry(article.link);
+            CListBoxEntry entry = inbox.getEntry(article.getKey());
             inbox.setSelected(entry);
 		}
 	}

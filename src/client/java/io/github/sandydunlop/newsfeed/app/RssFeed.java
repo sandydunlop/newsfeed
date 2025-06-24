@@ -33,6 +33,11 @@ public class RssFeed {
 	}
 
 
+	public URL getFeedSource() {
+		return feedSource;
+	}
+
+
 	private boolean hasUrlChanged(){
 		if (NewsfeedConfig.feedUrl != null && !NewsfeedConfig.feedUrl.equals(feedSource.toString())){
 			return true;

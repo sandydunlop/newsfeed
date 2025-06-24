@@ -98,12 +98,12 @@ public class ConfigScreen extends CupraScreen {
 		urlFieldWidget.setWidth(400);
 		// urlFieldWidget.addClearButton();
 		// urlFieldWidget.addPasteButton();
-		urlFieldWidget.setText(feedUrl);
-		urlFieldWidget.add(new CListBoxEntry("https://www.reddit.com/r/AskReddit/new/.rss", null));
 		urlFieldWidget.add(new CListBoxEntry("https://feeds.bbci.co.uk/news/world/rss.xml", null));
+		urlFieldWidget.add(new CListBoxEntry("https://www.reddit.com/r/AskReddit/new/.rss", null));
 		urlFieldWidget.onSelectionChanged(entry -> {
-
+			//TODO
 		});
+		urlFieldWidget.setText(feedUrl);
 
         new CSpacer(body, MEDIUM_VERTICAL_GAP);
 
@@ -112,7 +112,7 @@ public class ConfigScreen extends CupraScreen {
 		checkboxContainer.setHeight(WIDGET_HEIGHT);
 		enabledCheckboxlWidget = new CCheckBox(checkboxContainer, "Enable feed", feedEnabled);
         // new CSpacer(body, MEDIUM_VERTICAL_GAP);
-		updateCheckboxlWidget = new CCheckBox(checkboxContainer, "Checl for mod updates", updateCheckEnabled);
+		updateCheckboxlWidget = new CCheckBox(checkboxContainer, "Check for mod updates", updateCheckEnabled);
 
 		statusLabel = new CLabel(body, "")
 			.color(0xFF88FF00);
