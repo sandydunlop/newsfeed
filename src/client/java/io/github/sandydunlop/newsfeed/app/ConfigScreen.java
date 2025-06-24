@@ -1,15 +1,8 @@
 package io.github.sandydunlop.newsfeed.app;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 
-import org.json.JSONObject;
-
-import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
 import org.apache.logging.log4j.Logger;
@@ -17,23 +10,14 @@ import org.apache.logging.log4j.LogManager;
 import com.rometools.rome.io.XmlReader;
 
 import io.github.sandydunlop.cupra.common.CupraScreen;
-import io.github.sandydunlop.cupra.common.util.Align;
 import io.github.sandydunlop.cupra.common.widgets.CButton;
 import io.github.sandydunlop.cupra.common.widgets.CCheckBox;
 import io.github.sandydunlop.cupra.common.widgets.CContainer;
 import io.github.sandydunlop.cupra.common.widgets.CDropdownTextBox;
-import io.github.sandydunlop.cupra.common.widgets.CFormattedLabel;
 import io.github.sandydunlop.cupra.common.widgets.CLabel;
-import io.github.sandydunlop.cupra.common.widgets.CListBox;
 import io.github.sandydunlop.cupra.common.widgets.CListBoxEntry;
 import io.github.sandydunlop.cupra.common.widgets.CSpacer;
-import io.github.sandydunlop.cupra.common.widgets.CTextBox;
 import io.github.sandydunlop.cupra.platform.PlatformServices;
-import io.github.sandydunlop.newsfeed.mod.NewsfeedClientModInitializer;
-import io.github.sandydunlop.newsfeed.mod.NewsfeedModInitializer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.util.Identifier;
 
 
 public class ConfigScreen extends CupraScreen {

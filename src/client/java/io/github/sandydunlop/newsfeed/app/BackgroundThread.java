@@ -59,7 +59,9 @@ public class BackgroundThread extends Thread {
 
 
     private boolean urlHasChanged(){
-        return rssFeed != null && rssFeed.getFeedSource() != null && !rssFeed.getFeedSource().toString().equals(lastFeedUrl);
+        return rssFeed != null && 
+                rssFeed.getFeedSource() != null && 
+                !rssFeed.getFeedSource().toString().equals(lastFeedUrl);
     }
     
 
@@ -70,13 +72,11 @@ public class BackgroundThread extends Thread {
         checkingForUpdates = true;
 
         if (rssFeed == null || urlHasChanged()) {
-            System.out.println("Initializing...");
             rssFeed = new RssFeed();
             rssFeed.init();
             addToInbox(rssFeed.usedEntries);
             lastFeedUrl = rssFeed.getFeedSource().toString();
         }
-        System.out.println("Checking for updates...");
         rssFeed.fetch();
         addToInbox(rssFeed.currentEntries);
         if (foundUpdates) {

@@ -61,6 +61,7 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 
         inbox = new CListBox(body, selectionChanged -> {
 			article =  (Article)selectionChanged.getValue();
+			System.out.println("Selected index: " + inbox.getSelectedIndex());
 			populate(article);
 			return;
         });
@@ -77,22 +78,11 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 		descriptionWidget.setBackgroundColor(halfway);
 
 		prevButton = new CButton(footer, "Prev", click -> {
-			//TODO: Use selected info from listbox
-			CListBoxEntry selected = inbox.getSelected();
-			inbox.getIndexOf(selected);
-			// if (articleIndex > 0) {
-			// 	articleIndex--;
-			// 	article = Article.of(rssFeed.getEntry(articleIndex));
-			// 	selectArticle(article);
-			// }
+			inbox.setSelectedIndex(inbox.getSelectedIndex() + 1);
 		});
 
 		nextButton = new CButton(footer, "Next", click -> {
-			// if (articleIndex < rssFeed.usedEntries.size() - 1) {
-			// 	articleIndex++;
-			// 	article = Article.of(rssFeed.getEntry(articleIndex));
-			// 	selectArticle(article);
-			// }
+			inbox.setSelectedIndex(inbox.getSelectedIndex() - 1);
 		});
 
 		openButton = new CButton(footer, "Open Link", click -> {
@@ -109,6 +99,7 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 			this.close();
 		});
 
+		Inbox.getInstance().addRssUpdateListener(this);
     }
 
 
@@ -124,7 +115,6 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 			articleIndex = -1;
 		}
 		populate(article);
-		Inbox.getInstance().addRssUpdateListener(this);
 	}
 
 
@@ -143,8 +133,8 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
         descriptionWidget.add(new CLabel(null, article.description));
         descriptionWidget.layout();
 
-        nextButton.setEnabled(articleIndex != inbox.contents().size() - 1);
-        prevButton.setEnabled(articleIndex != 0);
+        prevButton.setEnabled(inbox.getSelectedIndex() < inbox.count() - 1);
+        nextButton.setEnabled(inbox.getSelectedIndex() > 0);
     }
 
 
