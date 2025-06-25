@@ -60,6 +60,7 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 		NewsfeedConfig.loadConfig(FabricLoader.getInstance().getConfigDir().resolve(NewsfeedModInitializer.MOD_ID + ".json"));
 		Newsfeed app = new Newsfeed();
 		platformServices.setApp(app);
+		Newsfeed.getBackgroundThread();
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (newsfeedKeyBind.wasPressed()) {
@@ -68,24 +69,6 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 			}
 		});
 	}
-
-
-	// public static void loadConfig() {
-	// 	if (NewsfeedConfig.configFilePath == null) {
-	// 		NewsfeedConfig.configFilePath = FabricLoader.getInstance().getConfigDir().resolve(NewsfeedModInitializer.MOD_ID + ".json");
-	// 	}
-	// 	try {
-	// 		String json = IOUtils.toString(NewsfeedConfig.configFilePath.toUri(), StandardCharsets.UTF_8);
-	// 		JSONObject jsonObject = new JSONObject(json);
-	// 		NewsfeedConfig.feedUrl = jsonObject.getString("feedUrl");
-	// 		NewsfeedConfig.feedEnabled = jsonObject.getBoolean("feedEnabled");
-	// 		NewsfeedConfig.updateCheckEnabled = jsonObject.getBoolean("updateCheckEnabled");
-	// 	} catch(JSONException e){
-	// 		LOGGER.error("Problem loading config: {}", e.getMessage());
-	// 	} catch(IOException e){
-	// 		LOGGER.error("Unable to read config file: {}", e.getMessage());
-	// 	}
-	// }
 
 
 	public static Screen getArticleScreen(Screen parent) {
@@ -101,22 +84,21 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 	private static void render(DrawContext context, RenderTickCounter tickCounter) {
 		if (tock++ > interval) {
 			tock = 0;
-			//Newsfeed.getRssFeed().update();
 		}
 		// //TODO Move this out of render method into new thread
-		// if (!doneStartupNotifications && tock > 100) {
-		// 	if (NewsfeedConfig.updateCheckEnabled) {
-		// 		if (ModUtils.isUpdateAvailable()) {
-		// 			LOGGER.info("Update available for " + NewsfeedModInitializer.MOD_ID);
-		// 			String msg = String.format("Update available for %s: %s", NewsfeedModInitializer.MOD_ID, ModUtils.getLatestVersion());
-		// 			LOGGER.info(msg);
-		// 			if (MinecraftClient.getInstance().player != null) {
-		// 				MinecraftServices.getInstance().showNotification(msg);
-		// 			}
-		// 		}
-		// 	}
-		// 	doneStartupNotifications = true;
-		// }
+		if (!doneStartupNotifications && tock > 100) {
+			if (NewsfeedConfig.updateCheckEnabled) {
+				if (ModUtils.isUpdateAvailable()) {
+					LOGGER.info("Update available for " + NewsfeedModInitializer.MOD_ID);
+					String msg = String.format("Update available for %s: %s", NewsfeedModInitializer.MOD_ID, ModUtils.getLatestVersion());
+					LOGGER.info(msg);
+					if (MinecraftClient.getInstance().player != null) {
+						MinecraftServices.getInstance().showNotification(msg);
+					}
+				}
+			}
+			doneStartupNotifications = true;
+		}
 		MinecraftServices.getTicker().render(context);
 	}
 
