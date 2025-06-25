@@ -75,7 +75,6 @@ public class RssFeed {
 
 	public void fetch()
 	{
-		System.out.println("fetch");
 		if (NewsfeedConfig.feedUrl!=null && !NewsfeedConfig.feedUrl.isEmpty()){
 			for (SyndEntry entry : currentEntries) {
 				usedEntries.add(entry);

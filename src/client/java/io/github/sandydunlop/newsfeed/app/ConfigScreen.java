@@ -110,13 +110,12 @@ public class ConfigScreen extends CupraScreen {
 		});
 		continueButton.setEnabled(false);
 
-		header.setTooltip("HEADER");
-		header.setDebug(0xffffff00);
-		body.setDebug(0xFF00AAAA);
-		footer.setDebug(0xFFAAAA00);
-		checkboxContainer.setDebug(0xFFFFFFFF);
-		statusLabel.setDebug(0xFF00FF00);
-		//urlLabelWidget.setDebug(0xFF0000FF);
+		// header.setTooltip("HEADER");
+		// header.setDebug(0xffffff00);
+		// body.setDebug(0xFF00AAAA);
+		// footer.setDebug(0xFFAAAA00);
+		// checkboxContainer.setDebug(0xFFFFFFFF);
+		// statusLabel.setDebug(0xFF00FF00);
 
 		validationThread = new Thread(this::validationChecker);
 		validationThread.setName("Newsfeed Validation Thread");

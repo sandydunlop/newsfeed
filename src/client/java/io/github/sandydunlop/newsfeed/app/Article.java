@@ -8,7 +8,6 @@ import java.util.Date;
 import com.rometools.rome.feed.synd.SyndEntry;
 
 
-
 public class Article {
     public String title;
     public String description;
