@@ -103,20 +103,20 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 			tock = 0;
 			//Newsfeed.getRssFeed().update();
 		}
-		//TODO Move this out of render method into new thread
-		if (!doneStartupNotifications && tock > 100) {
-			if (NewsfeedConfig.updateCheckEnabled) {
-				if (ModUtils.isUpdateAvailable()) {
-					LOGGER.info("Update available for " + NewsfeedModInitializer.MOD_ID);
-					String msg = String.format("Update available for %s: %s", NewsfeedModInitializer.MOD_ID, ModUtils.getLatestVersion());
-					LOGGER.info(msg);
-					if (MinecraftClient.getInstance().player != null) {
-						ticker.display(msg);
-					}
-				}
-			}
-			doneStartupNotifications = true;
-		}
+		// //TODO Move this out of render method into new thread
+		// if (!doneStartupNotifications && tock > 100) {
+		// 	if (NewsfeedConfig.updateCheckEnabled) {
+		// 		if (ModUtils.isUpdateAvailable()) {
+		// 			LOGGER.info("Update available for " + NewsfeedModInitializer.MOD_ID);
+		// 			String msg = String.format("Update available for %s: %s", NewsfeedModInitializer.MOD_ID, ModUtils.getLatestVersion());
+		// 			LOGGER.info(msg);
+		// 			if (MinecraftClient.getInstance().player != null) {
+		// 				MinecraftServices.getInstance().showNotification(msg);
+		// 			}
+		// 		}
+		// 	}
+		// 	doneStartupNotifications = true;
+		// }
 		MinecraftServices.getTicker().render(context);
 	}
 

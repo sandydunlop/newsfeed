@@ -20,6 +20,7 @@ public class BackgroundThread extends Thread {
         this.runnable = () -> {
             do {
                 try {
+                    System.out.println("tick");
                     checkForUpdates();
                     Thread.sleep(SLEEP_TIME);
                 } catch (InterruptedException e) {
@@ -80,6 +81,7 @@ public class BackgroundThread extends Thread {
         rssFeed.fetch();
         addToInbox(rssFeed.currentEntries);
         if (foundUpdates) {
+                    System.out.println("found updates");
             Inbox.getInstance().updateEnded();
             foundUpdates = false;
         }

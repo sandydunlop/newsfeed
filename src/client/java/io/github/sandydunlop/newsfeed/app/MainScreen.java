@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import io.github.sandydunlop.cupra.common.CupraScreen;
+import io.github.sandydunlop.cupra.common.palette.ColorPalette;
 import io.github.sandydunlop.cupra.common.util.Align;
 import io.github.sandydunlop.cupra.common.widgets.CButton;
 import io.github.sandydunlop.cupra.common.widgets.CContainer;
@@ -14,7 +15,6 @@ import io.github.sandydunlop.cupra.common.widgets.CListBoxEntry;
 import io.github.sandydunlop.cupra.common.widgets.CSpacer;
 import io.github.sandydunlop.cupra.common.widgets.CWidget;
 import io.github.sandydunlop.cupra.platform.PlatformServices;
-import net.minecraft.util.math.ColorHelper;
 
 
 public class MainScreen extends CupraScreen implements RssUpdateListener {
@@ -65,7 +65,7 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 		articleText = new CFormattedLabel(body);
         articleText.setExpandable(true);
 
-		int halfway = ColorHelper.lerp(0.5f, 
+		int halfway = ColorPalette.argbLerp(0.5f,
 				CWidget.getPalette().REGULAR_BACKGROUND, 
 				CWidget.getPalette().INPUT_BACKGROUND);
 		articleText.setBackgroundColor(halfway);

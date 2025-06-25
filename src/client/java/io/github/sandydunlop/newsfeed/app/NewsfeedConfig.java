@@ -11,10 +11,9 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import io.github.sandydunlop.newsfeed.mod.NewsfeedModInitializer;
 
 public class NewsfeedConfig {
-	private static final Logger LOGGER = LogManager.getLogger(NewsfeedModInitializer.MOD_ID);
+	private static final Logger LOGGER = LogManager.getLogger("newsfeed.app");
     public static Path configFilePath = null;
 
     // These are the default values overridden by the config file

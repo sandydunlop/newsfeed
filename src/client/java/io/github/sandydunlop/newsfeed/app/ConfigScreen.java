@@ -10,10 +10,12 @@ import org.apache.logging.log4j.LogManager;
 import com.rometools.rome.io.XmlReader;
 
 import io.github.sandydunlop.cupra.common.CupraScreen;
+import io.github.sandydunlop.cupra.common.util.Align;
 import io.github.sandydunlop.cupra.common.widgets.CButton;
 import io.github.sandydunlop.cupra.common.widgets.CCheckBox;
 import io.github.sandydunlop.cupra.common.widgets.CContainer;
 import io.github.sandydunlop.cupra.common.widgets.CDropdownTextBox;
+import io.github.sandydunlop.cupra.common.widgets.CFlexiSpacer;
 import io.github.sandydunlop.cupra.common.widgets.CLabel;
 import io.github.sandydunlop.cupra.common.widgets.CListBoxEntry;
 import io.github.sandydunlop.cupra.common.widgets.CSpacer;
@@ -22,12 +24,9 @@ import io.github.sandydunlop.cupra.platform.PlatformServices;
 
 public class ConfigScreen extends CupraScreen {
 	private static final Logger LOGGER = LogManager.getLogger("newsfeed");
-	private final int VALIDATION_DELAY = 10;
+	private static final int VALIDATION_DELAY = 10;
 	
 	private int timer = 0;
-	private String statusText = "";
-	private float statusAlpha = 0.0f;
-	private boolean statusIsFading = false;
 	private boolean isValidFeed = true;
 	private boolean isValidating = false;
 	private boolean needsValidating = false;
@@ -36,76 +35,72 @@ public class ConfigScreen extends CupraScreen {
 	private CContainer body;
 	private CContainer footer;
 
-	private CLabel urlLabelWidget;
 	private CDropdownTextBox urlFieldWidget;
 	private CContainer checkboxContainer;
-    private CContainer buttonContainer;
 	private CCheckBox enabledCheckboxlWidget;
 	private CCheckBox updateCheckboxlWidget;
-	private CButton cancelButton;
 	private CButton continueButton;
 	private CLabel statusLabel;
 
-	public String feedName = null;
-	public String feedUrl = null;
-	public boolean feedEnabled = true;
-	public boolean updateCheckEnabled = true;
-	private Thread thread = null;
+	private String feedUrl = null;
+	private boolean feedEnabled = true;
+	private boolean updateCheckEnabled = true;
+	private Thread validationThread = null;
 
 	public ConfigScreen() {
 		super();
 		setTitle("Config");
 		suggestSize(440,300);
-		feedName = NewsfeedConfig.feedName;
 		feedUrl = NewsfeedConfig.feedUrl;
 		feedEnabled = NewsfeedConfig.feedEnabled;
 		updateCheckEnabled = NewsfeedConfig.updateCheckEnabled;
 
-		final int WIDGET_HEIGHT = 20;
-		final int MEDIUM_VERTICAL_GAP = 10;
-		final int SMALL_VERTICAL_GAP = 5;
+		this.setTooltip("SCREEN");
 
-		this.setPadding(4);
+		final int WIDGET_HEIGHT = 20;
+
+        this.setAlignHorizontal(Align.Horizontal.SPREAD);
 
 		header = new CContainer(this, true);
-		header.setPadding(10);
+        header.setPadding(4);
+		header.setExpandable(false);
+		//header.setHeight(30);
 
 		body = new CContainer(this);
 		body.setPadding(10);
+		header.setExpandable(true);
 
-		// new CSpacer(this, MEDIUM_VERTICAL_GAP);
+		footer = new CContainer(this, true);
+		footer.setPadding(10);
+		footer.setExpandable(false);
 
-		urlLabelWidget = new CLabel(body, "Feed URL");
+        CLabel title = new CLabel(header, "Newsfeed Config")
+                .fontSize(22)
+                .bold();
+        //title.setHeight(28);
+
+		new CLabel(body, "Feed URL");
 
 		urlFieldWidget = new CDropdownTextBox(body, feedUrl);
 		urlFieldWidget.setWidth(400);
-		// urlFieldWidget.addClearButton();
-		// urlFieldWidget.addPasteButton();
 		urlFieldWidget.add(new CListBoxEntry("https://feeds.bbci.co.uk/news/world/rss.xml", null));
 		urlFieldWidget.add(new CListBoxEntry("https://www.reddit.com/r/AskReddit/new/.rss", null));
-		urlFieldWidget.onSelectionChanged(entry -> {
-			//TODO
-		});
 		urlFieldWidget.setText(feedUrl);
-
-        new CSpacer(body, MEDIUM_VERTICAL_GAP);
 
 		checkboxContainer = new CContainer(body, true);
 		checkboxContainer.setPadding(20);
-		checkboxContainer.setHeight(WIDGET_HEIGHT);
 		enabledCheckboxlWidget = new CCheckBox(checkboxContainer, "Enable feed", feedEnabled);
-        // new CSpacer(body, MEDIUM_VERTICAL_GAP);
 		updateCheckboxlWidget = new CCheckBox(checkboxContainer, "Check for mod updates", updateCheckEnabled);
 
-		statusLabel = new CLabel(body, "")
-			.color(0xFF88FF00);
+		new CSpacer(body, WIDGET_HEIGHT);
+		statusLabel = new CLabel(body, "");
+		statusLabel.color(0xFF88FF00);
+		statusLabel.setHeight(WIDGET_HEIGHT);
 
-		buttonContainer = new CContainer(this, true);
-		buttonContainer.setPadding(10);
-        cancelButton = new CButton(buttonContainer, "Cancel", click -> {
+        new CButton(footer, "Cancel", click -> {
 			this.close();
 		});
-		continueButton = new CButton(buttonContainer, "Continue", click -> {
+		continueButton = new CButton(footer, "Continue", click -> {
 			NewsfeedConfig.feedUrl = urlFieldWidget.getText();
 			NewsfeedConfig.feedEnabled = enabledCheckboxlWidget.isChecked();
 			NewsfeedConfig.updateCheckEnabled = updateCheckboxlWidget.isChecked();
@@ -115,17 +110,25 @@ public class ConfigScreen extends CupraScreen {
 		});
 		continueButton.setEnabled(false);
 
-		thread = new Thread(this::validationChecker);
-		thread.setName("Newsfeed Validation Thread");
-		thread.start();
+		header.setTooltip("HEADER");
+		header.setDebug(0xffffff00);
+		body.setDebug(0xFF00AAAA);
+		footer.setDebug(0xFFAAAA00);
+		checkboxContainer.setDebug(0xFFFFFFFF);
+		statusLabel.setDebug(0xFF00FF00);
+		//urlLabelWidget.setDebug(0xFF0000FF);
+
+		validationThread = new Thread(this::validationChecker);
+		validationThread.setName("Newsfeed Validation Thread");
+		validationThread.start();
 	}
 
 
 	@Override
 	public void onClose() {
-		if (thread != null && thread.isAlive()){
-			thread.interrupt();
-			thread = null;
+		if (validationThread != null && validationThread.isAlive()){
+			validationThread.interrupt();
+			validationThread = null;
 		}
 	}
 
@@ -184,10 +187,10 @@ public class ConfigScreen extends CupraScreen {
 				Thread.currentThread().interrupt();
 			}
 		} while (!Thread.interrupted());
-		if (thread != null && thread.isAlive()){
+		if (validationThread != null && validationThread.isAlive()){
 			LOGGER.info("Validation thread interrupted");
-			thread.interrupt();
-			thread = null;
+			validationThread.interrupt();
+			validationThread = null;
 		}
 	}
 
