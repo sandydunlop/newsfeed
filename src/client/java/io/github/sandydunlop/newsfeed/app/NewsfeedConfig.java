@@ -17,10 +17,9 @@ public class NewsfeedConfig {
     public static Path configFilePath = null;
 
     // These are the default values overridden by the config file
-    public static String feedName = "AskReddit";
-    // public static String feedUrl = "https://lorem-rss.herokuapp.com/feed"; 
     public static String feedUrl = "https://www.reddit.com/r/AskReddit/new/.rss";; 
     public static boolean feedEnabled = true;
+    public static boolean autoScroll = true;
     public static boolean updateCheckEnabled = true;
 
 
@@ -30,6 +29,7 @@ public class NewsfeedConfig {
 			String json = IOUtils.toString(NewsfeedConfig.configFilePath.toUri(), StandardCharsets.UTF_8);
 			JSONObject jsonObject = new JSONObject(json);
 			NewsfeedConfig.feedUrl = jsonObject.getString("feedUrl");
+			NewsfeedConfig.autoScroll = jsonObject.getBoolean("autoScroll");
 			NewsfeedConfig.feedEnabled = jsonObject.getBoolean("feedEnabled");
 			NewsfeedConfig.updateCheckEnabled = jsonObject.getBoolean("updateCheckEnabled");
 		} catch(JSONException e){
@@ -43,6 +43,7 @@ public class NewsfeedConfig {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("feedUrl", NewsfeedConfig.feedUrl);
         jsonObject.put("feedEnabled", NewsfeedConfig.feedEnabled);
+        jsonObject.put("autoScroll", NewsfeedConfig.autoScroll);
         jsonObject.put("updateCheckEnabled", NewsfeedConfig.updateCheckEnabled);
 
         try (FileWriter file = new FileWriter(NewsfeedConfig.configFilePath.toString(), StandardCharsets.UTF_8)) {

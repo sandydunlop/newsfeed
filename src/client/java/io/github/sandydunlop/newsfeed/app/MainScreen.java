@@ -8,7 +8,9 @@ import io.github.sandydunlop.cupra.common.palette.ColorPalette;
 import io.github.sandydunlop.cupra.common.util.Align;
 import io.github.sandydunlop.cupra.common.widgets.CButton;
 import io.github.sandydunlop.cupra.common.widgets.CContainer;
+import io.github.sandydunlop.cupra.common.widgets.CFlexiSpacer;
 import io.github.sandydunlop.cupra.common.widgets.CFormattedLabel;
+import io.github.sandydunlop.cupra.common.widgets.CImage;
 import io.github.sandydunlop.cupra.common.widgets.CLabel;
 import io.github.sandydunlop.cupra.common.widgets.CListBox;
 import io.github.sandydunlop.cupra.common.widgets.CListBoxEntry;
@@ -45,8 +47,13 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
         body.setExpandable(true);
 
         CContainer footer = new CContainer(this, true);
-        footer.setAlignHorizontal(Align.Horizontal.SPREAD);  //TODO: Make this work
+        footer.setAlignHorizontal(Align.Horizontal.SPREAD);
         footer.setPadding(10);
+
+		CImage icon = new CImage(header);
+		icon.fromResource("assets/newsfeed/icon-32.png");
+		icon.setWidth(32);
+		icon.setHeight(32);
 
         titleWidget = new CLabel(header, "")
                 .fontSize(22)
@@ -70,6 +77,7 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 				CWidget.getPalette().INPUT_BACKGROUND);
 		articleText.setBackgroundColor(halfway);
 
+		new CFlexiSpacer(footer);
 		prevButton = new CButton(footer, "Prev", click -> {
 			inbox.setSelectedIndex(inbox.getSelectedIndex() + 1);
 		});
@@ -91,6 +99,7 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 		new CButton(footer, "Close", click -> {
 			this.close();
 		});
+		new CFlexiSpacer(footer);
 
 		Inbox.getInstance().addRssUpdateListener(this);
     }
@@ -143,7 +152,9 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 				inbox.insertAt(0, new CListBoxEntry(newArticle.title, newArticle.getKey(), newArticle));
 			}
 			CListBoxEntry latest = inbox.getEntry(0);
-			inbox.scrollTo(latest);
+			if (NewsfeedConfig.autoScroll) {
+				inbox.scrollTo(latest);
+			}
 			if (inbox.count() > 0 && !articleIsSelected) {
 				inbox.setSelected(latest);
 				article = (Article) latest.getValue();

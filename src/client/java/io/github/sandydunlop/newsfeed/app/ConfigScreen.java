@@ -16,6 +16,7 @@ import io.github.sandydunlop.cupra.common.widgets.CCheckBox;
 import io.github.sandydunlop.cupra.common.widgets.CContainer;
 import io.github.sandydunlop.cupra.common.widgets.CDropdownTextBox;
 import io.github.sandydunlop.cupra.common.widgets.CFlexiSpacer;
+import io.github.sandydunlop.cupra.common.widgets.CImage;
 import io.github.sandydunlop.cupra.common.widgets.CLabel;
 import io.github.sandydunlop.cupra.common.widgets.CListBoxEntry;
 import io.github.sandydunlop.cupra.common.widgets.CSpacer;
@@ -30,36 +31,28 @@ public class ConfigScreen extends CupraScreen {
 	private boolean isValidFeed = true;
 	private boolean isValidating = false;
 	private boolean needsValidating = false;
+	private Thread validationThread = null;
+	private String feedUrl = null;
 
 	private CContainer header;
 	private CContainer body;
 	private CContainer footer;
 
-	private CDropdownTextBox urlFieldWidget;
-	private CContainer checkboxContainer;
-	private CCheckBox enabledCheckboxlWidget;
-	private CCheckBox updateCheckboxlWidget;
+	private CDropdownTextBox urlField;
+	private CCheckBox enabledCheckbox;
+	private CCheckBox autoScrollCheckbox;
+	private CCheckBox updateCheckbox;
 	private CButton continueButton;
 	private CLabel statusLabel;
 
-	private String feedUrl = null;
-	private boolean feedEnabled = true;
-	private boolean updateCheckEnabled = true;
-	private Thread validationThread = null;
 
 	public ConfigScreen() {
 		super();
+		final int WIDGET_HEIGHT = 20;
 		setTitle("Config");
 		suggestSize(440,300);
+        setAlignHorizontal(Align.Horizontal.SPREAD);
 		feedUrl = NewsfeedConfig.feedUrl;
-		feedEnabled = NewsfeedConfig.feedEnabled;
-		updateCheckEnabled = NewsfeedConfig.updateCheckEnabled;
-
-		this.setTooltip("SCREEN");
-
-		final int WIDGET_HEIGHT = 20;
-
-        this.setAlignHorizontal(Align.Horizontal.SPREAD);
 
 		header = new CContainer(this, true);
         header.setPadding(4);
@@ -73,42 +66,45 @@ public class ConfigScreen extends CupraScreen {
 		footer.setPadding(10);
 		footer.setExpandable(false);
 
-        new CLabel(header, "Newsfeed Config")
+		CImage icon = new CImage(header);
+		icon.fromResource("assets/newsfeed/icon-32.png");
+		icon.setWidth(32);
+		icon.setHeight(32);
+
+		new CLabel(header, "Newsfeed Config")
                 .fontSize(22)
                 .bold();
 
 		new CFlexiSpacer(body);
-		// new CFlexiSpacer(body);
 		CContainer middle = new CContainer(body);
-		//middle.setAlignHorizontal(Align.Horizontal.SPREAD);
-		//middle.setExpandable(true);
 
-		new CSpacer(middle, 20);
+		new CSpacer(middle, WIDGET_HEIGHT);
 		new CLabel(middle, "Feed URL");
 		new CSpacer(middle, 4);
 
-		urlFieldWidget = new CDropdownTextBox(middle, feedUrl);
-		urlFieldWidget.setWidth(400);
-		urlFieldWidget.add(new CListBoxEntry("https://feeds.bbci.co.uk/news/world/rss.xml", null));
-		urlFieldWidget.add(new CListBoxEntry("https://www.reddit.com/r/AskReddit/new/.rss", null));
-		urlFieldWidget.add(new CListBoxEntry("A", null));
-		urlFieldWidget.add(new CListBoxEntry("B", null));
-		urlFieldWidget.add(new CListBoxEntry("C", null));
-		urlFieldWidget.setText(feedUrl);
+		urlField = new CDropdownTextBox(middle, feedUrl);
+		urlField.setWidth(400);
+		urlField.add(new CListBoxEntry("https://feeds.bbci.co.uk/news/world/rss.xml", null));
+		urlField.add(new CListBoxEntry("https://www.reddit.com/r/AskReddit/new/.rss", null));
+		urlField.add(new CListBoxEntry("A", null));
+		urlField.add(new CListBoxEntry("B", null));
+		urlField.add(new CListBoxEntry("C", null));
+		urlField.setText(feedUrl);
 
-		checkboxContainer = new CContainer(middle, false);
+		CContainer checkboxContainer = new CContainer(middle, false);
 		checkboxContainer.setPadding(0);
 		checkboxContainer.setAlignHorizontal(Align.Horizontal.SPREAD);
 		new CSpacer(checkboxContainer, 40);
-		enabledCheckboxlWidget = new CCheckBox(checkboxContainer, "Enable feed", feedEnabled);
+		enabledCheckbox = new CCheckBox(checkboxContainer, "Enable feed", NewsfeedConfig.feedEnabled);
 		new CSpacer(checkboxContainer, 10);
-		updateCheckboxlWidget = new CCheckBox(checkboxContainer, "Check for mod updates", updateCheckEnabled);
+		autoScrollCheckbox = new CCheckBox(checkboxContainer, "Auto scroll to new articles", NewsfeedConfig.autoScroll);
+		new CSpacer(checkboxContainer, 10);
+		updateCheckbox = new CCheckBox(checkboxContainer, "Check for mod updates", NewsfeedConfig.updateCheckEnabled);
 
 		new CSpacer(middle, WIDGET_HEIGHT);
 		statusLabel = new CLabel(middle, "");
 		statusLabel.color(0xFF88FF00);
 		statusLabel.setHeight(WIDGET_HEIGHT);
-		// new CFlexiSpacer(middle);
 		new CFlexiSpacer(body);
 
 		new CFlexiSpacer(footer);
@@ -116,9 +112,9 @@ public class ConfigScreen extends CupraScreen {
 			this.close();
 		});
 		continueButton = new CButton(footer, "Continue", click -> {
-			NewsfeedConfig.feedUrl = urlFieldWidget.getText();
-			NewsfeedConfig.feedEnabled = enabledCheckboxlWidget.isChecked();
-			NewsfeedConfig.updateCheckEnabled = updateCheckboxlWidget.isChecked();
+			NewsfeedConfig.feedUrl = urlField.getText();
+			NewsfeedConfig.feedEnabled = enabledCheckbox.isChecked();
+			NewsfeedConfig.updateCheckEnabled = updateCheckbox.isChecked();
 			NewsfeedConfig.saveConfig();
 			Newsfeed.getBackgroundThread().restart();
 			this.close();
@@ -144,9 +140,9 @@ public class ConfigScreen extends CupraScreen {
 	public void validationChecker() {
 		do {
 			// If URL is changed, wait VALIDATION_DELAY ticks before checking if it's a valid feed
-			if (urlFieldWidget!= null && !urlFieldWidget.getText().equals((feedUrl))){
+			if (urlField!= null && !urlField.getText().equals((feedUrl))){
 				timer = VALIDATION_DELAY;
-				feedUrl = urlFieldWidget.getText();
+				feedUrl = urlField.getText();
 				isValidFeed = false;
 			}
 
@@ -177,11 +173,12 @@ public class ConfigScreen extends CupraScreen {
 			boolean continueButtonEnabled = continueButton.isEnabled();
 			if (isValidating){
 				continueButton.setEnabled(false);
-			}else if(!isValidFeed && !NewsfeedConfig.feedUrl.equals(urlFieldWidget.getText())){
+			}else if(!isValidFeed && !NewsfeedConfig.feedUrl.equals(urlField.getText())){
 				continueButton.setEnabled(false);
-			}else if (!NewsfeedConfig.feedUrl.equals(urlFieldWidget.getText()) ||
-				NewsfeedConfig.feedEnabled != enabledCheckboxlWidget.isChecked() ||
-				NewsfeedConfig.updateCheckEnabled != updateCheckboxlWidget.isChecked()){
+			}else if (!NewsfeedConfig.feedUrl.equals(urlField.getText()) ||
+				NewsfeedConfig.feedEnabled != enabledCheckbox.isChecked() ||
+				NewsfeedConfig.autoScroll != autoScrollCheckbox.isChecked() ||
+				NewsfeedConfig.updateCheckEnabled != updateCheckbox.isChecked()){
 				continueButton.setEnabled(true);
 			}else{
 				continueButton.setEnabled(false);
@@ -240,10 +237,10 @@ public class ConfigScreen extends CupraScreen {
 	{
 		URL feedSource = null;
 		try {
-			if (urlFieldWidget.getText() == null || urlFieldWidget.getText().isEmpty()){
+			if (urlField.getText() == null || urlField.getText().isEmpty()){
 				return false;
 			}
-			feedSource = URI.create(urlFieldWidget.getText()).toURL();
+			feedSource = URI.create(urlField.getText()).toURL();
 			SyndFeedInput input = new SyndFeedInput();
 			@SuppressWarnings("unused")
 			SyndFeed feed = input.build(new XmlReader(feedSource));
