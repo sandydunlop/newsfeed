@@ -84,6 +84,9 @@ public class ConfigScreen extends CupraScreen {
 		urlFieldWidget.setWidth(400);
 		urlFieldWidget.add(new CListBoxEntry("https://feeds.bbci.co.uk/news/world/rss.xml", null));
 		urlFieldWidget.add(new CListBoxEntry("https://www.reddit.com/r/AskReddit/new/.rss", null));
+		urlFieldWidget.add(new CListBoxEntry("A", null));
+		urlFieldWidget.add(new CListBoxEntry("B", null));
+		urlFieldWidget.add(new CListBoxEntry("C", null));
 		urlFieldWidget.setText(feedUrl);
 
 		checkboxContainer = new CContainer(body, true);

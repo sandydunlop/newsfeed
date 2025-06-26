@@ -98,12 +98,12 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 
 	@Override
 	public void onShow() {
-		lastUpdateTime = new Date().getTime();
 		article = Article.empty();
 		CListBoxEntry selected = inbox.getSelected();
 		if (selected != null) {
 			article = (Article) selected.getValue();
 		}
+		updateInbox();
 		populate();
 	}
 
