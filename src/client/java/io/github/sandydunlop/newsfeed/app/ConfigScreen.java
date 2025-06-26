@@ -86,9 +86,10 @@ public class ConfigScreen extends CupraScreen {
 		urlField.setWidth(400);
 		urlField.add(new CListBoxEntry("https://feeds.bbci.co.uk/news/world/rss.xml", null));
 		urlField.add(new CListBoxEntry("https://www.reddit.com/r/AskReddit/new/.rss", null));
-		urlField.add(new CListBoxEntry("A", null));
-		urlField.add(new CListBoxEntry("B", null));
-		urlField.add(new CListBoxEntry("C", null));
+		urlField.add(new CListBoxEntry("https://nullforums.net/forums/minecraft-rss.473/index.rss", null));
+		urlField.add(new CListBoxEntry("https://www.minecraftforum.net/news.rss", null));
+		urlField.add(new CListBoxEntry("https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml", null));
+		urlField.add(new CListBoxEntry("https://rss.nytimes.com/services/xml/rss/nyt/World.xml", null));
 		urlField.setText(feedUrl);
 
 		CContainer checkboxContainer = new CContainer(middle, false);
@@ -114,6 +115,7 @@ public class ConfigScreen extends CupraScreen {
 		continueButton = new CButton(footer, "Continue", click -> {
 			NewsfeedConfig.feedUrl = urlField.getText();
 			NewsfeedConfig.feedEnabled = enabledCheckbox.isChecked();
+			NewsfeedConfig.autoScroll = autoScrollCheckbox.isChecked();
 			NewsfeedConfig.updateCheckEnabled = updateCheckbox.isChecked();
 			NewsfeedConfig.saveConfig();
 			Newsfeed.getBackgroundThread().restart();
@@ -121,10 +123,6 @@ public class ConfigScreen extends CupraScreen {
 		});
 		continueButton.setEnabled(false);
 		new CFlexiSpacer(footer);
-
-		validationThread = new Thread(this::validationChecker);
-		validationThread.setName("Newsfeed Validation Thread");
-		validationThread.start();
 	}
 
 
@@ -134,6 +132,14 @@ public class ConfigScreen extends CupraScreen {
 			validationThread.interrupt();
 			validationThread = null;
 		}
+	}
+
+
+	@Override
+	public void onShow() {
+		validationThread = new Thread(this::validationChecker);
+		validationThread.setName("Newsfeed Validation Thread");
+		validationThread.start();
 	}
 
 
@@ -249,11 +255,4 @@ public class ConfigScreen extends CupraScreen {
 			return false;
 		}
 	}
-
-
-	// @Override
-	// public void close() {
-	// 	this.client.setScreen(this.parent);
-	// }
-
 }

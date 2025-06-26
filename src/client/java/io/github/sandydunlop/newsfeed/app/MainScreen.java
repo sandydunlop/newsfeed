@@ -34,7 +34,7 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 		super();
 
 		final int SMALL_VERTICAL_GAP = 5;
-        this.setPadding(5);
+        this.setPadding(10);
         this.setAlignHorizontal(Align.Horizontal.SPREAD);
 
 		setTitle("Newsfeed");
@@ -55,7 +55,7 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 		icon.setWidth(32);
 		icon.setHeight(32);
 
-        titleWidget = new CLabel(header, "")
+        titleWidget = new CLabel(header, "Newsfeed")
                 .fontSize(22)
                 .bold();
         titleWidget.setHeight(28);
@@ -126,10 +126,7 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 	private void populate() {
 		if (article == null) {
 			article = Article.empty();
-		}
-        //titleWidget.setText(rssFeed.feedTitle);
-        titleWidget.setText("Newsfeed");
-        
+		}        
 		CLabel heading = new CLabel(null, article.title).bold();
 		articleText.clear();
         articleText.add(heading);
