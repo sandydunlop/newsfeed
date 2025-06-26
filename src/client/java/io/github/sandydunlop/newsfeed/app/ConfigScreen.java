@@ -65,7 +65,7 @@ public class ConfigScreen extends CupraScreen {
         header.setPadding(4);
 		header.setExpandable(false);
 
-		body = new CContainer(this);
+		body = new CContainer(this, true);
 		body.setPadding(10);
 		body.setExpandable(true);
 
@@ -78,9 +78,16 @@ public class ConfigScreen extends CupraScreen {
                 .bold();
 
 		new CFlexiSpacer(body);
-		new CLabel(body, "Feed URL");
+		// new CFlexiSpacer(body);
+		CContainer middle = new CContainer(body);
+		//middle.setAlignHorizontal(Align.Horizontal.SPREAD);
+		//middle.setExpandable(true);
 
-		urlFieldWidget = new CDropdownTextBox(body, feedUrl);
+		new CSpacer(middle, 20);
+		new CLabel(middle, "Feed URL");
+		new CSpacer(middle, 4);
+
+		urlFieldWidget = new CDropdownTextBox(middle, feedUrl);
 		urlFieldWidget.setWidth(400);
 		urlFieldWidget.add(new CListBoxEntry("https://feeds.bbci.co.uk/news/world/rss.xml", null));
 		urlFieldWidget.add(new CListBoxEntry("https://www.reddit.com/r/AskReddit/new/.rss", null));
@@ -89,17 +96,22 @@ public class ConfigScreen extends CupraScreen {
 		urlFieldWidget.add(new CListBoxEntry("C", null));
 		urlFieldWidget.setText(feedUrl);
 
-		checkboxContainer = new CContainer(body, true);
-		checkboxContainer.setPadding(20);
+		checkboxContainer = new CContainer(middle, false);
+		checkboxContainer.setPadding(0);
+		checkboxContainer.setAlignHorizontal(Align.Horizontal.SPREAD);
+		new CSpacer(checkboxContainer, 40);
 		enabledCheckboxlWidget = new CCheckBox(checkboxContainer, "Enable feed", feedEnabled);
+		new CSpacer(checkboxContainer, 10);
 		updateCheckboxlWidget = new CCheckBox(checkboxContainer, "Check for mod updates", updateCheckEnabled);
 
-		new CSpacer(body, WIDGET_HEIGHT);
-		statusLabel = new CLabel(body, "");
+		new CSpacer(middle, WIDGET_HEIGHT);
+		statusLabel = new CLabel(middle, "");
 		statusLabel.color(0xFF88FF00);
 		statusLabel.setHeight(WIDGET_HEIGHT);
+		// new CFlexiSpacer(middle);
 		new CFlexiSpacer(body);
 
+		new CFlexiSpacer(footer);
         new CButton(footer, "Cancel", click -> {
 			this.close();
 		});
@@ -112,6 +124,7 @@ public class ConfigScreen extends CupraScreen {
 			this.close();
 		});
 		continueButton.setEnabled(false);
+		new CFlexiSpacer(footer);
 
 		validationThread = new Thread(this::validationChecker);
 		validationThread.setName("Newsfeed Validation Thread");
@@ -152,7 +165,7 @@ public class ConfigScreen extends CupraScreen {
 						statusLabel.setText("");
 						PlatformServices.getInstance().render();
 					}else{
-						statusLabel.setText("newsfeed.config.invalid.status");
+						statusLabel.setText("Invalid Feed URL");
 						isValidFeed = false;
 						PlatformServices.getInstance().render();
 					}
