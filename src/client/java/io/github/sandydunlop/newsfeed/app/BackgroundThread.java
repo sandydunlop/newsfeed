@@ -6,7 +6,7 @@ import com.rometools.rome.feed.synd.SyndEntry;
 
 
 public class BackgroundThread extends Thread {
-    private final int SLEEP_TIME = 10000; // 10 seconds
+    private static final int SLEEP_TIME = 60000; // One minute
     private final Runnable runnable;
     private boolean checkingForUpdates = false;
     private boolean foundUpdates = false;
