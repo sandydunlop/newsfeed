@@ -64,21 +64,20 @@ public class ConfigScreen extends CupraScreen {
 		header = new CContainer(this, true);
         header.setPadding(4);
 		header.setExpandable(false);
-		//header.setHeight(30);
 
 		body = new CContainer(this);
 		body.setPadding(10);
-		header.setExpandable(true);
+		body.setExpandable(true);
 
 		footer = new CContainer(this, true);
 		footer.setPadding(10);
 		footer.setExpandable(false);
 
-        CLabel title = new CLabel(header, "Newsfeed Config")
+        new CLabel(header, "Newsfeed Config")
                 .fontSize(22)
                 .bold();
-        //title.setHeight(28);
 
+		new CFlexiSpacer(body);
 		new CLabel(body, "Feed URL");
 
 		urlFieldWidget = new CDropdownTextBox(body, feedUrl);
@@ -96,6 +95,7 @@ public class ConfigScreen extends CupraScreen {
 		statusLabel = new CLabel(body, "");
 		statusLabel.color(0xFF88FF00);
 		statusLabel.setHeight(WIDGET_HEIGHT);
+		new CFlexiSpacer(body);
 
         new CButton(footer, "Cancel", click -> {
 			this.close();
@@ -109,13 +109,6 @@ public class ConfigScreen extends CupraScreen {
 			this.close();
 		});
 		continueButton.setEnabled(false);
-
-		// header.setTooltip("HEADER");
-		// header.setDebug(0xffffff00);
-		// body.setDebug(0xFF00AAAA);
-		// footer.setDebug(0xFFAAAA00);
-		// checkboxContainer.setDebug(0xFFFFFFFF);
-		// statusLabel.setDebug(0xFF00FF00);
 
 		validationThread = new Thread(this::validationChecker);
 		validationThread.setName("Newsfeed Validation Thread");
