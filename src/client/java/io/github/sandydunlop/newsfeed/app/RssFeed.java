@@ -49,7 +49,7 @@ public class RssFeed {
 
 	public void init(){
 		try{
-			if (NewsfeedConfig.feedUrl!= null && !NewsfeedConfig.feedUrl.isEmpty()&& currentEntries.size() == 0) {
+			if (NewsfeedConfig.feedUrl != null && !NewsfeedConfig.feedUrl.isEmpty() && currentEntries.size() == 0) {
 				int suppressedCount = 0;
 				feedSource = URI.create(NewsfeedConfig.feedUrl).toURL();
 				SyndFeedInput input = new SyndFeedInput();
@@ -111,33 +111,6 @@ public class RssFeed {
 	}
 	
 
-	public void update()
-	{
-		if (currentEntries.size() > 0 && this.feedSource.toString().equals(NewsfeedConfig.feedUrl)) {
-			if (NewsfeedConfig.feedEnabled){
-				SyndEntry toDisplay = null;
-				for (SyndEntry entry : currentEntries) {
-					if (!alreadyUsed(entry)) {
-						toDisplay = entry;
-						usedEntries.add(entry);
-						currentEntries.remove(entry);
-						//break;
-						PlatformServices.getInstance().showNotification(entry.getTitle());
-					}
-				}
-				if (toDisplay != null) {
-					String msg = toDisplay.getTitle();
-					LOGGER.info(msg);
-					// PlatformServices.getInstance().showNotification(msg);
-				}
-			}
-		}else if (currentEntries.size() == 0 ||
-				!this.feedSource.toString().equals(NewsfeedConfig.feedUrl)){
-			fetch();
-		}
-	}
-
-
 	public SyndEntry getEntry(int n) {
 		if (usedEntries.size() > n) {
 			return usedEntries.get(n);
@@ -164,6 +137,4 @@ public class RssFeed {
 		}
 		return false;
 	}
-
-
 }

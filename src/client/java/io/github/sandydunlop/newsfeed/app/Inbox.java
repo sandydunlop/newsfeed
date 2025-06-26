@@ -17,11 +17,13 @@ public class Inbox {
         return instance;
     }
 
+
     private Inbox() {
         // Private constructor to prevent instantiation
     }
 
-    public void addArticle(Article article) {
+
+    public synchronized void addArticle(Article article) {
         if (keys.contains(article.getKey())) {
             // Article already exists, do not add it again
             return;
@@ -31,7 +33,7 @@ public class Inbox {
     }
 
 
-    public void updateEnded() {
+    public synchronized void updateEnded() {
         if (articles.size() > articleCount) {
             articleCount = articles.size();
             RssUpdateEvent event = new RssUpdateEvent(this);
@@ -49,7 +51,6 @@ public class Inbox {
         }
         return recentArticles;
     }
-
 
 
 	public void removeRssUpdateListener(RssUpdateListener listener) {

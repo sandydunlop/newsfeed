@@ -8,7 +8,9 @@ import io.github.sandydunlop.cupra.common.palette.ColorPalette;
 import io.github.sandydunlop.cupra.common.util.Align;
 import io.github.sandydunlop.cupra.common.widgets.CButton;
 import io.github.sandydunlop.cupra.common.widgets.CContainer;
+import io.github.sandydunlop.cupra.common.widgets.CFlexiSpacer;
 import io.github.sandydunlop.cupra.common.widgets.CFormattedLabel;
+import io.github.sandydunlop.cupra.common.widgets.CImage;
 import io.github.sandydunlop.cupra.common.widgets.CLabel;
 import io.github.sandydunlop.cupra.common.widgets.CListBox;
 import io.github.sandydunlop.cupra.common.widgets.CListBoxEntry;
@@ -32,7 +34,7 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 		super();
 
 		final int SMALL_VERTICAL_GAP = 5;
-        this.setPadding(5);
+        this.setPadding(10);
         this.setAlignHorizontal(Align.Horizontal.SPREAD);
 
 		setTitle("Newsfeed");
@@ -45,10 +47,15 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
         body.setExpandable(true);
 
         CContainer footer = new CContainer(this, true);
-        footer.setAlignHorizontal(Align.Horizontal.SPREAD);  //TODO: Make this work
+        footer.setAlignHorizontal(Align.Horizontal.SPREAD);
         footer.setPadding(10);
 
-        titleWidget = new CLabel(header, "")
+		CImage icon = new CImage(header);
+		icon.fromResource("assets/newsfeed/icon-32.png");
+		icon.setWidth(32);
+		icon.setHeight(32);
+
+        titleWidget = new CLabel(header, "Newsfeed")
                 .fontSize(22)
                 .bold();
         titleWidget.setHeight(28);
@@ -70,6 +77,7 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 				CWidget.getPalette().INPUT_BACKGROUND);
 		articleText.setBackgroundColor(halfway);
 
+		new CFlexiSpacer(footer);
 		prevButton = new CButton(footer, "Prev", click -> {
 			inbox.setSelectedIndex(inbox.getSelectedIndex() + 1);
 		});
@@ -91,6 +99,7 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 		new CButton(footer, "Close", click -> {
 			this.close();
 		});
+		new CFlexiSpacer(footer);
 
 		Inbox.getInstance().addRssUpdateListener(this);
     }
@@ -98,12 +107,12 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 
 	@Override
 	public void onShow() {
-		lastUpdateTime = new Date().getTime();
 		article = Article.empty();
 		CListBoxEntry selected = inbox.getSelected();
 		if (selected != null) {
 			article = (Article) selected.getValue();
 		}
+		updateInbox();
 		populate();
 	}
 
@@ -117,10 +126,7 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 	private void populate() {
 		if (article == null) {
 			article = Article.empty();
-		}
-        //titleWidget.setText(rssFeed.feedTitle);
-        titleWidget.setText("Newsfeed");
-        
+		}        
 		CLabel heading = new CLabel(null, article.title).bold();
 		articleText.clear();
         articleText.add(heading);
@@ -143,7 +149,9 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 				inbox.insertAt(0, new CListBoxEntry(newArticle.title, newArticle.getKey(), newArticle));
 			}
 			CListBoxEntry latest = inbox.getEntry(0);
-			inbox.scrollTo(latest);
+			if (NewsfeedConfig.autoScroll) {
+				inbox.scrollTo(latest);
+			}
 			if (inbox.count() > 0 && !articleIsSelected) {
 				inbox.setSelected(latest);
 				article = (Article) latest.getValue();
