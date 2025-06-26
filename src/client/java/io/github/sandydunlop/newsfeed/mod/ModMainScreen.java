@@ -25,11 +25,13 @@ public class ModMainScreen extends CupraMinecraftScreen {
 	protected void init() {
 		super.init();
 		MinecraftServices platformServices = MinecraftServices.getInstance();
+		MinecraftServices.getTicker().setHidden(true);
 		platformServices.getApp().run();
 		layoutAppScreen();
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (NewsfeedClientModInitializer.newsfeedKeyBind.wasPressed()) {
+				MinecraftServices.getTicker().setHidden(false);
 				MinecraftClient.getInstance().setScreen(null);
 			}
 		});

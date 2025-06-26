@@ -1,9 +1,5 @@
 package io.github.sandydunlop.newsfeed.mod;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -18,34 +14,29 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.lwjgl.glfw.GLFW;
 
-import io.github.sandydunlop.cupra.common.fonts.FontSpec;
 import io.github.sandydunlop.cupra.platform.minecraft.MinecraftServices;
-import io.github.sandydunlop.cupra.platform.minecraft.Ticker;
 import io.github.sandydunlop.newsfeed.app.Newsfeed;
 import io.github.sandydunlop.newsfeed.app.NewsfeedConfig;
-import io.github.sandydunlop.newsfeed.app.RssFeed;
 
 
 public class NewsfeedClientModInitializer implements ClientModInitializer {
-	private static final Logger LOGGER = LogManager.getLogger(NewsfeedModInitializer.MOD_ID);
-	private static final Identifier RENDER_LAYER = Identifier.of(NewsfeedModInitializer.MOD_ID);
-	private static int tock = 0; //20 ticks = 1 second
+	private static final Logger LOGGER = LogManager.getLogger("Newsfeed");
+	private static final Identifier RENDER_LAYER = Identifier.of("newsfeed");
 	private static final int ONE_MINUTE = 1200; // 20 ticks * 60 seconds
-	private static final int interval = ONE_MINUTE;
+	private static final int INTERVAL = ONE_MINUTE;
+	private static int tock = 0; //20 ticks = 1 second
 	private static boolean doneStartupNotifications = false;
-	private static Ticker ticker = null;
 	public static final KeyBinding newsfeedKeyBind = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-		"newsfeed.keybinds.open", // The translation key of the keybinding's name
+		"Open Newsfeed", // The translation key of the keybinding's name
 		InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
 		GLFW.GLFW_KEY_N, // The keycode of the key
-		"newsfeed.keybinds.title" // The translation key of the keybinding's category.
+		"Newsfeed" // The translation key of the keybinding's category.
 	));
 
 
@@ -82,7 +73,7 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 
 
 	private static void render(DrawContext context, RenderTickCounter tickCounter) {
-		if (tock++ > interval) {
+		if (tock++ > INTERVAL) {
 			tock = 0;
 		}
 		// //TODO Move this out of render method into new thread
@@ -104,6 +95,6 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 
 
 	public static void updateNow() {
-		tock = interval;
+		tock = INTERVAL;
 	}
 }

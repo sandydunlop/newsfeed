@@ -1,5 +1,8 @@
 package io.github.sandydunlop.newsfeed.app;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
+
 import io.github.sandydunlop.cupra.common.CupraApp;
 import io.github.sandydunlop.cupra.platform.desktop.DesktopServices;
 
@@ -24,7 +27,7 @@ public class Newsfeed extends CupraApp {
 
 
     public Newsfeed() {
-        // Nothing to initialize here, as the run method will handle it.
+		setDebugLogging(NewsfeedConfig.debugLogEnabled);
     }
 
 
@@ -57,4 +60,13 @@ public class Newsfeed extends CupraApp {
         }
         return configScreen;
     }
+
+
+    private void setDebugLogging(boolean enable) {
+		if (enable) {
+			Configurator.setLevel("newsfeed", Level.DEBUG);
+		}else{
+			Configurator.setLevel("newsfeed", Level.ERROR);
+		}
+	}
 }

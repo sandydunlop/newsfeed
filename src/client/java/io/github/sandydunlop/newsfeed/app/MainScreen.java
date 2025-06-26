@@ -149,7 +149,7 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 				inbox.insertAt(0, new CListBoxEntry(newArticle.title, newArticle.getKey(), newArticle));
 			}
 			CListBoxEntry latest = inbox.getEntry(0);
-			if (NewsfeedConfig.autoScroll) {
+			if (NewsfeedConfig.autoScrollEnabled) {
 				inbox.scrollTo(latest);
 			}
 			if (inbox.count() > 0 && !articleIsSelected) {
