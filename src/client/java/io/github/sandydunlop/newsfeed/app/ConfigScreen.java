@@ -53,20 +53,23 @@ public class ConfigScreen extends CupraScreen {
 		final int WIDGET_HEIGHT = 20;
 		setTitle("Config");
 		suggestSize(440,300);
-        setAlignHorizontal(Align.Horizontal.SPREAD);
 		feedUrl = NewsfeedConfig.feedUrl;
 
 		header = new CContainer(this, true);
         header.setPadding(4);
 		header.setExpandable(false);
+		header.setId("header");
 
 		body = new CContainer(this, true);
-		body.setPadding(10);
-		body.setExpandable(true);
+		body.setAlignHorizontal(Align.Horizontal.MIDDLE);
+		body.setId("body");
 
 		footer = new CContainer(this, true);
-		footer.setPadding(10);
+        footer.setPadding(10);
 		footer.setExpandable(false);
+		footer.setAlignHorizontal(Align.Horizontal.MIDDLE);
+		footer.setHeight(40);
+		footer.setId("footer");
 
 		CImage icon = new CImage(header);
 		icon.fromResource("assets/newsfeed/icon-32.png");
@@ -77,15 +80,13 @@ public class ConfigScreen extends CupraScreen {
                 .fontSize(22)
                 .bold();
 
-		new CFlexiSpacer(body);
 		CContainer middle = new CContainer(body);
+		middle.setId("middle");
 
-		new CSpacer(middle, WIDGET_HEIGHT);
 		new CLabel(middle, "Feed URL");
-		new CSpacer(middle, 4);
 
 		urlField = new CDropdownTextBox(middle, feedUrl);
-		urlField.setWidth(400);
+		urlField.setWidth(300);
 		urlField.add(new CListBoxEntry("https://feeds.bbci.co.uk/news/world/rss.xml", null));
 		urlField.add(new CListBoxEntry("https://www.reddit.com/r/AskReddit/new/.rss", null));
 		urlField.add(new CListBoxEntry("https://nullforums.net/forums/minecraft-rss.473/index.rss", null));
@@ -95,24 +96,17 @@ public class ConfigScreen extends CupraScreen {
 		urlField.setText(feedUrl);
 
 		CContainer checkboxContainer = new CContainer(middle, false);
-		checkboxContainer.setPadding(0);
-		checkboxContainer.setAlignHorizontal(Align.Horizontal.SPREAD);
-		new CSpacer(checkboxContainer, 20);
+		checkboxContainer.setId("checkboxContainer");
+		checkboxContainer.setAlignHorizontal(Align.Horizontal.MIDDLE);
 		enabledCheckbox = new CCheckBox(checkboxContainer, "Enable feed", NewsfeedConfig.feedEnabled);
-		new CSpacer(checkboxContainer, 10);
 		autoScrollCheckbox = new CCheckBox(checkboxContainer, "Auto scroll to new articles", NewsfeedConfig.autoScrollEnabled);
-		new CSpacer(checkboxContainer, 10);
 		updateCheckbox = new CCheckBox(checkboxContainer, "Check for mod updates", NewsfeedConfig.updateCheckEnabled);
-		new CSpacer(checkboxContainer, 10);
 		debugCheckbox = new CCheckBox(checkboxContainer, "Log debug information", NewsfeedConfig.debugLogEnabled);
 
-		new CSpacer(middle, WIDGET_HEIGHT);
 		statusLabel = new CLabel(middle, "");
 		statusLabel.color(0xFF88FF00);
 		statusLabel.setHeight(WIDGET_HEIGHT);
-		new CFlexiSpacer(body);
 
-		new CFlexiSpacer(footer);
         new CButton(footer, "Cancel", click -> {
 			this.close();
 		});
@@ -128,7 +122,6 @@ public class ConfigScreen extends CupraScreen {
 			this.close();
 		});
 		continueButton.setEnabled(false);
-		new CFlexiSpacer(footer);
 	}
 
 
