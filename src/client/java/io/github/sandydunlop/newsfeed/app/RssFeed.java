@@ -18,18 +18,15 @@ import io.github.sandydunlop.cupra.platform.PlatformServices;
 
 
 public class RssFeed {
-	private static final Logger LOGGER = LogManager.getLogger("newsfeed");
-	List<SyndEntry> currentEntries;
-	List<SyndEntry> usedEntries;
-	public URL feedSource;
+	private static final Logger LOGGER = LogManager.getLogger("Newsfeed");
+	List<SyndEntry> currentEntries = new ArrayList<>();
+	List<SyndEntry> usedEntries = new ArrayList<>();
+	public URL feedSource = null;
 	String feedTitle;
 
 
-    public RssFeed()
-	{
-		currentEntries = new ArrayList<SyndEntry>();
-		usedEntries = new ArrayList<SyndEntry>();
-		init();
+    public RssFeed() {
+		// Nothing to see here
 	}
 
 
@@ -38,18 +35,9 @@ public class RssFeed {
 	}
 
 
-	private boolean hasUrlChanged(){
-		if (NewsfeedConfig.feedUrl != null && !NewsfeedConfig.feedUrl.equals(feedSource.toString())){
-			return true;
-		}else{
-			return false;
-		}
-	}
-
-
 	public void init(){
 		try{
-			if (NewsfeedConfig.feedUrl != null && !NewsfeedConfig.feedUrl.isEmpty() && currentEntries.size() == 0) {
+			if (NewsfeedConfig.feedUrl != null && !NewsfeedConfig.feedUrl.isEmpty() && currentEntries.isEmpty()) {
 				int suppressedCount = 0;
 				feedSource = URI.create(NewsfeedConfig.feedUrl).toURL();
 				SyndFeedInput input = new SyndFeedInput();
@@ -60,13 +48,10 @@ public class RssFeed {
 					usedEntries.add(entry);
 					suppressedCount++;
 				}
-				String msg= String.format("%s feed loaded. Suppressing %d old articles.", feedTitle, suppressedCount);
-				LOGGER.info(msg);
+				LOGGER.info("{} feed loaded. Suppressing {} old articles.", feedTitle, suppressedCount);
 			}
 		}catch(IOException e){
-			String msg = String.format("Invalid feed at %s", feedSource.toString(), null);
-			LOGGER.error(msg);
-			PlatformServices.getInstance().showNotification(msg);
+			LOGGER.error("Invalid feed at {}", feedSource);
 		}catch(FeedException e){
 			LOGGER.error("FeedException: {}", e.getMessage());
 		}
@@ -94,6 +79,7 @@ public class RssFeed {
 				List<SyndEntry> entries = feed.getEntries();
 				for (SyndEntry entry : entries) {
 					if (!alreadyUsed(entry)) {
+						LOGGER.info("{}: New article: {}", feed.getTitle(), entry.getTitle());
 						currentEntries.add(entry);
 						PlatformServices.getInstance().showNotification(entry.getTitle());
 					}

@@ -34,21 +34,25 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 		super();
 
 		final int SMALL_VERTICAL_GAP = 5;
-        this.setPadding(10);
+        this.setPadding(4);
         this.setAlignHorizontal(Align.Horizontal.SPREAD);
 
 		setTitle("Newsfeed");
 
         CContainer header = new CContainer(this, true);
         header.setPadding(4);
+		header.setExpandable(false);
+		header.setHeight(32);
 
         CContainer body = new CContainer(this);
         body.setPadding(0);
         body.setExpandable(true);
 
         CContainer footer = new CContainer(this, true);
-        footer.setAlignHorizontal(Align.Horizontal.SPREAD);
         footer.setPadding(10);
+        footer.setAlignHorizontal(Align.Horizontal.MIDDLE);
+		footer.setExpandable(false);
+		footer.setHeight(40);
 
 		CImage icon = new CImage(header);
 		icon.fromResource("assets/newsfeed/icon-32.png");
@@ -77,7 +81,7 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 				CWidget.getPalette().INPUT_BACKGROUND);
 		articleText.setBackgroundColor(halfway);
 
-		new CFlexiSpacer(footer);
+		// new CFlexiSpacer(footer);
 		prevButton = new CButton(footer, "Prev", click -> {
 			inbox.setSelectedIndex(inbox.getSelectedIndex() + 1);
 		});
@@ -99,7 +103,7 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 		new CButton(footer, "Close", click -> {
 			this.close();
 		});
-		new CFlexiSpacer(footer);
+		// new CFlexiSpacer(footer);
 
 		Inbox.getInstance().addRssUpdateListener(this);
     }
@@ -149,7 +153,7 @@ public class MainScreen extends CupraScreen implements RssUpdateListener {
 				inbox.insertAt(0, new CListBoxEntry(newArticle.title, newArticle.getKey(), newArticle));
 			}
 			CListBoxEntry latest = inbox.getEntry(0);
-			if (NewsfeedConfig.autoScroll) {
+			if (NewsfeedConfig.autoScrollEnabled) {
 				inbox.scrollTo(latest);
 			}
 			if (inbox.count() > 0 && !articleIsSelected) {

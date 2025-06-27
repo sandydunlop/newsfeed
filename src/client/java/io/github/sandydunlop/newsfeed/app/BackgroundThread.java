@@ -2,10 +2,14 @@ package io.github.sandydunlop.newsfeed.app;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.rometools.rome.feed.synd.SyndEntry;
 
 
 public class BackgroundThread extends Thread {
+	private static final Logger LOGGER = LogManager.getLogger("Newsfeed");
     private static final int SLEEP_TIME = 60000; // One minute
     private final Runnable runnable;
     private boolean checkingForUpdates = false;
@@ -16,7 +20,7 @@ public class BackgroundThread extends Thread {
 
 
     public BackgroundThread() {
-        super("Newsfeed Background Thread");
+        super("Newsfeed-Updt");
         this.runnable = () -> {
             do {
                 try {
@@ -66,6 +70,7 @@ public class BackgroundThread extends Thread {
     
 
     private void checkForUpdates() {
+        LOGGER.info("Checking for updates");
         if (checkingForUpdates) {
             return;
         }

@@ -3,9 +3,10 @@ package io.github.sandydunlop.newsfeed.app;
 import java.net.URI;
 import java.net.URL;
 
-import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import com.rometools.rome.io.XmlReader;
 
@@ -24,7 +25,7 @@ import io.github.sandydunlop.cupra.platform.PlatformServices;
 
 
 public class ConfigScreen extends CupraScreen {
-	private static final Logger LOGGER = LogManager.getLogger("newsfeed");
+	private static final Logger LOGGER = LogManager.getLogger("Newsfeed");
 	private static final int VALIDATION_DELAY = 10;
 	
 	private int timer = 0;
@@ -42,8 +43,9 @@ public class ConfigScreen extends CupraScreen {
 	private CCheckBox enabledCheckbox;
 	private CCheckBox autoScrollCheckbox;
 	private CCheckBox updateCheckbox;
-	private CButton continueButton;
+	private CCheckBox debugCheckbox;
 	private CLabel statusLabel;
+	private CButton continueButton;
 
 
 	public ConfigScreen() {
@@ -51,20 +53,23 @@ public class ConfigScreen extends CupraScreen {
 		final int WIDGET_HEIGHT = 20;
 		setTitle("Config");
 		suggestSize(440,300);
-        setAlignHorizontal(Align.Horizontal.SPREAD);
 		feedUrl = NewsfeedConfig.feedUrl;
 
 		header = new CContainer(this, true);
         header.setPadding(4);
 		header.setExpandable(false);
+		header.setId("header");
 
 		body = new CContainer(this, true);
-		body.setPadding(10);
-		body.setExpandable(true);
+		body.setAlignHorizontal(Align.Horizontal.MIDDLE);
+		body.setId("body");
 
 		footer = new CContainer(this, true);
-		footer.setPadding(10);
+        footer.setPadding(10);
 		footer.setExpandable(false);
+		footer.setAlignHorizontal(Align.Horizontal.MIDDLE);
+		footer.setHeight(40);
+		footer.setId("footer");
 
 		CImage icon = new CImage(header);
 		icon.fromResource("assets/newsfeed/icon-32.png");
@@ -75,15 +80,13 @@ public class ConfigScreen extends CupraScreen {
                 .fontSize(22)
                 .bold();
 
-		new CFlexiSpacer(body);
 		CContainer middle = new CContainer(body);
+		middle.setId("middle");
 
-		new CSpacer(middle, WIDGET_HEIGHT);
 		new CLabel(middle, "Feed URL");
-		new CSpacer(middle, 4);
 
 		urlField = new CDropdownTextBox(middle, feedUrl);
-		urlField.setWidth(400);
+		urlField.setWidth(300);
 		urlField.add(new CListBoxEntry("https://feeds.bbci.co.uk/news/world/rss.xml", null));
 		urlField.add(new CListBoxEntry("https://www.reddit.com/r/AskReddit/new/.rss", null));
 		urlField.add(new CListBoxEntry("https://nullforums.net/forums/minecraft-rss.473/index.rss", null));
@@ -93,36 +96,32 @@ public class ConfigScreen extends CupraScreen {
 		urlField.setText(feedUrl);
 
 		CContainer checkboxContainer = new CContainer(middle, false);
-		checkboxContainer.setPadding(0);
-		checkboxContainer.setAlignHorizontal(Align.Horizontal.SPREAD);
-		new CSpacer(checkboxContainer, 40);
+		checkboxContainer.setId("checkboxContainer");
+		checkboxContainer.setAlignHorizontal(Align.Horizontal.MIDDLE);
 		enabledCheckbox = new CCheckBox(checkboxContainer, "Enable feed", NewsfeedConfig.feedEnabled);
-		new CSpacer(checkboxContainer, 10);
-		autoScrollCheckbox = new CCheckBox(checkboxContainer, "Auto scroll to new articles", NewsfeedConfig.autoScroll);
-		new CSpacer(checkboxContainer, 10);
+		autoScrollCheckbox = new CCheckBox(checkboxContainer, "Auto scroll to new articles", NewsfeedConfig.autoScrollEnabled);
 		updateCheckbox = new CCheckBox(checkboxContainer, "Check for mod updates", NewsfeedConfig.updateCheckEnabled);
+		debugCheckbox = new CCheckBox(checkboxContainer, "Log debug information", NewsfeedConfig.debugLogEnabled);
 
-		new CSpacer(middle, WIDGET_HEIGHT);
 		statusLabel = new CLabel(middle, "");
 		statusLabel.color(0xFF88FF00);
 		statusLabel.setHeight(WIDGET_HEIGHT);
-		new CFlexiSpacer(body);
 
-		new CFlexiSpacer(footer);
         new CButton(footer, "Cancel", click -> {
 			this.close();
 		});
 		continueButton = new CButton(footer, "Continue", click -> {
 			NewsfeedConfig.feedUrl = urlField.getText();
 			NewsfeedConfig.feedEnabled = enabledCheckbox.isChecked();
-			NewsfeedConfig.autoScroll = autoScrollCheckbox.isChecked();
+			NewsfeedConfig.autoScrollEnabled = autoScrollCheckbox.isChecked();
 			NewsfeedConfig.updateCheckEnabled = updateCheckbox.isChecked();
+			NewsfeedConfig.debugLogEnabled = debugCheckbox.isChecked();
 			NewsfeedConfig.saveConfig();
 			Newsfeed.getBackgroundThread().restart();
+			setDebugLogging(NewsfeedConfig.debugLogEnabled);
 			this.close();
 		});
 		continueButton.setEnabled(false);
-		new CFlexiSpacer(footer);
 	}
 
 
@@ -137,15 +136,20 @@ public class ConfigScreen extends CupraScreen {
 
 	@Override
 	public void onShow() {
+		enabledCheckbox.setChecked(NewsfeedConfig.feedEnabled);
+		autoScrollCheckbox.setChecked(NewsfeedConfig.autoScrollEnabled);
+		updateCheckbox.setChecked(NewsfeedConfig.updateCheckEnabled);
+		debugCheckbox.setChecked(NewsfeedConfig.debugLogEnabled);
+
 		validationThread = new Thread(this::validationChecker);
-		validationThread.setName("Newsfeed Validation Thread");
+		validationThread.setName("Newsfeed-Vldt");
 		validationThread.start();
 	}
 
 
 	public void validationChecker() {
 		do {
-			// If URL is changed, wait VALIDATION_DELAY ticks before checking if it's a valid feed
+			// If URL is changed, wait VALIDATION_DELAY ms before checking if it's a valid feed
 			if (urlField!= null && !urlField.getText().equals((feedUrl))){
 				timer = VALIDATION_DELAY;
 				feedUrl = urlField.getText();
@@ -183,7 +187,8 @@ public class ConfigScreen extends CupraScreen {
 				continueButton.setEnabled(false);
 			}else if (!NewsfeedConfig.feedUrl.equals(urlField.getText()) ||
 				NewsfeedConfig.feedEnabled != enabledCheckbox.isChecked() ||
-				NewsfeedConfig.autoScroll != autoScrollCheckbox.isChecked() ||
+				NewsfeedConfig.autoScrollEnabled != autoScrollCheckbox.isChecked() ||
+				NewsfeedConfig.debugLogEnabled != debugCheckbox.isChecked() ||
 				NewsfeedConfig.updateCheckEnabled != updateCheckbox.isChecked()){
 				continueButton.setEnabled(true);
 			}else{
@@ -206,39 +211,6 @@ public class ConfigScreen extends CupraScreen {
 	}
 
 
-	// public void fff(){
-	// 	// Logo and title
-	// 	int logoTop = 5;
-	// 	int logoLeft = (int)(this.width * 0.1);
-	// 	Identifier texture = Identifier.of(NewsfeedModInitializer.MOD_ID, "icon-32.png");
-	// 	context.drawTexture(RenderLayer::getGuiTextured, texture, logoLeft, logoTop, 0, 0, 32, 32, 32, 32);
-	// 	context.getMatrices().push();
-	// 	context.getMatrices().scale(2.0F, 2.0F, 1F);  
-	// 	context.drawText(client.textRenderer, "newsfeed.config.title", (logoLeft + 40) / 2, logoTop + 1, 0xFFFFFFFF, true);
-	// 	context.getMatrices().pop();
-
-	// 	// Status text
-	// 	int alpha = (int)(statusAlpha * 255);
-	// 	if (alpha > 10){
-	// 		int color = (alpha << 24) | (255 << 16) |  (207 << 8);
-	// 		int screenWidth = client.getWindow().getScaledWidth();
-	// 		int screenHeight = client.getWindow().getScaledHeight();
-	// 		int x = (screenWidth - client.textRenderer.getWidth(statusText)) / 2;
-	// 		int y = screenHeight - 60;
-	// 		context.drawText(client.textRenderer, statusText, x, y, color, false);
-	// 	}
-	// }
-
-
-	// private void drawBackground(DrawContext context) {
-	// 	context.fill(0, 40, this.width, this.height - 40, 0x88000000);
-	// 	context.drawHorizontalLine(0, this.width, 40, 0xFF3F3F3F);
-	// 	context.drawHorizontalLine(0, this.width, 41, 0xFF000000);
-	// 	context.drawHorizontalLine(0, this.width, this.height - 41, 0xFF000000);
-	// 	context.drawHorizontalLine(0, this.width, this.height - 40, 0xFF3F3F3F);
-	// }
-
-	
 	private boolean validateFeed()
 	{
 		URL feedSource = null;
@@ -248,11 +220,21 @@ public class ConfigScreen extends CupraScreen {
 			}
 			feedSource = URI.create(urlField.getText()).toURL();
 			SyndFeedInput input = new SyndFeedInput();
-			@SuppressWarnings("unused")
-			SyndFeed feed = input.build(new XmlReader(feedSource));
+			input.build(new XmlReader(feedSource));
 			return true;
 		}catch(Exception e){
 			return false;
+		}
+	}
+
+
+	private void setDebugLogging(boolean enable) {
+		if (enable) {
+			Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.DEBUG);
+			Configurator.setLevel("newsfeed", Level.DEBUG);
+		}else{
+			Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.ERROR);
+			Configurator.setLevel("newsfeed", Level.ERROR);
 		}
 	}
 }

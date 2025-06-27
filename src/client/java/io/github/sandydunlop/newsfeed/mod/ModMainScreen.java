@@ -25,11 +25,13 @@ public class ModMainScreen extends CupraMinecraftScreen {
 	protected void init() {
 		super.init();
 		MinecraftServices platformServices = MinecraftServices.getInstance();
+		MinecraftServices.getTicker().setHidden(true);
 		platformServices.getApp().run();
 		layoutAppScreen();
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (NewsfeedClientModInitializer.newsfeedKeyBind.wasPressed()) {
+				MinecraftServices.getTicker().setHidden(false);
 				MinecraftClient.getInstance().setScreen(null);
 			}
 		});
@@ -41,7 +43,7 @@ public class ModMainScreen extends CupraMinecraftScreen {
 		if (client.player != null){
 			this.applyBlur();
 			this.renderInGameBackground(context);
-			context.fill(0, 0, this.width, this.height, 0x44FFFFFF & CWidget.getPalette().REGULAR_BACKGROUND);
+			context.fill(0, 0, this.width, this.height, 0x88FFFFFF & CWidget.getPalette().REGULAR_BACKGROUND);
 		}
 		super.render(context, mouseX, mouseY, delta);
     }

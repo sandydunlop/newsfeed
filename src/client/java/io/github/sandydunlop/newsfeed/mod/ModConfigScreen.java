@@ -38,7 +38,7 @@ public class ModConfigScreen extends CupraMinecraftScreen {
 		if (client.player != null){
 			this.applyBlur();
 			this.renderInGameBackground(context);
-			context.fill(0, 0, this.width, this.height, 0x44FFFFFF & CWidget.getPalette().REGULAR_BACKGROUND);
+			context.fill(0, 0, this.width, this.height, 0x88FFFFFF & CWidget.getPalette().REGULAR_BACKGROUND);
 		}
 		super.render(context, mouseX, mouseY, delta);
     }
