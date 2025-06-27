@@ -43,7 +43,7 @@ public class ConfigScreen extends CupraScreen {
 	private CCheckBox enabledCheckbox;
 	private CCheckBox autoScrollCheckbox;
 	private CCheckBox updateCheckbox;
-	private CCheckBox debugCheckbox;
+	// private CCheckBox debugCheckbox;
 	private CLabel statusLabel;
 	private CButton continueButton;
 
@@ -58,6 +58,7 @@ public class ConfigScreen extends CupraScreen {
 		header = new CContainer(this, true);
         header.setPadding(4);
 		header.setExpandable(false);
+		header.setHeight(40);
 		header.setId("header");
 
 		body = new CContainer(this, true);
@@ -80,7 +81,9 @@ public class ConfigScreen extends CupraScreen {
                 .fontSize(22)
                 .bold();
 
+		new CSpacer(body, 50);
 		CContainer middle = new CContainer(body);
+		middle.setWidth(350);
 		middle.setId("middle");
 
 		new CLabel(middle, "Feed URL");
@@ -101,11 +104,12 @@ public class ConfigScreen extends CupraScreen {
 		enabledCheckbox = new CCheckBox(checkboxContainer, "Enable feed", NewsfeedConfig.feedEnabled);
 		autoScrollCheckbox = new CCheckBox(checkboxContainer, "Auto scroll to new articles", NewsfeedConfig.autoScrollEnabled);
 		updateCheckbox = new CCheckBox(checkboxContainer, "Check for mod updates", NewsfeedConfig.updateCheckEnabled);
-		debugCheckbox = new CCheckBox(checkboxContainer, "Log debug information", NewsfeedConfig.debugLogEnabled);
+		//debugCheckbox = new CCheckBox(checkboxContainer, "Log debug information", NewsfeedConfig.debugLogEnabled);
 
 		statusLabel = new CLabel(middle, "");
 		statusLabel.color(0xFF88FF00);
 		statusLabel.setHeight(WIDGET_HEIGHT);
+		new CSpacer(body, 50);
 
         new CButton(footer, "Cancel", click -> {
 			this.close();
@@ -115,7 +119,7 @@ public class ConfigScreen extends CupraScreen {
 			NewsfeedConfig.feedEnabled = enabledCheckbox.isChecked();
 			NewsfeedConfig.autoScrollEnabled = autoScrollCheckbox.isChecked();
 			NewsfeedConfig.updateCheckEnabled = updateCheckbox.isChecked();
-			NewsfeedConfig.debugLogEnabled = debugCheckbox.isChecked();
+			//NewsfeedConfig.debugLogEnabled = debugCheckbox.isChecked();
 			NewsfeedConfig.saveConfig();
 			Newsfeed.getBackgroundThread().restart();
 			setDebugLogging(NewsfeedConfig.debugLogEnabled);
@@ -139,7 +143,7 @@ public class ConfigScreen extends CupraScreen {
 		enabledCheckbox.setChecked(NewsfeedConfig.feedEnabled);
 		autoScrollCheckbox.setChecked(NewsfeedConfig.autoScrollEnabled);
 		updateCheckbox.setChecked(NewsfeedConfig.updateCheckEnabled);
-		debugCheckbox.setChecked(NewsfeedConfig.debugLogEnabled);
+		// debugCheckbox.setChecked(NewsfeedConfig.debugLogEnabled);
 
 		validationThread = new Thread(this::validationChecker);
 		validationThread.setName("Newsfeed-Vldt");
@@ -188,7 +192,7 @@ public class ConfigScreen extends CupraScreen {
 			}else if (!NewsfeedConfig.feedUrl.equals(urlField.getText()) ||
 				NewsfeedConfig.feedEnabled != enabledCheckbox.isChecked() ||
 				NewsfeedConfig.autoScrollEnabled != autoScrollCheckbox.isChecked() ||
-				NewsfeedConfig.debugLogEnabled != debugCheckbox.isChecked() ||
+				// NewsfeedConfig.debugLogEnabled != debugCheckbox.isChecked() ||
 				NewsfeedConfig.updateCheckEnabled != updateCheckbox.isChecked()){
 				continueButton.setEnabled(true);
 			}else{
