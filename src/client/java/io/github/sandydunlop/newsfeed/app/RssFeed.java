@@ -4,16 +4,17 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 
+import io.github.sandydunlop.cupra.common.logging.Logger;
+import io.github.sandydunlop.cupra.common.logging.LogManager;
 import io.github.sandydunlop.cupra.platform.PlatformServices;
 
 
@@ -35,10 +36,9 @@ public class RssFeed {
 	}
 
 
-	public void init(){
+	public synchronized void init(){
 		try{
 			if (NewsfeedConfig.feedUrl != null && !NewsfeedConfig.feedUrl.isEmpty() && currentEntries.isEmpty()) {
-				int suppressedCount = 0;
 				feedSource = URI.create(NewsfeedConfig.feedUrl).toURL();
 				SyndFeedInput input = new SyndFeedInput();
 				SyndFeed feed = input.build(new XmlReader(feedSource));
@@ -46,9 +46,8 @@ public class RssFeed {
 				List<SyndEntry> entries = feed.getEntries();
 				for (SyndEntry entry : entries) {
 					usedEntries.add(entry);
-					suppressedCount++;
 				}
-				LOGGER.info("{} feed loaded. Suppressing {} old articles.", feedTitle, suppressedCount);
+				LOGGER.info("{} feed loaded", feedTitle);
 			}
 		}catch(IOException e){
 			LOGGER.error("Invalid feed at {}", feedSource);
@@ -58,7 +57,7 @@ public class RssFeed {
 	}
 
 
-	public void fetch()
+	public synchronized void fetch()
 	{
 		if (NewsfeedConfig.feedUrl!=null && !NewsfeedConfig.feedUrl.isEmpty()){
 			for (SyndEntry entry : currentEntries) {
@@ -85,14 +84,15 @@ public class RssFeed {
 					}
 				}
 				feedSource = tryFeedSource;
-				
 			}catch(IOException e){
-				String msg = String.format("Invalid feed at %s", tryFeedSource.toString(), null);
-				LOGGER.error(msg);
-				PlatformServices.getInstance().showNotification(msg);
+				LOGGER.error("Problem loading feed: {}", tryFeedSource == null ? "(null)" : tryFeedSource.toString());
+				LOGGER.error("{}", e.getMessage());
 			}catch(FeedException e){
-				LOGGER.error("FeedException1: {}", e.getMessage());
-			} 
+				LOGGER.error("FeedException: {}", e.getMessage());
+			}catch(Exception e){
+				LOGGER.error("Error processing feed: {}", e.getMessage());
+				LOGGER.error("{}", Arrays.asList(e.getStackTrace()));
+			}
 		}
 	}
 	
@@ -102,16 +102,6 @@ public class RssFeed {
 			return usedEntries.get(n);
 		}
 		return null;
-	}
-
-
-	private boolean alreadyGot(SyndEntry entry) {
-		for(SyndEntry e : currentEntries){
-			if(e.getLink().equals(entry.getLink())) {
-				return true;
-			}
-		}
-		return alreadyUsed(entry);
 	}
 
 

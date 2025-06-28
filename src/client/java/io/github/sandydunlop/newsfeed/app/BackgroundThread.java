@@ -2,10 +2,10 @@ package io.github.sandydunlop.newsfeed.app;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.rometools.rome.feed.synd.SyndEntry;
+
+import io.github.sandydunlop.cupra.common.logging.Logger;
+import io.github.sandydunlop.cupra.common.logging.LogManager;
 
 
 public class BackgroundThread extends Thread {
@@ -27,18 +27,19 @@ public class BackgroundThread extends Thread {
                     checkForUpdates();
                     Thread.sleep(SLEEP_TIME);
                 } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    break;
-                } catch (Exception ignore) {
-                    // Ignore
+                    LOGGER.debug("Interrupted");
+                } catch (Exception e) {
+                    LOGGER.error(e.getMessage());
                 }
             } while (keepRunning);
+            LOGGER.debug("Terminating");
         };
     }
 
 
     public void restart(){
         if (this.isAlive()) {
+            checkingForUpdates = false;
             this.interrupt();
         }
     }
@@ -60,34 +61,30 @@ public class BackgroundThread extends Thread {
             e.printStackTrace();
         }
     }
-
-
-    private boolean urlHasChanged(){
-        return rssFeed != null && 
-                rssFeed.getFeedSource() != null && 
-                !rssFeed.getFeedSource().toString().equals(lastFeedUrl);
-    }
     
 
     private void checkForUpdates() {
-        LOGGER.info("Checking for updates");
         if (checkingForUpdates) {
             return;
         }
         checkingForUpdates = true;
-
-        if (rssFeed == null || urlHasChanged()) {
+        if (rssFeed == null || !NewsfeedConfig.feedUrl.equals(lastFeedUrl)) {
+            LOGGER.debug("Initializing {}", NewsfeedConfig.feedUrl);
             rssFeed = new RssFeed();
             rssFeed.init();
             addToInbox(rssFeed.usedEntries);
-            lastFeedUrl = rssFeed.getFeedSource().toString();
+            lastFeedUrl = NewsfeedConfig.feedUrl;
+        } else {
+            LOGGER.debug("Checking for updates");
+            rssFeed.fetch();
+            addToInbox(rssFeed.currentEntries);
         }
-        rssFeed.fetch();
-        addToInbox(rssFeed.currentEntries);
         if (foundUpdates) {
+            LOGGER.debug("New articles found");
             Inbox.getInstance().updateEnded();
             foundUpdates = false;
         }
+        LOGGER.debug("Complete");
         checkingForUpdates = false;
     }
 

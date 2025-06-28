@@ -4,19 +4,16 @@ import java.net.URI;
 import java.net.URL;
 
 import com.rometools.rome.io.SyndFeedInput;
-import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
 import com.rometools.rome.io.XmlReader;
 
 import io.github.sandydunlop.cupra.common.CupraScreen;
+import io.github.sandydunlop.cupra.common.logging.Logger;
+import io.github.sandydunlop.cupra.common.logging.LogManager;
 import io.github.sandydunlop.cupra.common.util.Align;
 import io.github.sandydunlop.cupra.common.widgets.CButton;
 import io.github.sandydunlop.cupra.common.widgets.CCheckBox;
 import io.github.sandydunlop.cupra.common.widgets.CContainer;
 import io.github.sandydunlop.cupra.common.widgets.CDropdownTextBox;
-import io.github.sandydunlop.cupra.common.widgets.CFlexiSpacer;
 import io.github.sandydunlop.cupra.common.widgets.CImage;
 import io.github.sandydunlop.cupra.common.widgets.CLabel;
 import io.github.sandydunlop.cupra.common.widgets.CListBoxEntry;
@@ -43,7 +40,7 @@ public class ConfigScreen extends CupraScreen {
 	private CCheckBox enabledCheckbox;
 	private CCheckBox autoScrollCheckbox;
 	private CCheckBox updateCheckbox;
-	// private CCheckBox debugCheckbox;
+	private CCheckBox debugCheckbox;
 	private CLabel statusLabel;
 	private CButton continueButton;
 
@@ -104,7 +101,7 @@ public class ConfigScreen extends CupraScreen {
 		enabledCheckbox = new CCheckBox(checkboxContainer, "Enable feed", NewsfeedConfig.feedEnabled);
 		autoScrollCheckbox = new CCheckBox(checkboxContainer, "Auto scroll to new articles", NewsfeedConfig.autoScrollEnabled);
 		updateCheckbox = new CCheckBox(checkboxContainer, "Check for mod updates", NewsfeedConfig.updateCheckEnabled);
-		//debugCheckbox = new CCheckBox(checkboxContainer, "Log debug information", NewsfeedConfig.debugLogEnabled);
+		debugCheckbox = new CCheckBox(checkboxContainer, "Log debug information", NewsfeedConfig.debugLogEnabled);
 
 		statusLabel = new CLabel(middle, "");
 		statusLabel.color(0xFF88FF00);
@@ -119,10 +116,10 @@ public class ConfigScreen extends CupraScreen {
 			NewsfeedConfig.feedEnabled = enabledCheckbox.isChecked();
 			NewsfeedConfig.autoScrollEnabled = autoScrollCheckbox.isChecked();
 			NewsfeedConfig.updateCheckEnabled = updateCheckbox.isChecked();
-			//NewsfeedConfig.debugLogEnabled = debugCheckbox.isChecked();
+			NewsfeedConfig.debugLogEnabled = debugCheckbox.isChecked();
 			NewsfeedConfig.saveConfig();
 			Newsfeed.getBackgroundThread().restart();
-			setDebugLogging(NewsfeedConfig.debugLogEnabled);
+			PlatformServices.getInstance().setDebugLogging(NewsfeedConfig.debugLogEnabled);
 			this.close();
 		});
 		continueButton.setEnabled(false);
@@ -143,7 +140,7 @@ public class ConfigScreen extends CupraScreen {
 		enabledCheckbox.setChecked(NewsfeedConfig.feedEnabled);
 		autoScrollCheckbox.setChecked(NewsfeedConfig.autoScrollEnabled);
 		updateCheckbox.setChecked(NewsfeedConfig.updateCheckEnabled);
-		// debugCheckbox.setChecked(NewsfeedConfig.debugLogEnabled);
+		debugCheckbox.setChecked(NewsfeedConfig.debugLogEnabled);
 
 		validationThread = new Thread(this::validationChecker);
 		validationThread.setName("Newsfeed-Vldt");
@@ -184,6 +181,9 @@ public class ConfigScreen extends CupraScreen {
 				thread.start();
 			}
 
+			if (urlField == null) {
+				continue;
+			}
 			boolean continueButtonEnabled = continueButton.isEnabled();
 			if (isValidating){
 				continueButton.setEnabled(false);
@@ -192,7 +192,7 @@ public class ConfigScreen extends CupraScreen {
 			}else if (!NewsfeedConfig.feedUrl.equals(urlField.getText()) ||
 				NewsfeedConfig.feedEnabled != enabledCheckbox.isChecked() ||
 				NewsfeedConfig.autoScrollEnabled != autoScrollCheckbox.isChecked() ||
-				// NewsfeedConfig.debugLogEnabled != debugCheckbox.isChecked() ||
+				NewsfeedConfig.debugLogEnabled != debugCheckbox.isChecked() ||
 				NewsfeedConfig.updateCheckEnabled != updateCheckbox.isChecked()){
 				continueButton.setEnabled(true);
 			}else{
@@ -228,17 +228,6 @@ public class ConfigScreen extends CupraScreen {
 			return true;
 		}catch(Exception e){
 			return false;
-		}
-	}
-
-
-	private void setDebugLogging(boolean enable) {
-		if (enable) {
-			Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.DEBUG);
-			Configurator.setLevel("newsfeed", Level.DEBUG);
-		}else{
-			Configurator.setAllLevels(LogManager.getRootLogger().getName(), Level.ERROR);
-			Configurator.setLevel("newsfeed", Level.ERROR);
 		}
 	}
 }
