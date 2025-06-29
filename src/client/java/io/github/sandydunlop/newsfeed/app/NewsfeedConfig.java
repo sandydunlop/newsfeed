@@ -22,6 +22,7 @@ public class NewsfeedConfig {
     public static boolean autoScrollEnabled = true;
     public static boolean updateCheckEnabled = true;
     public static boolean debugLogEnabled = false;
+    public static boolean invertMouseScrollEnabled = false;
 
 
     // Private constructor to prevent instantiation
@@ -38,6 +39,7 @@ public class NewsfeedConfig {
 			NewsfeedConfig.autoScrollEnabled = getBooleanOrDefault(jsonObject, "autoScroll", true);
 			NewsfeedConfig.updateCheckEnabled = getBooleanOrDefault(jsonObject, "updateCheckEnabled", true);
             NewsfeedConfig.debugLogEnabled = getBooleanOrDefault(jsonObject, "debugLogEnabled", false);
+            NewsfeedConfig.invertMouseScrollEnabled = getBooleanOrDefault(jsonObject, "invertMouseScroll", false);
 		} catch(JSONException e){
 			LOGGER.error("Problem loading config: {}", e.getMessage());
 		} catch(IOException e){
@@ -60,6 +62,7 @@ public class NewsfeedConfig {
         jsonObject.put("autoScroll", NewsfeedConfig.autoScrollEnabled);
         jsonObject.put("updateCheckEnabled", NewsfeedConfig.updateCheckEnabled);
         jsonObject.put("debugLogEnabled", NewsfeedConfig.debugLogEnabled);
+        jsonObject.put("invertMouseScroll", NewsfeedConfig.invertMouseScrollEnabled);
 
         try (FileWriter file = new FileWriter(NewsfeedConfig.configFilePath.toString(), StandardCharsets.UTF_8)) {
             file.write(jsonObject.toString(4));

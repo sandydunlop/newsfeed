@@ -25,6 +25,7 @@ public class Newsfeed extends CupraApp {
 
 
     public Newsfeed() {
+        PlatformServices.getInstance().setInvertMouseScrolling(NewsfeedConfig.invertMouseScrollEnabled);
 		PlatformServices.getInstance().setDebugLogging(NewsfeedConfig.debugLogEnabled);
     }
 

@@ -39,6 +39,7 @@ public class ConfigScreen extends CupraScreen {
 	private CDropdownTextBox urlField;
 	private CCheckBox enabledCheckbox;
 	private CCheckBox autoScrollCheckbox;
+	private CCheckBox invertMouseScrollCheckbox;
 	private CCheckBox updateCheckbox;
 	private CCheckBox debugCheckbox;
 	private CLabel statusLabel;
@@ -100,6 +101,7 @@ public class ConfigScreen extends CupraScreen {
 		checkboxContainer.setAlignHorizontal(Align.Horizontal.MIDDLE);
 		enabledCheckbox = new CCheckBox(checkboxContainer, "Enable feed", NewsfeedConfig.feedEnabled);
 		autoScrollCheckbox = new CCheckBox(checkboxContainer, "Auto scroll to new articles", NewsfeedConfig.autoScrollEnabled);
+		invertMouseScrollCheckbox = new CCheckBox(checkboxContainer, "Invert mouse scrolling", NewsfeedConfig.invertMouseScrollEnabled);
 		updateCheckbox = new CCheckBox(checkboxContainer, "Check for mod updates", NewsfeedConfig.updateCheckEnabled);
 		debugCheckbox = new CCheckBox(checkboxContainer, "Log debug information", NewsfeedConfig.debugLogEnabled);
 
@@ -115,10 +117,12 @@ public class ConfigScreen extends CupraScreen {
 			NewsfeedConfig.feedUrl = urlField.getText();
 			NewsfeedConfig.feedEnabled = enabledCheckbox.isChecked();
 			NewsfeedConfig.autoScrollEnabled = autoScrollCheckbox.isChecked();
+			NewsfeedConfig.invertMouseScrollEnabled = invertMouseScrollCheckbox.isChecked();
 			NewsfeedConfig.updateCheckEnabled = updateCheckbox.isChecked();
 			NewsfeedConfig.debugLogEnabled = debugCheckbox.isChecked();
 			NewsfeedConfig.saveConfig();
 			Newsfeed.getBackgroundThread().restart();
+			PlatformServices.getInstance().setInvertMouseScrolling(NewsfeedConfig.invertMouseScrollEnabled);
 			PlatformServices.getInstance().setDebugLogging(NewsfeedConfig.debugLogEnabled);
 			this.close();
 		});
@@ -186,18 +190,10 @@ public class ConfigScreen extends CupraScreen {
 				continue;
 			}
 			boolean continueButtonEnabled = continueButton.isEnabled();
-			if (isValidating){
+			if (isValidating || !isValidFeed){
 				continueButton.setEnabled(false);
-			}else if(!isValidFeed && !NewsfeedConfig.feedUrl.equals(urlField.getText())){
-				continueButton.setEnabled(false);
-			}else if (!NewsfeedConfig.feedUrl.equals(urlField.getText()) ||
-				NewsfeedConfig.feedEnabled != enabledCheckbox.isChecked() ||
-				NewsfeedConfig.autoScrollEnabled != autoScrollCheckbox.isChecked() ||
-				NewsfeedConfig.debugLogEnabled != debugCheckbox.isChecked() ||
-				NewsfeedConfig.updateCheckEnabled != updateCheckbox.isChecked()){
-				continueButton.setEnabled(true);
 			}else{
-				continueButton.setEnabled(false);
+				continueButton.setEnabled(true);
 			}
 			if (continueButtonEnabled != continueButton.isEnabled()) {
 				PlatformServices.getInstance().render();
