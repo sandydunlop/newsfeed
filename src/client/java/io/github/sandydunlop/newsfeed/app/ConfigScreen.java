@@ -137,13 +137,14 @@ public class ConfigScreen extends CupraScreen {
 
 	@Override
 	public void onShow() {
+		urlField.setText(NewsfeedConfig.feedUrl);
 		enabledCheckbox.setChecked(NewsfeedConfig.feedEnabled);
 		autoScrollCheckbox.setChecked(NewsfeedConfig.autoScrollEnabled);
 		updateCheckbox.setChecked(NewsfeedConfig.updateCheckEnabled);
 		debugCheckbox.setChecked(NewsfeedConfig.debugLogEnabled);
 
 		validationThread = new Thread(this::validationChecker);
-		validationThread.setName("Newsfeed-Vldt");
+		validationThread.setName("Newsfeed-Vali");
 		validationThread.start();
 	}
 
