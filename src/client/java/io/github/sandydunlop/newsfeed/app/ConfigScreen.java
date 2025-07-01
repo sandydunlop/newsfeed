@@ -10,6 +10,7 @@ import io.github.sandydunlop.cupra.common.CupraScreen;
 import io.github.sandydunlop.cupra.common.logging.Logger;
 import io.github.sandydunlop.cupra.common.logging.LogManager;
 import io.github.sandydunlop.cupra.common.util.Align;
+import io.github.sandydunlop.cupra.common.util.Symbol;
 import io.github.sandydunlop.cupra.common.widgets.CButton;
 import io.github.sandydunlop.cupra.common.widgets.CCheckBox;
 import io.github.sandydunlop.cupra.common.widgets.CContainer;
@@ -18,6 +19,7 @@ import io.github.sandydunlop.cupra.common.widgets.CImage;
 import io.github.sandydunlop.cupra.common.widgets.CLabel;
 import io.github.sandydunlop.cupra.common.widgets.CListBoxEntry;
 import io.github.sandydunlop.cupra.common.widgets.CSpacer;
+import io.github.sandydunlop.cupra.common.widgets.CSymbolButton;
 import io.github.sandydunlop.cupra.platform.PlatformServices;
 
 
@@ -79,8 +81,8 @@ public class ConfigScreen extends CupraScreen {
                 .fontSize(22)
                 .bold();
 
-		new CSpacer(body, 50);
 		CContainer middle = new CContainer(body);
+		middle.setExpandable(false);
 		middle.setWidth(350);
 		middle.setId("middle");
 
@@ -108,7 +110,6 @@ public class ConfigScreen extends CupraScreen {
 		statusLabel = new CLabel(middle, "");
 		statusLabel.color(0xFF88FF00);
 		statusLabel.setHeight(WIDGET_HEIGHT);
-		new CSpacer(body, 50);
 
         new CButton(footer, "Cancel", click -> {
 			this.close();
