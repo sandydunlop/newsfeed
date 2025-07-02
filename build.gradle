@@ -35,7 +35,6 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	modImplementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.5.0'	
 	modImplementation include("org.jdom:jdom2:${project.jdom_version}")
 	modImplementation include("com.rometools:rome:${project.rome_version}")
 	modImplementation include("com.rometools:rome-utils:${project.rome_version}")
