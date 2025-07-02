@@ -10,6 +10,7 @@ import io.github.sandydunlop.cupra.common.CupraScreen;
 import io.github.sandydunlop.cupra.common.logging.Logger;
 import io.github.sandydunlop.cupra.common.logging.LogManager;
 import io.github.sandydunlop.cupra.common.util.Align;
+import io.github.sandydunlop.cupra.common.util.Symbol;
 import io.github.sandydunlop.cupra.common.widgets.CButton;
 import io.github.sandydunlop.cupra.common.widgets.CCheckBox;
 import io.github.sandydunlop.cupra.common.widgets.CContainer;
@@ -18,6 +19,7 @@ import io.github.sandydunlop.cupra.common.widgets.CImage;
 import io.github.sandydunlop.cupra.common.widgets.CLabel;
 import io.github.sandydunlop.cupra.common.widgets.CListBoxEntry;
 import io.github.sandydunlop.cupra.common.widgets.CSpacer;
+import io.github.sandydunlop.cupra.common.widgets.CSymbolButton;
 import io.github.sandydunlop.cupra.platform.PlatformServices;
 
 
@@ -39,6 +41,7 @@ public class ConfigScreen extends CupraScreen {
 	private CDropdownTextBox urlField;
 	private CCheckBox enabledCheckbox;
 	private CCheckBox autoScrollCheckbox;
+	private CCheckBox invertMouseScrollCheckbox;
 	private CCheckBox updateCheckbox;
 	private CCheckBox debugCheckbox;
 	private CLabel statusLabel;
@@ -78,8 +81,8 @@ public class ConfigScreen extends CupraScreen {
                 .fontSize(22)
                 .bold();
 
-		new CSpacer(body, 50);
 		CContainer middle = new CContainer(body);
+		middle.setExpandable(false);
 		middle.setWidth(350);
 		middle.setId("middle");
 
@@ -100,13 +103,13 @@ public class ConfigScreen extends CupraScreen {
 		checkboxContainer.setAlignHorizontal(Align.Horizontal.MIDDLE);
 		enabledCheckbox = new CCheckBox(checkboxContainer, "Enable feed", NewsfeedConfig.feedEnabled);
 		autoScrollCheckbox = new CCheckBox(checkboxContainer, "Auto scroll to new articles", NewsfeedConfig.autoScrollEnabled);
+		invertMouseScrollCheckbox = new CCheckBox(checkboxContainer, "Invert mouse scrolling", NewsfeedConfig.invertMouseScrollEnabled);
 		updateCheckbox = new CCheckBox(checkboxContainer, "Check for mod updates", NewsfeedConfig.updateCheckEnabled);
 		debugCheckbox = new CCheckBox(checkboxContainer, "Log debug information", NewsfeedConfig.debugLogEnabled);
 
 		statusLabel = new CLabel(middle, "");
 		statusLabel.color(0xFF88FF00);
 		statusLabel.setHeight(WIDGET_HEIGHT);
-		new CSpacer(body, 50);
 
         new CButton(footer, "Cancel", click -> {
 			this.close();
@@ -115,10 +118,12 @@ public class ConfigScreen extends CupraScreen {
 			NewsfeedConfig.feedUrl = urlField.getText();
 			NewsfeedConfig.feedEnabled = enabledCheckbox.isChecked();
 			NewsfeedConfig.autoScrollEnabled = autoScrollCheckbox.isChecked();
+			NewsfeedConfig.invertMouseScrollEnabled = invertMouseScrollCheckbox.isChecked();
 			NewsfeedConfig.updateCheckEnabled = updateCheckbox.isChecked();
 			NewsfeedConfig.debugLogEnabled = debugCheckbox.isChecked();
 			NewsfeedConfig.saveConfig();
 			Newsfeed.getBackgroundThread().restart();
+			PlatformServices.getInstance().setInvertMouseScrolling(NewsfeedConfig.invertMouseScrollEnabled);
 			PlatformServices.getInstance().setDebugLogging(NewsfeedConfig.debugLogEnabled);
 			this.close();
 		});
@@ -137,13 +142,14 @@ public class ConfigScreen extends CupraScreen {
 
 	@Override
 	public void onShow() {
+		urlField.setText(NewsfeedConfig.feedUrl);
 		enabledCheckbox.setChecked(NewsfeedConfig.feedEnabled);
 		autoScrollCheckbox.setChecked(NewsfeedConfig.autoScrollEnabled);
 		updateCheckbox.setChecked(NewsfeedConfig.updateCheckEnabled);
 		debugCheckbox.setChecked(NewsfeedConfig.debugLogEnabled);
 
 		validationThread = new Thread(this::validationChecker);
-		validationThread.setName("Newsfeed-Vldt");
+		validationThread.setName("Newsfeed-Vali");
 		validationThread.start();
 	}
 
@@ -185,18 +191,10 @@ public class ConfigScreen extends CupraScreen {
 				continue;
 			}
 			boolean continueButtonEnabled = continueButton.isEnabled();
-			if (isValidating){
+			if (isValidating || !isValidFeed){
 				continueButton.setEnabled(false);
-			}else if(!isValidFeed && !NewsfeedConfig.feedUrl.equals(urlField.getText())){
-				continueButton.setEnabled(false);
-			}else if (!NewsfeedConfig.feedUrl.equals(urlField.getText()) ||
-				NewsfeedConfig.feedEnabled != enabledCheckbox.isChecked() ||
-				NewsfeedConfig.autoScrollEnabled != autoScrollCheckbox.isChecked() ||
-				NewsfeedConfig.debugLogEnabled != debugCheckbox.isChecked() ||
-				NewsfeedConfig.updateCheckEnabled != updateCheckbox.isChecked()){
-				continueButton.setEnabled(true);
 			}else{
-				continueButton.setEnabled(false);
+				continueButton.setEnabled(true);
 			}
 			if (continueButtonEnabled != continueButton.isEnabled()) {
 				PlatformServices.getInstance().render();

@@ -23,7 +23,6 @@ public class ModConfigScreen extends CupraMinecraftScreen {
         super.init();
         MinecraftServices platformServices = MinecraftServices.getInstance();
         platformServices.getApp().openScreen(Newsfeed.getConfigScreen());
-        //layoutAppScreen(); // TODO
     }
 
 
