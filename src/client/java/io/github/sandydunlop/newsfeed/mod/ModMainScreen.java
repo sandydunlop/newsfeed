@@ -5,10 +5,11 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-
+import io.github.sandydunlop.cupra.common.CupraScreen;
 import io.github.sandydunlop.cupra.common.widgets.CWidget;
 import io.github.sandydunlop.cupra.platform.minecraft.CupraMinecraftScreen;
 import io.github.sandydunlop.cupra.platform.minecraft.MinecraftServices;
+import io.github.sandydunlop.newsfeed.app.MainScreen;
 
 
 public class ModMainScreen extends CupraMinecraftScreen {
@@ -27,13 +28,6 @@ public class ModMainScreen extends CupraMinecraftScreen {
 	protected void init() {
 		super.init();
 		layoutAppScreen();
-
-		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			while (NewsfeedClientModInitializer.newsfeedKeyBind.wasPressed()) {
-				MinecraftServices.getTicker().setHidden(false);
-				MinecraftClient.getInstance().setScreen(null);
-			}
-		});
     }
 
 
