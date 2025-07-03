@@ -26,6 +26,7 @@ public abstract class NewsfeedClientScreenMixin {
 			CupraScreen screen = MinecraftServices.getInstance().getApp().getScreen();
 			if (screen instanceof MainScreen) {
 				NewsfeedClientModInitializer.newsfeedKeyBind.setPressed(false);
+				MinecraftServices.getTicker().setHidden(false);
 				info.setReturnValue(true);
 				this.close();
 			}

@@ -18,8 +18,6 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
 
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.lwjgl.glfw.GLFW;
 
