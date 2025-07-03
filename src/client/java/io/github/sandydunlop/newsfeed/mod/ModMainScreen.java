@@ -1,18 +1,18 @@
 package io.github.sandydunlop.newsfeed.mod;
 
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import io.github.sandydunlop.cupra.common.CupraScreen;
+
+import io.github.sandydunlop.cupra.common.logging.LogManager;
+import io.github.sandydunlop.cupra.common.logging.Logger;
 import io.github.sandydunlop.cupra.common.widgets.CWidget;
 import io.github.sandydunlop.cupra.platform.minecraft.CupraMinecraftScreen;
 import io.github.sandydunlop.cupra.platform.minecraft.MinecraftServices;
-import io.github.sandydunlop.newsfeed.app.MainScreen;
 
 
 public class ModMainScreen extends CupraMinecraftScreen {
+	private static final Logger LOGGER = LogManager.getLogger("Newsfeed");
 	Screen parent = null;
 
 

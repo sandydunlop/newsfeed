@@ -8,7 +8,6 @@ import io.github.sandydunlop.cupra.common.palette.ColorPalette;
 import io.github.sandydunlop.cupra.common.util.Align;
 import io.github.sandydunlop.cupra.common.widgets.CButton;
 import io.github.sandydunlop.cupra.common.widgets.CContainer;
-import io.github.sandydunlop.cupra.common.widgets.CFlexiSpacer;
 import io.github.sandydunlop.cupra.common.widgets.CFormattedLabel;
 import io.github.sandydunlop.cupra.common.widgets.CImage;
 import io.github.sandydunlop.cupra.common.widgets.CLabel;

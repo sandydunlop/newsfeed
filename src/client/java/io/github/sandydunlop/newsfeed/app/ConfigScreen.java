@@ -15,6 +15,7 @@ import io.github.sandydunlop.cupra.common.widgets.CButton;
 import io.github.sandydunlop.cupra.common.widgets.CCheckBox;
 import io.github.sandydunlop.cupra.common.widgets.CContainer;
 import io.github.sandydunlop.cupra.common.widgets.CDropdownTextBox;
+import io.github.sandydunlop.cupra.common.widgets.CFlexiSpacer;
 import io.github.sandydunlop.cupra.common.widgets.CImage;
 import io.github.sandydunlop.cupra.common.widgets.CLabel;
 import io.github.sandydunlop.cupra.common.widgets.CListBoxEntry;
@@ -50,7 +51,6 @@ public class ConfigScreen extends CupraScreen {
 
 	public ConfigScreen() {
 		super();
-		final int WIDGET_HEIGHT = 20;
 		setTitle("Config");
 		suggestSize(440,300);
 		feedUrl = NewsfeedConfig.feedUrl;
@@ -64,6 +64,7 @@ public class ConfigScreen extends CupraScreen {
 		body = new CContainer(this, true);
 		body.setAlignHorizontal(Align.Horizontal.MIDDLE);
 		body.setId("body");
+		body.setPadding(0);
 
 		footer = new CContainer(this, true);
         footer.setPadding(10);
@@ -82,34 +83,44 @@ public class ConfigScreen extends CupraScreen {
                 .bold();
 
 		CContainer middle = new CContainer(body);
+		middle.setAlignVertical(Align.Vertical.MIDDLE);
 		middle.setExpandable(false);
 		middle.setWidth(350);
 		middle.setId("middle");
 
-		new CLabel(middle, "Feed URL");
+		CContainer labelContainer = new CContainer(middle, true);
+		labelContainer.setAlignHorizontal(Align.Horizontal.SPREAD);
+		labelContainer.setId("labelContainer");
+		labelContainer.setPadding(0);
+		labelContainer.setExpandable(false);
+
+		new CLabel(labelContainer, "Feed URL");
+		new CFlexiSpacer(labelContainer);
+		statusLabel = new CLabel(labelContainer, "");
+		statusLabel.color(0xFF88FF00);
+		statusLabel.setWidth(100);
+		statusLabel.align(Align.Horizontal.RIGHT);
+
 
 		urlField = new CDropdownTextBox(middle, feedUrl);
-		urlField.setWidth(300);
-		urlField.add(new CListBoxEntry("https://feeds.bbci.co.uk/news/world/rss.xml", null));
-		urlField.add(new CListBoxEntry("https://www.reddit.com/r/AskReddit/new/.rss", null));
-		urlField.add(new CListBoxEntry("https://nullforums.net/forums/minecraft-rss.473/index.rss", null));
+		urlField.setWidth(340);
 		urlField.add(new CListBoxEntry("https://www.minecraftforum.net/news.rss", null));
+		urlField.add(new CListBoxEntry("https://www.reddit.com/r/AskReddit/new/.rss", null));
+		urlField.add(new CListBoxEntry("https://feeds.bbci.co.uk/news/world/rss.xml", null));
 		urlField.add(new CListBoxEntry("https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml", null));
 		urlField.add(new CListBoxEntry("https://rss.nytimes.com/services/xml/rss/nyt/World.xml", null));
+		urlField.add(new CListBoxEntry("https://www.france24.com/fr/rss", null));
 		urlField.setText(feedUrl);
 
 		CContainer checkboxContainer = new CContainer(middle, false);
 		checkboxContainer.setId("checkboxContainer");
+		checkboxContainer.setExpandable(false);
 		checkboxContainer.setAlignHorizontal(Align.Horizontal.MIDDLE);
 		enabledCheckbox = new CCheckBox(checkboxContainer, "Enable feed", NewsfeedConfig.feedEnabled);
 		autoScrollCheckbox = new CCheckBox(checkboxContainer, "Auto scroll to new articles", NewsfeedConfig.autoScrollEnabled);
 		invertMouseScrollCheckbox = new CCheckBox(checkboxContainer, "Invert mouse scrolling", NewsfeedConfig.invertMouseScrollEnabled);
 		updateCheckbox = new CCheckBox(checkboxContainer, "Check for mod updates", NewsfeedConfig.updateCheckEnabled);
 		debugCheckbox = new CCheckBox(checkboxContainer, "Log debug information", NewsfeedConfig.debugLogEnabled);
-
-		statusLabel = new CLabel(middle, "");
-		statusLabel.color(0xFF88FF00);
-		statusLabel.setHeight(WIDGET_HEIGHT);
 
         new CButton(footer, "Cancel", click -> {
 			this.close();
