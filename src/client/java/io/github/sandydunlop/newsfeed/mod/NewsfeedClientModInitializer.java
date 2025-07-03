@@ -15,8 +15,6 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
 
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.lwjgl.glfw.GLFW;
 
@@ -28,10 +26,6 @@ import io.github.sandydunlop.newsfeed.app.NewsfeedConfig;
 public class NewsfeedClientModInitializer implements ClientModInitializer {
 	private static final Logger LOGGER = LogManager.getLogger("Newsfeed");
 	private static final Identifier RENDER_LAYER = Identifier.of("newsfeed");
-	private static final int ONE_MINUTE = 1200; // 20 ticks * 60 seconds
-	private static final int INTERVAL = ONE_MINUTE;
-	private static int tock = 0; //20 ticks = 1 second
-	private static boolean doneStartupNotifications = false;
 	public static final KeyBinding newsfeedKeyBind = KeyBindingHelper.registerKeyBinding(new KeyBinding(
 		"Open Newsfeed", // The translation key of the keybinding's name
 		InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
@@ -59,6 +53,18 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 				MinecraftClient.getInstance().setScreen(screen);
 			}
 		});
+
+		Thread thread = new Thread(() -> {
+			try {
+				Thread.sleep(10000);
+				checkForUpdate();
+			} catch (InterruptedException e) {
+				LOGGER.error("Unable to check for new version");
+				LOGGER.error(e.getMessage());
+				Thread.currentThread().interrupt();
+			}
+		});
+		thread.start();
 	}
 
 
@@ -73,28 +79,18 @@ public class NewsfeedClientModInitializer implements ClientModInitializer {
 
 
 	private static void render(DrawContext context, RenderTickCounter tickCounter) {
-		if (tock++ > INTERVAL) {
-			tock = 0;
-		}
-		// //TODO Move this out of render method into new thread
-		if (!doneStartupNotifications && tock > 100) {
-			if (NewsfeedConfig.updateCheckEnabled) {
-				if (ModUtils.isUpdateAvailable()) {
-					LOGGER.info("Update available for " + NewsfeedModInitializer.MOD_ID);
-					String msg = String.format("Update available for %s: %s", NewsfeedModInitializer.MOD_ID, ModUtils.getLatestVersion());
-					LOGGER.info(msg);
-					if (MinecraftClient.getInstance().player != null) {
-						MinecraftServices.getInstance().showNotification(msg);
-					}
-				}
-			}
-			doneStartupNotifications = true;
-		}
 		MinecraftServices.getTicker().render(context);
 	}
 
 
-	public static void updateNow() {
-		tock = INTERVAL;
+	private void checkForUpdate() {
+		if (ModUtils.isUpdateAvailable()) {
+			LOGGER.info("Update available for " + NewsfeedModInitializer.MOD_ID);
+			String msg = String.format("Update available for %s: %s", NewsfeedModInitializer.MOD_ID, ModUtils.getLatestVersion());
+			LOGGER.info(msg);
+			if (MinecraftClient.getInstance().player != null) {
+				MinecraftServices.getInstance().showNotification(msg);
+			}
+		}
 	}
 }
