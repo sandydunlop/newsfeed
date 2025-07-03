@@ -1,8 +1,8 @@
 # Newsfeed - An RSS News Reader for Minecraft
 
-[![Minecraft](https://img.shields.io/badge/minecraft-1.21.4-olive.svg)](https://www.minecraft.net/)
-[![Fabric](https://img.shields.io/badge/fabric-0.16.10-olive.svg)](https://fabricmc.net/)
-[![Java](https://img.shields.io/badge/java-17-olive.svg)](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
+[![Minecraft](https://img.shields.io/badge/minecraft-1.21.5-olive.svg)](https://www.minecraft.net/)
+[![Fabric](https://img.shields.io/badge/fabric-0.16.14-olive.svg)](https://fabricmc.net/)
+[![Java](https://img.shields.io/badge/java-21-olive.svg)](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
 [![Gradle](https://img.shields.io/badge/gradle-8.12.1-olive.svg)](https://gradle.org/)
 [![MIT License](https://img.shields.io/badge/license-MIT-olive.svg)](https://opensource.org/license/mit/)
 

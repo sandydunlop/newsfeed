@@ -18,13 +18,13 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"io.github.sandydunlop.newsfeed.NewsfeedModInitializer"
+			"io.github.sandydunlop.newsfeed.mod.NewsfeedModInitializer"
 		],
 		"client": [
-			"io.github.sandydunlop.newsfeed.NewsfeedClientModInitializer"
+			"io.github.sandydunlop.newsfeed.mod.NewsfeedClientModInitializer"
 		],
 		"modmenu": [
-			"io.github.sandydunlop.newsfeed.ModMenuIntegration"
+			"io.github.sandydunlop.newsfeed.mod.ModMenuIntegration"
 		]
 	},
 	"mixins": [
