@@ -1,11 +1,5 @@
 # Newsfeed - An RSS News Reader for Minecraft
 
-[![Minecraft](https://img.shields.io/badge/minecraft-1.21.5-olive.svg)](https://www.minecraft.net/)
-[![Fabric](https://img.shields.io/badge/fabric-0.16.14-olive.svg)](https://fabricmc.net/)
-[![Java](https://img.shields.io/badge/java-21-olive.svg)](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
-[![Gradle](https://img.shields.io/badge/gradle-8.12.1-olive.svg)](https://gradle.org/)
-[![MIT License](https://img.shields.io/badge/license-MIT-olive.svg)](https://opensource.org/license/mit/)
-
 ## Features
 
 This mod adds a news feed to the game that displays the latest news from a configurable source. The mod is designed to be lightweight and easy to use, with a simple interface that allows you to quickly view the latest news headlines. The default news source is set to the BBC World News RSS feed, but you can change it to any RSS feed you like. 
